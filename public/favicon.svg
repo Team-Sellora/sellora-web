@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title>Sellora</title>
+  <rect width="64" height="64" rx="14" fill="#17324d"/>
+  <path d="M44 18H25c-5 0-9 4-9 9s4 9 9 9h14c3 0 5 2 5 5s-2 5-5 5H20" fill="none" stroke="#8dd3c7" stroke-linecap="round" stroke-width="7"/>
+</svg>

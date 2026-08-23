@@ -26,56 +26,256 @@ const provinces: Record_[] = [
 ];
 
 const areaManagers: Record_[] = [
-  { id: "1", name: "N. Fernando", email: "n.fernando@sellora.io", province: "Western", status: "Active" },
-  { id: "2", name: "K. Perera", email: "k.perera@sellora.io", province: "Central", status: "Active" },
-  { id: "3", name: "S. Jayawardena", email: "s.jaya@sellora.io", province: "Southern", status: "Inactive" },
+  {
+    id: "1",
+    name: "N. Fernando",
+    email: "n.fernando@sellora.io",
+    province: "Western",
+    status: "Active",
+  },
+  {
+    id: "2",
+    name: "K. Perera",
+    email: "k.perera@sellora.io",
+    province: "Central",
+    status: "Active",
+  },
+  {
+    id: "3",
+    name: "S. Jayawardena",
+    email: "s.jaya@sellora.io",
+    province: "Southern",
+    status: "Inactive",
+  },
 ];
 
 const agencies: Record_[] = [
-  { id: "1", name: "Colombo Metro Distributors", code: "AG-001", province: "Western", territories: "6", status: "Active" },
-  { id: "2", name: "Kandy Trade Partners", code: "AG-002", province: "Central", territories: "4", status: "Active" },
-  { id: "3", name: "Galle Supply Co.", code: "AG-003", province: "Southern", territories: "3", status: "Inactive" },
-  { id: "4", name: "Badulla Distributors", code: "AG-004", province: "Uva", territories: "2", status: "Active" },
+  {
+    id: "1",
+    name: "Colombo Metro Distributors",
+    code: "AG-001",
+    province: "Western",
+    territories: "6",
+    status: "Active",
+  },
+  {
+    id: "2",
+    name: "Kandy Trade Partners",
+    code: "AG-002",
+    province: "Central",
+    territories: "4",
+    status: "Active",
+  },
+  {
+    id: "3",
+    name: "Galle Supply Co.",
+    code: "AG-003",
+    province: "Southern",
+    territories: "3",
+    status: "Inactive",
+  },
+  {
+    id: "4",
+    name: "Badulla Distributors",
+    code: "AG-004",
+    province: "Uva",
+    territories: "2",
+    status: "Active",
+  },
 ];
 
 const territories: Record_[] = [
-  { id: "1", name: "Colombo North", code: "T-101", agency: "Colombo Metro Distributors", shops: "148", status: "Active" },
-  { id: "2", name: "Colombo South", code: "T-102", agency: "Colombo Metro Distributors", shops: "132", status: "Active" },
-  { id: "3", name: "Kandy City", code: "T-201", agency: "Kandy Trade Partners", shops: "96", status: "Active" },
-  { id: "4", name: "Galle Coastal", code: "T-301", agency: "Galle Supply Co.", shops: "74", status: "Inactive" },
+  {
+    id: "1",
+    name: "Colombo North",
+    code: "T-101",
+    agency: "Colombo Metro Distributors",
+    shops: "148",
+    status: "Active",
+  },
+  {
+    id: "2",
+    name: "Colombo South",
+    code: "T-102",
+    agency: "Colombo Metro Distributors",
+    shops: "132",
+    status: "Active",
+  },
+  {
+    id: "3",
+    name: "Kandy City",
+    code: "T-201",
+    agency: "Kandy Trade Partners",
+    shops: "96",
+    status: "Active",
+  },
+  {
+    id: "4",
+    name: "Galle Coastal",
+    code: "T-301",
+    agency: "Galle Supply Co.",
+    shops: "74",
+    status: "Inactive",
+  },
 ];
 
 const salesReps: Record_[] = [
-  { id: "1", name: "A. Silva", code: "SR-014", territory: "Colombo North", phone: "077 123 4567", status: "Active" },
-  { id: "2", name: "R. Bandara", code: "SR-019", territory: "Kandy City", phone: "071 998 2210", status: "Active" },
-  { id: "3", name: "M. Dias", code: "SR-022", territory: "Galle Coastal", phone: "076 442 1180", status: "Inactive" },
-  { id: "4", name: "T. Rajapaksha", code: "SR-027", territory: "Colombo South", phone: "070 331 8890", status: "Active" },
+  {
+    id: "1",
+    name: "A. Silva",
+    code: "SR-014",
+    territory: "Colombo North",
+    phone: "077 123 4567",
+    status: "Active",
+  },
+  {
+    id: "2",
+    name: "R. Bandara",
+    code: "SR-019",
+    territory: "Kandy City",
+    phone: "071 998 2210",
+    status: "Active",
+  },
+  {
+    id: "3",
+    name: "M. Dias",
+    code: "SR-022",
+    territory: "Galle Coastal",
+    phone: "076 442 1180",
+    status: "Inactive",
+  },
+  {
+    id: "4",
+    name: "T. Rajapaksha",
+    code: "SR-027",
+    territory: "Colombo South",
+    phone: "070 331 8890",
+    status: "Active",
+  },
 ];
 
 const shops: Record_[] = [
-  { id: "1", name: "New City Grocery", code: "SH-1042", territory: "Colombo North", owner: "P. Kumara", status: "Active" },
-  { id: "2", name: "Sunrise Mart", code: "SH-1088", territory: "Colombo South", owner: "L. Nawaz", status: "Active" },
-  { id: "3", name: "Hill Top Stores", code: "SH-2011", territory: "Kandy City", owner: "D. Herath", status: "Inactive" },
-  { id: "4", name: "Ocean Traders", code: "SH-3005", territory: "Galle Coastal", owner: "V. Peiris", status: "Active" },
+  {
+    id: "1",
+    name: "New City Grocery",
+    code: "SH-1042",
+    territory: "Colombo North",
+    owner: "P. Kumara",
+    status: "Active",
+  },
+  {
+    id: "2",
+    name: "Sunrise Mart",
+    code: "SH-1088",
+    territory: "Colombo South",
+    owner: "L. Nawaz",
+    status: "Active",
+  },
+  {
+    id: "3",
+    name: "Hill Top Stores",
+    code: "SH-2011",
+    territory: "Kandy City",
+    owner: "D. Herath",
+    status: "Inactive",
+  },
+  {
+    id: "4",
+    name: "Ocean Traders",
+    code: "SH-3005",
+    territory: "Galle Coastal",
+    owner: "V. Peiris",
+    status: "Active",
+  },
 ];
 
 const products: Record_[] = [
-  { id: "1", name: "Cream Cracker 190g", sku: "FMCG-0091", category: "Biscuits", price: "180.00", status: "Active" },
-  { id: "2", name: "Milk Powder 400g", sku: "FMCG-0142", category: "Dairy", price: "1,290.00", status: "Active" },
-  { id: "3", name: "Coconut Oil 750ml", sku: "FMCG-0233", category: "Cooking", price: "940.00", status: "Inactive" },
-  { id: "4", name: "Detergent Bar 120g", sku: "FMCG-0310", category: "Household", price: "125.00", status: "Active" },
+  {
+    id: "1",
+    name: "Cream Cracker 190g",
+    sku: "FMCG-0091",
+    category: "Biscuits",
+    price: "180.00",
+    status: "Active",
+  },
+  {
+    id: "2",
+    name: "Milk Powder 400g",
+    sku: "FMCG-0142",
+    category: "Dairy",
+    price: "1,290.00",
+    status: "Active",
+  },
+  {
+    id: "3",
+    name: "Coconut Oil 750ml",
+    sku: "FMCG-0233",
+    category: "Cooking",
+    price: "940.00",
+    status: "Inactive",
+  },
+  {
+    id: "4",
+    name: "Detergent Bar 120g",
+    sku: "FMCG-0310",
+    category: "Household",
+    price: "125.00",
+    status: "Active",
+  },
 ];
 
 const inventory: Record_[] = [
-  { id: "1", product: "Cream Cracker 190g", warehouse: "Colombo Main", onHand: "4,820", reserved: "310", status: "Active" },
-  { id: "2", product: "Milk Powder 400g", warehouse: "Colombo Main", onHand: "1,240", reserved: "180", status: "Active" },
-  { id: "3", product: "Coconut Oil 750ml", warehouse: "Kandy Depot", onHand: "0", reserved: "0", status: "Inactive" },
+  {
+    id: "1",
+    product: "Cream Cracker 190g",
+    warehouse: "Colombo Main",
+    onHand: "4,820",
+    reserved: "310",
+    status: "Active",
+  },
+  {
+    id: "2",
+    product: "Milk Powder 400g",
+    warehouse: "Colombo Main",
+    onHand: "1,240",
+    reserved: "180",
+    status: "Active",
+  },
+  {
+    id: "3",
+    product: "Coconut Oil 750ml",
+    warehouse: "Kandy Depot",
+    onHand: "0",
+    reserved: "0",
+    status: "Inactive",
+  },
 ];
 
 const orders: Record_[] = [
-  { id: "1", reference: "ORD-20481", shop: "New City Grocery", rep: "A. Silva", total: "42,180.00", status: "Active" },
-  { id: "2", reference: "ORD-20482", shop: "Sunrise Mart", rep: "T. Rajapaksha", total: "18,940.00", status: "Active" },
-  { id: "3", reference: "ORD-20479", shop: "Hill Top Stores", rep: "R. Bandara", total: "7,320.00", status: "Inactive" },
+  {
+    id: "1",
+    reference: "ORD-20481",
+    shop: "New City Grocery",
+    rep: "A. Silva",
+    total: "42,180.00",
+    status: "Active",
+  },
+  {
+    id: "2",
+    reference: "ORD-20482",
+    shop: "Sunrise Mart",
+    rep: "T. Rajapaksha",
+    total: "18,940.00",
+    status: "Active",
+  },
+  {
+    id: "3",
+    reference: "ORD-20479",
+    shop: "Hill Top Stores",
+    rep: "R. Bandara",
+    total: "7,320.00",
+    status: "Inactive",
+  },
 ];
 
 export const entities: Record<string, EntityConfig> = {
@@ -259,7 +459,11 @@ export const summaryStats = [
 ];
 
 export const recentActivity = [
-  { id: "1", text: "A. Silva submitted order ORD-20481 for New City Grocery", time: "12 minutes ago" },
+  {
+    id: "1",
+    text: "A. Silva submitted order ORD-20481 for New City Grocery",
+    time: "12 minutes ago",
+  },
   { id: "2", text: "Territory Colombo South reassigned to T. Rajapaksha", time: "1 hour ago" },
   { id: "3", text: "Product Coconut Oil 750ml marked inactive", time: "3 hours ago" },
   { id: "4", text: "Agency Badulla Distributors created", time: "Yesterday" },

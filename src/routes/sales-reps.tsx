@@ -7,7 +7,10 @@ export const Route = createFileRoute("/sales-reps")({
       { title: "Sales Reps — Sellora" },
       { name: "description", content: "Manage field sales representatives and their territories." },
       { property: "og:title", content: "Sales Reps — Sellora" },
-      { property: "og:description", content: "Manage field sales representatives and their territories." },
+      {
+        property: "og:description",
+        content: "Manage field sales representatives and their territories.",
+      },
     ],
   }),
   component: () => <EntityListPage slug="sales-reps" />,

@@ -1,11 +1,13 @@
 import type { InputHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
-type Props = Readonly<InputHTMLAttributes<HTMLInputElement> & {
-  label: string;
-  error?: string | undefined;
-  hint?: string | undefined;
-}>;
+type Props = Readonly<
+  InputHTMLAttributes<HTMLInputElement> & {
+    label: string;
+    error?: string | undefined;
+    hint?: string | undefined;
+  }
+>;
 
 export function FormField({ label, error, hint, id, className, ...props }: Props) {
   const fieldId = id ?? props.name ?? label.toLowerCase().replace(/\s+/g, "-");

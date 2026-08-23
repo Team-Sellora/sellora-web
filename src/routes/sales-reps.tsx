@@ -1,0 +1,14 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { EntityListPage } from "@/components/EntityListPage";
+
+export const Route = createFileRoute("/sales-reps")({
+  head: () => ({
+    meta: [
+      { title: "Sales Reps — Sellora" },
+      { name: "description", content: "Manage field sales representatives and their territories." },
+      { property: "og:title", content: "Sales Reps — Sellora" },
+      { property: "og:description", content: "Manage field sales representatives and their territories." },
+    ],
+  }),
+  component: () => <EntityListPage slug="sales-reps" />,
+});

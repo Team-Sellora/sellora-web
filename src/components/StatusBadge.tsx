@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import type { Status } from "@/lib/mock-data";
 
-export function StatusBadge({ status }: { status: Status }) {
+export function StatusBadge({ status }: Readonly<{ status: Status }>) {
   return (
     <span
       className={cn(

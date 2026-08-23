@@ -4,9 +4,33 @@ import { Plus } from "lucide-react";
 import { DataTable } from "@/components/DataTable";
 import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
-import { getEntity, type Status } from "@/lib/mock-data";
+import { getEntity, type Record_, type Status } from "@/lib/mock-data";
 
-export function EntityListPage({ slug }: { slug: string }) {
+function EntityRowActions({
+  slug,
+  row,
+}: Readonly<{ slug: string; row: { id: string; status: string } }>) {
+  return (
+    <div className="flex justify-end gap-3 text-xs">
+      <Link
+        to="/records/$entity/$id"
+        params={{ entity: slug, id: row.id }}
+        className="text-primary hover:underline"
+      >
+        Edit
+      </Link>
+      <button type="button" className="text-muted-foreground hover:text-destructive">
+        {row.status === "Active" ? "Deactivate" : "Activate"}
+      </button>
+    </div>
+  );
+}
+
+function createEntityRowActions(slug: string) {
+  return (row: Record_) => <EntityRowActions slug={slug} row={row} />;
+}
+
+export function EntityListPage({ slug }: Readonly<{ slug: string }>) {
   const entity = getEntity(slug)!;
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
@@ -53,20 +77,7 @@ export function EntityListPage({ slug }: { slug: string }) {
         renderCell={(row, key) =>
           key === "status" ? <StatusBadge status={row.status as Status} /> : row[key]
         }
-        rowActions={(row) => (
-          <div className="flex justify-end gap-3 text-xs">
-            <Link
-              to="/records/$entity/$id"
-              params={{ entity: entity.slug, id: row.id }}
-              className="text-primary hover:underline"
-            >
-              Edit
-            </Link>
-            <button type="button" className="text-muted-foreground hover:text-destructive">
-              {row.status === "Active" ? "Deactivate" : "Activate"}
-            </button>
-          </div>
-        )}
+        rowActions={createEntityRowActions(entity.slug)}
       />
     </>
   );

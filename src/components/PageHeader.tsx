@@ -9,12 +9,12 @@ export function PageHeader({
   description,
   crumbs = [],
   actions,
-}: {
+}: Readonly<{
   title: string;
   description?: string;
   crumbs?: Crumb[];
   actions?: ReactNode;
-}) {
+}>) {
   return (
     <div className="mb-6">
       <nav aria-label="Breadcrumb" className="mb-2 flex items-center gap-1 text-xs text-muted-foreground">

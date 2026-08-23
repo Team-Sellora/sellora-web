@@ -5,6 +5,15 @@ import type { Column, Record_ } from "@/lib/mock-data";
 
 const PAGE_SIZE = 5;
 
+function SortIcon({
+  columnKey,
+  sort,
+}: Readonly<{ columnKey: string; sort: { key: string; dir: "asc" | "desc" } | null }>) {
+  if (sort?.key !== columnKey) return <ArrowUpDown className="size-3" />;
+  if (sort.dir === "asc") return <ArrowUp className="size-3" />;
+  return <ArrowDown className="size-3" />;
+}
+
 export function DataTable({
   columns,
   rows,
@@ -15,7 +24,7 @@ export function DataTable({
   onSearch,
   statusFilter,
   onStatusFilter,
-}: {
+}: Readonly<{
   columns: Column[];
   rows: Record_[];
   loading?: boolean;
@@ -25,7 +34,7 @@ export function DataTable({
   onSearch: (v: string) => void;
   statusFilter: string;
   onStatusFilter: (v: string) => void;
-}) {
+}>) {
   const [sort, setSort] = useState<{ key: string; dir: "asc" | "desc" } | null>(null);
   const [page, setPage] = useState(1);
 
@@ -42,6 +51,42 @@ export function DataTable({
   const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
   const pageRows = sorted.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+  let tableContent: ReactNode;
+
+  if (loading) {
+    tableContent = Array.from({ length: 3 }).map((_, i) => (
+      <tr key={i} className="border-b border-border last:border-0">
+        {columns.map((col) => (
+          <td key={col.key} className="px-4 py-3">
+            <div className="h-3 w-24 animate-pulse rounded bg-muted" />
+          </td>
+        ))}
+        {rowActions && <td className="px-4 py-3" />}
+      </tr>
+    ));
+  } else if (pageRows.length === 0) {
+    tableContent = (
+      <tr>
+        <td
+          colSpan={columns.length + (rowActions ? 1 : 0)}
+          className="px-4 py-12 text-center text-sm text-muted-foreground"
+        >
+          No records found
+        </td>
+      </tr>
+    );
+  } else {
+    tableContent = pageRows.map((row) => (
+      <tr key={row.id} className="border-b border-border last:border-0 hover:bg-muted/40">
+        {columns.map((col) => (
+          <td key={col.key} className="px-4 py-3">
+            {renderCell ? renderCell(row, col.key) : row[col.key]}
+          </td>
+        ))}
+        {rowActions && <td className="px-4 py-3 text-right">{rowActions(row)}</td>}
+      </tr>
+    ));
+  }
 
   const toggleSort = (key: string) =>
     setSort((s) =>
@@ -90,13 +135,7 @@ export function DataTable({
                       className="inline-flex items-center gap-1 hover:text-foreground"
                     >
                       {col.label}
-                      {sort?.key !== col.key ? (
-                        <ArrowUpDown className="size-3" />
-                      ) : sort.dir === "asc" ? (
-                        <ArrowUp className="size-3" />
-                      ) : (
-                        <ArrowDown className="size-3" />
-                      )}
+                      <SortIcon columnKey={col.key} sort={sort} />
                     </button>
                   ) : (
                     col.label
@@ -107,38 +146,7 @@ export function DataTable({
             </tr>
           </thead>
           <tbody>
-            {loading ? (
-              Array.from({ length: 3 }).map((_, i) => (
-                <tr key={i} className="border-b border-border last:border-0">
-                  {columns.map((col) => (
-                    <td key={col.key} className="px-4 py-3">
-                      <div className="h-3 w-24 animate-pulse rounded bg-muted" />
-                    </td>
-                  ))}
-                  {rowActions && <td className="px-4 py-3" />}
-                </tr>
-              ))
-            ) : pageRows.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={columns.length + (rowActions ? 1 : 0)}
-                  className="px-4 py-12 text-center text-sm text-muted-foreground"
-                >
-                  No records found
-                </td>
-              </tr>
-            ) : (
-              pageRows.map((row) => (
-                <tr key={row.id} className="border-b border-border last:border-0 hover:bg-muted/40">
-                  {columns.map((col) => (
-                    <td key={col.key} className="px-4 py-3">
-                      {renderCell ? renderCell(row, col.key) : row[col.key]}
-                    </td>
-                  ))}
-                  {rowActions && <td className="px-4 py-3 text-right">{rowActions(row)}</td>}
-                </tr>
-              ))
-            )}
+            {tableContent}
           </tbody>
         </table>
       </div>

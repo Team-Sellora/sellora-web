@@ -1,14 +1,20 @@
 import type { InputHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
-type Props = InputHTMLAttributes<HTMLInputElement> & {
+type Props = Readonly<InputHTMLAttributes<HTMLInputElement> & {
   label: string;
   error?: string | undefined;
   hint?: string | undefined;
-};
+}>;
 
 export function FormField({ label, error, hint, id, className, ...props }: Props) {
   const fieldId = id ?? props.name ?? label.toLowerCase().replace(/\s+/g, "-");
+  let helperText = null;
+  if (error) {
+    helperText = <p className="text-xs text-destructive">{error}</p>;
+  } else if (hint) {
+    helperText = <p className="text-xs text-muted-foreground">{hint}</p>;
+  }
   return (
     <div className="space-y-1.5">
       <label htmlFor={fieldId} className="block text-sm font-medium">
@@ -24,11 +30,7 @@ export function FormField({ label, error, hint, id, className, ...props }: Props
         )}
         {...props}
       />
-      {error ? (
-        <p className="text-xs text-destructive">{error}</p>
-      ) : hint ? (
-        <p className="text-xs text-muted-foreground">{hint}</p>
-      ) : null}
+      {helperText}
     </div>
   );
 }

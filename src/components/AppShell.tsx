@@ -30,7 +30,7 @@ const navItems: { to: string; label: string; icon: typeof LayoutDashboard; exact
   { to: "/orders", label: "Orders", icon: ClipboardList },
 ];
 
-export function AppShell({ children }: { children: ReactNode }) {
+export function AppShell({ children }: { readonly children: ReactNode }) {
   const [collapsed, setCollapsed] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 

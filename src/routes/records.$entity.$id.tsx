@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState, type FormEvent } from "react";
+import { useState, type SubmitEvent } from "react";
 import { FormField } from "@/components/FormField";
 import { PageHeader } from "@/components/PageHeader";
 import { getEntity, getRecord } from "@/lib/mock-data";
@@ -47,7 +47,7 @@ function RecordForm() {
   const isNew = id === "new";
   const listPath = `/${entity.slug}` as "/provinces";
 
-  const onSubmit = (e: FormEvent) => {
+  const onSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const next: Record<string, string> = {};
     entity.fields.forEach((f) => {

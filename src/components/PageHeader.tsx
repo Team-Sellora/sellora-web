@@ -17,7 +17,10 @@ export function PageHeader({
 }>) {
   return (
     <div className="mb-6">
-      <nav aria-label="Breadcrumb" className="mb-2 flex items-center gap-1 text-xs text-muted-foreground">
+      <nav
+        aria-label="Breadcrumb"
+        className="mb-2 flex items-center gap-1 text-xs text-muted-foreground"
+      >
         <Link to="/" className="hover:text-foreground">
           Dashboard
         </Link>
@@ -37,9 +40,7 @@ export function PageHeader({
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-xl font-semibold tracking-tight">{title}</h1>
-          {description && (
-            <p className="mt-1 text-sm text-muted-foreground">{description}</p>
-          )}
+          {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
         </div>
         {actions}
       </div>

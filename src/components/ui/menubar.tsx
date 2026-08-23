@@ -12,7 +12,9 @@ function MenubarGroup({ ...props }: React.ComponentProps<typeof MenubarPrimitive
   return <MenubarPrimitive.Group {...props} />;
 }
 
-function MenubarPortal({ ...props }: Readonly<React.ComponentProps<typeof MenubarPrimitive.Portal>>) {
+function MenubarPortal({
+  ...props
+}: Readonly<React.ComponentProps<typeof MenubarPrimitive.Portal>>) {
   return <MenubarPrimitive.Portal {...props} />;
 }
 
@@ -69,7 +71,12 @@ const MenubarSubTrigger = React.forwardRef<
     )}
     {...props}
   >
-      "z-50 min-w-48 overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 data-[state=open]:zoom-in-95 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-(--radix-menubar-content-transform-origin)",
+    "z-50 min-w-48 overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground
+    shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out
+    data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 data-[state=open]:zoom-in-95
+    data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2
+    data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2
+    data-[side=top]:slide-in-from-bottom-2 origin-(--radix-menubar-content-transform-origin)",
     <ChevronRight className="ml-auto h-4 w-4" />
   </MenubarPrimitive.SubTrigger>
 ));

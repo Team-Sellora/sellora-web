@@ -30,3 +30,37 @@ const KNOWN_ROLES: SelloraRole[] = [
   "SalesRep",
   "ShopOwner",
 ];
+
+/**
+ * Typed accessor for Sellora auth state.
+ * Reads decoded claims (role, companyId) from the OIDC token so components
+ * never parse the token themselves.
+ */
+export function useSelloraAuth(): SelloraAuth {
+  const auth = useAuth();
+  const profile = auth.user?.profile;
+
+  const roles: string[] = Array.isArray(profile?.roles)
+    ? (profile.roles as string[])
+    : [];
+
+  const role = KNOWN_ROLES.find((r) => roles.includes(r)) ?? null;
+
+  const companyId =
+    typeof profile?.companyId === "string" ? profile.companyId : null;
+
+  return {
+    isAuthenticated: auth.isAuthenticated,
+    isLoading: auth.isLoading,
+    role,
+    roles,
+    companyId,
+    accessToken: auth.user?.access_token ?? null,
+    username:
+      (typeof profile?.preferred_username === "string"
+        ? profile.preferred_username
+        : null) ??
+      profile?.sub ??
+      null,
+  };
+}

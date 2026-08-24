@@ -11,8 +11,11 @@ import { type ReactNode } from "react";
 import { AuthProvider } from "@/auth/AuthProvider";
 import appCss from "../styles.css?url";
 import { AppShell } from "@/components/AppShell";
+<<<<<<< HEAD
 import { AuthGate } from "@/auth/AuthGate";
 import { TokenSync } from "@/auth/TokenSync";
+=======
+>>>>>>> origin/develop
 
 function NotFoundComponent() {
   return (
@@ -137,4 +140,3 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
-

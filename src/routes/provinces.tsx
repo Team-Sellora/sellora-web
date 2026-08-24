@@ -8,7 +8,10 @@ export const Route = createFileRoute("/provinces")({
       { title: "Provinces — Sellora" },
       { name: "description", content: "Manage provinces in the Sellora distribution network." },
       { property: "og:title", content: "Provinces — Sellora" },
-      { property: "og:description", content: "Manage provinces in the Sellora distribution network." },
+      {
+        property: "og:description",
+        content: "Manage provinces in the Sellora distribution network.",
+      },
     ],
   }),
   component: () => (

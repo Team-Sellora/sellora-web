@@ -31,7 +31,7 @@ const navItems: { to: string; label: string; icon: typeof LayoutDashboard; exact
   { to: "/orders", label: "Orders", icon: ClipboardList },
 ];
 
-export function AppShell({ children }: { children: ReactNode }) {
+export function AppShell({ children }: { readonly children: ReactNode }) {
   const [collapsed, setCollapsed] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
@@ -51,9 +51,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="flex size-7 shrink-0 items-center justify-center rounded bg-primary text-xs font-semibold text-primary-foreground">
             S
           </div>
-          {!collapsed && (
-            <span className="text-sm font-semibold tracking-tight">Sellora</span>
-          )}
+          {!collapsed && <span className="text-sm font-semibold tracking-tight">Sellora</span>}
         </div>
 
         <nav className="flex-1 space-y-0.5 overflow-y-auto p-2">

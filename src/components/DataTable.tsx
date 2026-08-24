@@ -142,12 +142,14 @@ export function DataTable({
                   )}
                 </th>
               ))}
-              {rowActions && <th className="px-4 py-2.5 text-right font-medium text-muted-foreground">Actions</th>}
+              {rowActions && (
+                <th className="px-4 py-2.5 text-right font-medium text-muted-foreground">
+                  Actions
+                </th>
+              )}
             </tr>
           </thead>
-          <tbody>
-            {tableContent}
-          </tbody>
+          <tbody>{tableContent}</tbody>
         </table>
       </div>
 

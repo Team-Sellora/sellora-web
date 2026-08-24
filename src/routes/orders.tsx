@@ -8,7 +8,10 @@ export const Route = createFileRoute("/orders")({
       { title: "Orders — Sellora" },
       { name: "description", content: "Review field sales orders placed by representatives." },
       { property: "og:title", content: "Orders — Sellora" },
-      { property: "og:description", content: "Review field sales orders placed by representatives." },
+      {
+        property: "og:description",
+        content: "Review field sales orders placed by representatives.",
+      },
     ],
   }),
   component: () => (

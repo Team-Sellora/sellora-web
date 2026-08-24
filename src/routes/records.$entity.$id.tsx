@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState, type FormEvent } from "react";
+import { useState, type SubmitEvent } from "react";
 import { FormField } from "@/components/FormField";
 import { PageHeader } from "@/components/PageHeader";
 import { getEntity, getRecord } from "@/lib/mock-data";
@@ -8,9 +8,15 @@ export const Route = createFileRoute("/records/$entity/$id")({
   head: () => ({
     meta: [
       { title: "Record details — Sellora" },
-      { name: "description", content: "Create or edit a record in the Sellora management console." },
+      {
+        name: "description",
+        content: "Create or edit a record in the Sellora management console.",
+      },
       { property: "og:title", content: "Record details — Sellora" },
-      { property: "og:description", content: "Create or edit a record in the Sellora management console." },
+      {
+        property: "og:description",
+        content: "Create or edit a record in the Sellora management console.",
+      },
     ],
   }),
   component: RecordForm,
@@ -27,7 +33,7 @@ function RecordForm() {
     entity?.fields.forEach((f) => {
       initial[f.key] = record?.[f.key] ?? "";
     });
-    initial['status'] = record?.status ?? "Active";
+    initial["status"] = record?.status ?? "Active";
     return initial;
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -41,7 +47,7 @@ function RecordForm() {
   const isNew = id === "new";
   const listPath = `/${entity.slug}` as "/provinces";
 
-  const onSubmit = (e: FormEvent) => {
+  const onSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const next: Record<string, string> = {};
     entity.fields.forEach((f) => {
@@ -86,7 +92,7 @@ function RecordForm() {
           </label>
           <select
             id="status"
-            value={values['status']}
+            value={values["status"]}
             onChange={(e) => setValues((v) => ({ ...v, status: e.target.value }))}
             className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring/40"
           >

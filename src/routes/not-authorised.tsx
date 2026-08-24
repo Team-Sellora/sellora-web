@@ -7,7 +7,10 @@ export const Route = createFileRoute("/not-authorised")({
       { title: "Not authorised — Sellora" },
       { name: "description", content: "You do not have permission to view this page in Sellora." },
       { property: "og:title", content: "Not authorised — Sellora" },
-      { property: "og:description", content: "You do not have permission to view this page in Sellora." },
+      {
+        property: "og:description",
+        content: "You do not have permission to view this page in Sellora.",
+      },
     ],
   }),
   component: NotAuthorised,

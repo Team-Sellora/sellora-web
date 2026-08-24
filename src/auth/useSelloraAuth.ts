@@ -21,6 +21,7 @@ export interface SelloraAuth {
   accessToken: string | null;
   /** Username / subject display. */
   username: string | null;
+  logout: () => Promise<void>;
 }
 
 const KNOWN_ROLES: SelloraRole[] = [
@@ -43,9 +44,7 @@ export function useSelloraAuth(): SelloraAuth {
   const roles: string[] = Array.isArray(profile?.roles)
     ? (profile.roles as string[])
     : [];
-
   const role = KNOWN_ROLES.find((r) => roles.includes(r)) ?? null;
-
   const companyId =
     typeof profile?.companyId === "string" ? profile.companyId : null;
 
@@ -62,5 +61,9 @@ export function useSelloraAuth(): SelloraAuth {
         : null) ??
       profile?.sub ??
       null,
+    // Ends the Identity Server session (end-session endpoint) AND clears
+    // local state — not just removeUser(), which would leave the IS session
+    // alive and let back/new-tab silently sign the user back in.
+    logout: () => auth.signoutRedirect(),
   };
 }

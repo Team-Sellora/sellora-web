@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { EntityListPage } from "@/components/EntityListPage";
+import { RouteGuard } from "@/auth/RouteGuard";
 
 export const Route = createFileRoute("/sales-reps")({
   head: () => ({
@@ -10,5 +11,9 @@ export const Route = createFileRoute("/sales-reps")({
       { property: "og:description", content: "Manage field sales representatives and their territories." },
     ],
   }),
-  component: () => <EntityListPage slug="sales-reps" />,
+  component: () => (
+    <RouteGuard>
+      <EntityListPage slug="sales-reps" />
+    </RouteGuard>
+  ),
 });

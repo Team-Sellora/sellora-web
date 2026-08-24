@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { EntityListPage } from "@/components/EntityListPage";
+import { RouteGuard } from "@/auth/RouteGuard";
 
 export const Route = createFileRoute("/provinces")({
   head: () => ({
@@ -10,5 +11,9 @@ export const Route = createFileRoute("/provinces")({
       { property: "og:description", content: "Manage provinces in the Sellora distribution network." },
     ],
   }),
-  component: () => <EntityListPage slug="provinces" />,
+  component: () => (
+    <RouteGuard>
+      <EntityListPage slug="provinces" />
+    </RouteGuard>
+  ),
 });

@@ -9,8 +9,11 @@ export const oidcConfig: UserManagerSettings = {
   redirect_uri: env.appOrigin,
   post_logout_redirect_uri: env.appOrigin,
   response_type: "code",
-  scope: "openid profile roles",
+  scope: "openid profile roles offline_access sellora:ref:read",
   automaticSilentRenew: true,
+  // Fire the renewal 2 minutes before expiry, so there's time to retry
+  // if the first attempt fails (CSP-45 requirement).
+  accessTokenExpiringNotificationTimeInSeconds: 120,
   // Token held in memory only (not localStorage/sessionStorage), per CSP-44.
   // Cleared on refresh; silent renewal (CSP-45) restores it from the still-
   // valid Identity Server session.

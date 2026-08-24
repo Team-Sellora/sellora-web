@@ -13,10 +13,7 @@ export function setUnauthorizedHandler(handler: () => void): void {
  * Single gateway HTTP client. Automatically attaches the bearer token to
  * every request, so callers never handle auth headers themselves.
  */
-export async function apiFetch(
-  path: string,
-  options: RequestInit = {},
-): Promise<Response> {
+export async function apiFetch(path: string, options: RequestInit = {}): Promise<Response> {
   const token = getAccessToken();
 
   const headers = new Headers(options.headers);

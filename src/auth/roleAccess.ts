@@ -11,10 +11,7 @@ export const routeAccess: Record<string, SelloraRole[]> = {
   "/orders": ["CompanyAdmin", "AreaManager", "AgencyOperator", "SalesRep"],
 };
 
-export function isRoleAllowed(
-  path: string,
-  role: SelloraRole | null,
-): boolean {
+export function isRoleAllowed(path: string, role: SelloraRole | null): boolean {
   const allowed = routeAccess[path];
   if (!allowed) return true;
   if (!role) return false;

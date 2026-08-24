@@ -9,13 +9,7 @@ function required(value: string | undefined, name: string): string {
 
 export const env = {
   isBaseUrl: required(import.meta.env.VITE_IS_BASE_URL, "VITE_IS_BASE_URL"),
-  gatewayBaseUrl: required(
-    import.meta.env.VITE_GATEWAY_BASE_URL,
-    "VITE_GATEWAY_BASE_URL",
-  ),
-  oidcClientId: required(
-    import.meta.env.VITE_OIDC_CLIENT_ID,
-    "VITE_OIDC_CLIENT_ID",
-  ),
+  gatewayBaseUrl: required(import.meta.env.VITE_GATEWAY_BASE_URL, "VITE_GATEWAY_BASE_URL"),
+  oidcClientId: required(import.meta.env.VITE_OIDC_CLIENT_ID, "VITE_OIDC_CLIENT_ID"),
   appOrigin: required(import.meta.env.VITE_APP_ORIGIN, "VITE_APP_ORIGIN"),
 } as const;

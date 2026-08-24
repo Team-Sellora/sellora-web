@@ -2,11 +2,7 @@ import { useAuth } from "react-oidc-context";
 
 // The five Sellora roles from US-E0-1.
 export type SelloraRole =
-  | "CompanyAdmin"
-  | "AreaManager"
-  | "AgencyOperator"
-  | "SalesRep"
-  | "ShopOwner";
+  "CompanyAdmin" | "AreaManager" | "AgencyOperator" | "SalesRep" | "ShopOwner";
 
 export interface SelloraAuth {
   isAuthenticated: boolean;
@@ -41,12 +37,9 @@ export function useSelloraAuth(): SelloraAuth {
   const auth = useAuth();
   const profile = auth.user?.profile;
 
-  const roles: string[] = Array.isArray(profile?.roles)
-    ? (profile.roles as string[])
-    : [];
+  const roles: string[] = Array.isArray(profile?.roles) ? (profile.roles as string[]) : [];
   const role = KNOWN_ROLES.find((r) => roles.includes(r)) ?? null;
-  const companyId =
-    typeof profile?.companyId === "string" ? profile.companyId : null;
+  const companyId = typeof profile?.companyId === "string" ? profile.companyId : null;
 
   return {
     isAuthenticated: auth.isAuthenticated,
@@ -56,9 +49,7 @@ export function useSelloraAuth(): SelloraAuth {
     companyId,
     accessToken: auth.user?.access_token ?? null,
     username:
-      (typeof profile?.preferred_username === "string"
-        ? profile.preferred_username
-        : null) ??
+      (typeof profile?.preferred_username === "string" ? profile.preferred_username : null) ??
       profile?.sub ??
       null,
     // Ends the Identity Server session (end-session endpoint) AND clears

@@ -1,5 +1,5 @@
 import type { UserManagerSettings } from "oidc-client-ts";
-import { WebStorageStateStore } from "oidc-client-ts";
+import { InMemoryWebStorage, WebStorageStateStore } from "oidc-client-ts";
 import { env } from "@/config/env";
 
 export const oidcConfig: UserManagerSettings = {
@@ -11,8 +11,8 @@ export const oidcConfig: UserManagerSettings = {
   response_type: "code",
   scope: "openid profile roles",
   automaticSilentRenew: true,
-  userStore:
-    typeof window !== "undefined"
-      ? new WebStorageStateStore({ store: window.sessionStorage })
-      : undefined,
+  // Token held in memory only (not localStorage/sessionStorage), per CSP-44.
+  // Cleared on refresh; silent renewal (CSP-45) restores it from the still-
+  // valid Identity Server session.
+  userStore: new WebStorageStateStore({ store: new InMemoryWebStorage() }),
 };

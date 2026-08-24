@@ -1,6 +1,14 @@
 import { env } from "@/config/env";
 import { getAccessToken } from "./tokenStore";
 
+// Called when a request comes back 401 despite the token/renewal — the token
+// was rejected, so send the user to log in again, preserving where they were.
+let onUnauthorized: (() => void) | null = null;
+
+export function setUnauthorizedHandler(handler: () => void): void {
+  onUnauthorized = handler;
+}
+
 /**
  * Single gateway HTTP client. Automatically attaches the bearer token to
  * every request, so callers never handle auth headers themselves.
@@ -17,8 +25,13 @@ export async function apiFetch(
   }
   headers.set("Accept", "application/json");
 
-  // path is relative to the gateway base, e.g. "/sellora/ref/1.0.0/test"
   const url = `${env.gatewayBaseUrl}${path}`;
+  const response = await fetch(url, { ...options, headers });
 
-  return fetch(url, { ...options, headers });
+  if (response.status === 401) {
+    // Token rejected — trigger the login redirect wired up by the auth layer.
+    onUnauthorized?.();
+  }
+
+  return response;
 }

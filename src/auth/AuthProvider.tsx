@@ -3,8 +3,6 @@ import { AuthProvider as OidcAuthProvider } from "react-oidc-context";
 import type { User } from "oidc-client-ts";
 import { oidcConfig } from "./oidcConfig";
 
-// After the redirect back from Identity Server, strip the ?code&state params
-// from the URL so the address bar is clean and a refresh doesn't re-trigger.
 function onSigninCallback(_user: User | void): void {
   window.history.replaceState({}, document.title, window.location.pathname);
 }
@@ -16,8 +14,15 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
     setMounted(true);
   }, []);
 
+  // On the server and the first hydration pass, render a neutral loading
+  // shell. Nothing below calls useAuth() until the real provider is mounted,
+  // so SSR never touches oidc-client-ts (which needs window).
   if (!mounted) {
-    return <>{children}</>;
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <p className="text-sm text-muted-foreground">Loading…</p>
+      </div>
+    );
   }
 
   return (

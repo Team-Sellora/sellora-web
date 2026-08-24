@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { EntityListPage } from "@/components/EntityListPage";
+import { RouteGuard } from "@/auth/RouteGuard";
 
 export const Route = createFileRoute("/inventory")({
   head: () => ({
@@ -16,5 +17,9 @@ export const Route = createFileRoute("/inventory")({
       },
     ],
   }),
-  component: () => <EntityListPage slug="inventory" />,
+  component: () => (
+    <RouteGuard>
+      <EntityListPage slug="inventory" />
+    </RouteGuard>
+  ),
 });

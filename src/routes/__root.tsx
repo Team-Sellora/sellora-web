@@ -12,6 +12,7 @@ import { AuthProvider } from "@/auth/AuthProvider";
 import appCss from "../styles.css?url";
 import { AppShell } from "@/components/AppShell";
 import { AuthGate } from "@/auth/AuthGate";
+import { TokenSync } from "@/auth/TokenSync";
 
 function NotFoundComponent() {
   return (
@@ -127,8 +128,8 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <AuthGate>
+          <TokenSync />
           <AppShell>
-            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
             <Outlet />
           </AppShell>
         </AuthGate>

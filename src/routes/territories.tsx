@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { EntityListPage } from "@/components/EntityListPage";
+import { HierarchyPage } from "@/features/hierarchy/HierarchyPage";
 import { RouteGuard } from "@/auth/RouteGuard";
 
 export const Route = createFileRoute("/territories")({
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/territories")({
   }),
   component: () => (
     <RouteGuard>
-      <EntityListPage slug="territories" />
+      <HierarchyPage kind="territory" />
     </RouteGuard>
   ),
 });

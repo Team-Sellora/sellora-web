@@ -15,7 +15,8 @@ import {
   PanelLeft,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { currentUser } from "@/lib/mock-data";
+import { useSelloraAuth } from "@/auth/useSelloraAuth";
+import { LogOut } from "lucide-react";
 
 const navItems: { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean }[] = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard, exact: true },
@@ -36,6 +37,7 @@ export function AppShell({ children }: { readonly children: ReactNode }) {
 
   const isActive = (to: string, exact?: boolean) =>
     exact ? pathname === to : pathname.startsWith(to);
+  const { username, role, logout } = useSelloraAuth();
 
   return (
     <div className="min-h-screen w-full bg-background text-foreground">
@@ -96,12 +98,18 @@ export function AppShell({ children }: { readonly children: ReactNode }) {
           {/* Placeholder for the authenticated user (wired up via OIDC later) */}
           <div className="flex items-center gap-3">
             <div className="text-right leading-tight">
-              <div className="text-sm font-medium">{currentUser.name}</div>
-              <div className="text-xs text-muted-foreground">{currentUser.role}</div>
+              <div className="text-sm font-medium">{username ?? "—"}</div>
+              <div className="text-xs text-muted-foreground">{role ?? "—"}</div>
             </div>
-            <div className="flex size-8 items-center justify-center rounded-full bg-muted text-xs font-medium text-muted-foreground">
-              PU
-            </div>
+            <button
+              type="button"
+              onClick={() => void logout()}
+              title="Log out"
+              className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            >
+              <LogOut className="size-4" />
+              <span>Log out</span>
+            </button>
           </div>
         </header>
 

@@ -1,22 +1,25 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { EntityListPage } from "@/components/EntityListPage";
 import { RouteGuard } from "@/auth/RouteGuard";
+import { ProvinceListPage } from "@/features/provinces/ProvinceListPage";
 
 export const Route = createFileRoute("/provinces")({
   head: () => ({
     meta: [
       { title: "Provinces — Sellora" },
-      { name: "description", content: "Manage provinces in the Sellora distribution network." },
+      {
+        name: "description",
+        content: "Provinces in your company with current Area Manager and counts.",
+      },
       { property: "og:title", content: "Provinces — Sellora" },
       {
         property: "og:description",
-        content: "Manage provinces in the Sellora distribution network.",
+        content: "Provinces in your company with current Area Manager and counts.",
       },
     ],
   }),
   component: () => (
     <RouteGuard>
-      <EntityListPage slug="provinces" />
+      <ProvinceListPage />
     </RouteGuard>
   ),
 });

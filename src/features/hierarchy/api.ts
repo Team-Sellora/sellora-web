@@ -22,6 +22,13 @@ export type Territory = {
   status: Status;
   createdAt: string;
 };
+
+export type TerritoryAgencyAssignment = {
+  assignmentId: string;
+  territoryId: string;
+  agencyId: string;
+  startsAt: string;
+};
 export class ApiProblem extends Error {
   constructor(
     public readonly status: number,
@@ -46,6 +53,16 @@ export const fetchAgencies = () =>
   apiFetch("/api/agencies?page=1&pageSize=100").then(unwrap<Page<Agency>>);
 export const fetchTerritories = () =>
   apiFetch("/api/territories?page=1&pageSize=100").then(unwrap<Page<Territory>>);
+
+export const fetchUnassignedTerritories = () =>
+  apiFetch("/api/territories?assigned=false&page=1&pageSize=100").then(unwrap<Page<Territory>>);
+
+export const assignTerritoryToAgency = (territoryId: string, agencyId: string) =>
+  apiFetch(`/api/territories/${territoryId}/agency`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ agencyId }),
+  }).then(unwrap<TerritoryAgencyAssignment>);
 export const createAgency = (input: {
   provinceId: string;
   operatorId: string;

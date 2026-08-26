@@ -26,11 +26,7 @@ interface Props {
   province: Province | null;
 }
 
-export function ReassignManagerDialog({
-  open,
-  onOpenChange,
-  province,
-}: Readonly<Props>) {
+export function ReassignManagerDialog({ open, onOpenChange, province }: Readonly<Props>) {
   const [selectedId, setSelectedId] = useState<string>("");
   const [fieldError, setFieldError] = useState<string | null>(null);
 
@@ -94,9 +90,7 @@ export function ReassignManagerDialog({
               {province.currentManager && (
                 <>
                   {" · Current: "}
-                  <span className="font-medium">
-                    {province.currentManager.displayName}
-                  </span>
+                  <span className="font-medium">{province.currentManager.displayName}</span>
                 </>
               )}
             </DialogDescription>
@@ -131,9 +125,7 @@ export function ReassignManagerDialog({
                 {managersList.map((m) => (
                   <SelectItem key={m.staffProfileId} value={m.staffProfileId}>
                     {m.displayName}
-                    {m.email && (
-                      <span className="ml-2 text-muted-foreground">{m.email}</span>
-                    )}
+                    {m.email && <span className="ml-2 text-muted-foreground">{m.email}</span>}
                   </SelectItem>
                 ))}
                 {!isManagersLoading && managersList.length === 0 && (
@@ -145,11 +137,7 @@ export function ReassignManagerDialog({
             </Select>
 
             {hasError && (
-              <p
-                id="area-manager-error"
-                role="alert"
-                className="text-xs text-destructive"
-              >
+              <p id="area-manager-error" role="alert" className="text-xs text-destructive">
                 {fieldError}
               </p>
             )}

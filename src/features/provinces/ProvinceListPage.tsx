@@ -87,9 +87,7 @@ export function ProvinceListPage() {
                       <span className="text-muted-foreground">—</span>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-right tabular-nums">
-                    {p.agencyCount}
-                  </td>
+                  <td className="px-4 py-3 text-right tabular-nums">{p.agencyCount}</td>
                   <td className="px-4 py-3 text-right tabular-nums">{p.shopCount}</td>
                   <td className="px-4 py-3 text-right">
                     <Button

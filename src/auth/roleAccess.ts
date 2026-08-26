@@ -7,6 +7,7 @@ export const routeAccess: Record<string, SelloraRole[]> = {
   // for Area Managers only; match that rule in the route guard.
   "/agencies": ["AreaManager"],
   "/territories": ["AreaManager"],
+  "/territory-assignments": ["AreaManager"],
   "/sales-reps": ["CompanyAdmin", "AreaManager", "AgencyOperator"],
   "/shops": ["CompanyAdmin", "AreaManager", "AgencyOperator", "SalesRep"],
   "/inventory": ["CompanyAdmin", "AreaManager", "AgencyOperator"],

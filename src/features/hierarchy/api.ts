@@ -30,6 +30,21 @@ export type TerritoryAgencyAssignment = {
   startsAt: string;
 };
 
+export type SalesRep = {
+  salesRepId: string;
+  displayName: string;
+  email?: string | null;
+  status: Status;
+  currentTerritory?: Territory | null;
+};
+
+export type SalesRepTerritoryAssignment = {
+  assignmentId: string;
+  territoryId: string;
+  salesRepId: string;
+  startsAt: string;
+};
+
 export type Shop = {
   shopId: string;
   territoryId: string;
@@ -107,6 +122,18 @@ export const assignTerritoryToAgency = (territoryId: string, agencyId: string) =
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ agencyId }),
   }).then(unwrap<TerritoryAgencyAssignment>);
+
+export const fetchSalesReps = () => apiFetch("/api/sales-reps").then(unwrap<SalesRep[]>);
+
+export const fetchUnassignedRepTerritories = () =>
+  apiFetch("/api/sales-reps/unassigned-territories").then(unwrap<Territory[]>);
+
+export const assignSalesRepToTerritory = (territoryId: string, salesRepId: string) =>
+  apiFetch(`/api/territories/${territoryId}/sales-rep`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ salesRepId }),
+  }).then(unwrap<SalesRepTerritoryAssignment>);
 
 export const createAgency = (input: {
   provinceId: string;

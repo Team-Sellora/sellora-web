@@ -2,19 +2,24 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { ApiProblem } from "./api";
 import { SalesRepAssignmentPage } from "./SalesRepAssignmentPage";
 
 const api = vi.hoisted(() => ({
+  ApiProblem: class ApiProblem extends Error {
+    constructor(
+      public readonly status: number,
+      public readonly detail?: string,
+      public readonly title?: string,
+    ) {
+      super(detail || title || `Request failed (${status})`);
+    }
+  },
   fetchSalesReps: vi.fn(),
   fetchUnassignedRepTerritories: vi.fn(),
   assignSalesRepToTerritory: vi.fn(),
 }));
 
-vi.mock("./api", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("./api")>();
-  return { ...actual, ...api };
-});
+vi.mock("./api", () => api);
 
 function renderPage() {
   const queryClient = new QueryClient({
@@ -50,7 +55,7 @@ describe("SalesRepAssignmentPage", () => {
       },
     ]);
     api.assignSalesRepToTerritory.mockRejectedValue(
-      new ApiProblem(409, "territory already has an active rep"),
+      new api.ApiProblem(409, "territory already has an active rep"),
     );
 
     renderPage();

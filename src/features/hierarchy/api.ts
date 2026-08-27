@@ -1,0 +1,72 @@
+import { apiFetch } from "@/api/client";
+
+export type Status = "Active" | "Inactive";
+export type Page<T> = { items: T[]; totalCount: number; page: number; pageSize: number };
+export type Province = { provinceId: string; name: string; code: string; status: Status };
+export type Agency = {
+  agencyId: string;
+  provinceId: string;
+  name: string;
+  email?: string | null;
+  phone?: string | null;
+  address?: string | null;
+  status: Status;
+  createdAt: string;
+};
+export type Territory = {
+  territoryId: string;
+  provinceId: string;
+  code: string;
+  name: string;
+  geographicDescription?: string | null;
+  status: Status;
+  createdAt: string;
+};
+export class ApiProblem extends Error {
+  constructor(
+    public readonly status: number,
+    public readonly detail?: string,
+    public readonly title?: string,
+  ) {
+    super(detail || title || `Request failed (${status})`);
+  }
+}
+async function unwrap<T>(response: Response): Promise<T> {
+  if (response.ok) return (await response.json()) as T;
+  let body: { detail?: string; title?: string } = {};
+  try {
+    body = (await response.json()) as typeof body;
+  } catch {
+    /* ignored */
+  }
+  throw new ApiProblem(response.status, body.detail, body.title);
+}
+export const fetchProvinces = () => apiFetch("/api/provinces").then(unwrap<Province[]>);
+export const fetchAgencies = () =>
+  apiFetch("/api/agencies?page=1&pageSize=100").then(unwrap<Page<Agency>>);
+export const fetchTerritories = () =>
+  apiFetch("/api/territories?page=1&pageSize=100").then(unwrap<Page<Territory>>);
+export const createAgency = (input: {
+  provinceId: string;
+  operatorId: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+}) =>
+  apiFetch("/api/agencies", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  }).then(unwrap<Agency>);
+export const createTerritory = (input: {
+  provinceId: string;
+  code: string;
+  name: string;
+  geographicDescription?: string;
+}) =>
+  apiFetch("/api/territories", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  }).then(unwrap<Territory>);

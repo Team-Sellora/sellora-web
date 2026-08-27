@@ -3,8 +3,10 @@ import type { SelloraRole } from "./useSelloraAuth";
 export const routeAccess: Record<string, SelloraRole[]> = {
   "/provinces": ["CompanyAdmin"],
   "/area-managers": ["CompanyAdmin"],
-  "/agencies": ["CompanyAdmin", "AreaManager"],
-  "/territories": ["CompanyAdmin", "AreaManager", "AgencyOperator"],
+  // The API currently authorizes both agency and territory registration/listing
+  // for Area Managers only; match that rule in the route guard.
+  "/agencies": ["AreaManager"],
+  "/territories": ["AreaManager"],
   "/sales-reps": ["CompanyAdmin", "AreaManager", "AgencyOperator"],
   "/shops": ["CompanyAdmin", "AreaManager", "AgencyOperator", "SalesRep"],
   "/inventory": ["CompanyAdmin", "AreaManager", "AgencyOperator"],

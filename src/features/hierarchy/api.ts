@@ -29,6 +29,48 @@ export type TerritoryAgencyAssignment = {
   agencyId: string;
   startsAt: string;
 };
+
+export type Shop = {
+  shopId: string;
+  territoryId: string;
+  name: string;
+  ownerName?: string | null;
+  ownerEmail?: string | null;
+  ownerPhone?: string | null;
+  address: string;
+  latitude: number;
+  longitude: number;
+  creditLimit: number;
+  status: Status;
+  createdAt: string;
+  updatedAt?: string | null;
+};
+
+export type ShopInput = {
+  territoryId: string;
+  name: string;
+  ownerName: string;
+  ownerIdentitySub: string;
+  ownerEmail: string;
+  ownerPhone: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  creditLimit: number;
+};
+
+type HierarchyResponse = {
+  provinces: Array<{
+    agencies: Array<{
+      territories: Array<{
+        territoryId: string;
+        code: string;
+        name: string;
+      }>;
+    }>;
+  }>;
+};
+
 export class ApiProblem extends Error {
   constructor(
     public readonly status: number,
@@ -49,8 +91,10 @@ async function unwrap<T>(response: Response): Promise<T> {
   throw new ApiProblem(response.status, body.detail, body.title);
 }
 export const fetchProvinces = () => apiFetch("/api/provinces").then(unwrap<Province[]>);
+
 export const fetchAgencies = () =>
   apiFetch("/api/agencies?page=1&pageSize=100").then(unwrap<Page<Agency>>);
+
 export const fetchTerritories = () =>
   apiFetch("/api/territories?page=1&pageSize=100").then(unwrap<Page<Territory>>);
 
@@ -63,6 +107,7 @@ export const assignTerritoryToAgency = (territoryId: string, agencyId: string) =
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ agencyId }),
   }).then(unwrap<TerritoryAgencyAssignment>);
+
 export const createAgency = (input: {
   provinceId: string;
   operatorId: string;
@@ -76,6 +121,7 @@ export const createAgency = (input: {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),
   }).then(unwrap<Agency>);
+
 export const createTerritory = (input: {
   provinceId: string;
   code: string;
@@ -87,3 +133,34 @@ export const createTerritory = (input: {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),
   }).then(unwrap<Territory>);
+export const fetchShops = (filters: {
+  territoryId?: string;
+  status?: Status;
+  page?: number;
+  pageSize?: number;
+}) => {
+  const query = new URLSearchParams({
+    status: filters.status ?? "Active",
+    page: String(filters.page ?? 1),
+    pageSize: String(filters.pageSize ?? 25),
+  });
+
+  if (filters.territoryId) query.set("territoryId", filters.territoryId);
+
+  return apiFetch(`/api/shops?${query}`).then(unwrap<Page<Shop>>);
+};
+
+export const createShop = (input: ShopInput) =>
+  apiFetch("/api/shops", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  }).then(unwrap<Shop>);
+
+export const fetchOperatorTerritories = async () => {
+  const hierarchy = await apiFetch("/api/hierarchy").then(unwrap<HierarchyResponse>);
+
+  return hierarchy.provinces.flatMap((province) =>
+    province.agencies.flatMap((agency) => agency.territories),
+  );
+};

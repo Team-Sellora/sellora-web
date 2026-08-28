@@ -74,6 +74,35 @@ export type ShopInput = {
   creditLimit: number;
 };
 
+export type CompanyAdmin = {
+  staffProfileId: string;
+  displayName: string;
+  email?: string | null;
+  status: Status;
+};
+
+export type HierarchyRollUpProvince = {
+  provinceId: string;
+  code: string;
+  name: string;
+  status: Status;
+  currentManager?: {
+    staffProfileId: string;
+    displayName: string;
+    email?: string | null;
+    reportsToAdmin?: {
+      staffProfileId: string;
+      displayName: string;
+      email?: string | null;
+    } | null;
+  } | null;
+  agencyCount: number;
+  territoryCount: number;
+  shopCount: number;
+  unassignedTerritoryCount: number;
+  hasUnassignedTerritories: boolean;
+};
+
 type HierarchyResponse = {
   provinces: Array<{
     agencies: Array<{
@@ -106,6 +135,19 @@ async function unwrap<T>(response: Response): Promise<T> {
   throw new ApiProblem(response.status, body.detail, body.title);
 }
 export const fetchProvinces = () => apiFetch("/api/provinces").then(unwrap<Province[]>);
+
+export const fetchHierarchyRollUp = () =>
+  apiFetch("/api/hierarchy/roll-up").then(unwrap<HierarchyRollUpProvince[]>);
+
+export const fetchCompanyAdmins = () =>
+  apiFetch("/api/company-admins").then(unwrap<CompanyAdmin[]>);
+
+export const updateAreaManagerReportsTo = (provinceId: string, reportsToAdminId: string) =>
+  apiFetch(`/api/provinces/${provinceId}/area-manager/reports-to`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ reportsToAdminId }),
+  }).then(unwrap<{ reportsToAdminId: string }>);
 
 export const fetchAgencies = () =>
   apiFetch("/api/agencies?page=1&pageSize=100").then(unwrap<Page<Agency>>);

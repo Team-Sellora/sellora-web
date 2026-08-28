@@ -12,6 +12,7 @@ import {
   Package,
   Boxes,
   ClipboardList,
+  GitFork,
   PanelLeftClose,
   PanelLeft,
 } from "lucide-react";
@@ -23,6 +24,7 @@ const navItems: { to: string; label: string; icon: typeof LayoutDashboard; exact
   { to: "/", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/provinces", label: "Provinces", icon: Map },
   { to: "/area-managers", label: "Area Managers", icon: UserCog },
+  { to: "/hierarchy-roll-up", label: "Hierarchy roll-up", icon: GitFork },
   { to: "/agencies", label: "Agencies", icon: Building2 },
   { to: "/territories", label: "Territories", icon: MapPin },
   { to: "/territory-assignments", label: "Assign territories", icon: ArrowLeftRight },

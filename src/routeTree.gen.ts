@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AgenciesRouteImport } from './routes/agencies'
 import { Route as AreaManagersRouteImport } from './routes/area-managers'
+import { Route as HierarchyRollUpRouteImport } from './routes/hierarchy-roll-up'
 import { Route as InventoryRouteImport } from './routes/inventory'
 import { Route as NotAuthorisedRouteImport } from './routes/not-authorised'
 import { Route as OrdersRouteImport } from './routes/orders'
@@ -36,6 +37,11 @@ const AgenciesRoute = AgenciesRouteImport.update({
 const AreaManagersRoute = AreaManagersRouteImport.update({
   id: '/area-managers',
   path: '/area-managers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HierarchyRollUpRoute = HierarchyRollUpRouteImport.update({
+  id: '/hierarchy-roll-up',
+  path: '/hierarchy-roll-up',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InventoryRoute = InventoryRouteImport.update({
@@ -93,6 +99,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/agencies': typeof AgenciesRoute
   '/area-managers': typeof AreaManagersRoute
+  '/hierarchy-roll-up': typeof HierarchyRollUpRoute
   '/inventory': typeof InventoryRoute
   '/not-authorised': typeof NotAuthorisedRoute
   '/orders': typeof OrdersRoute
@@ -108,6 +115,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/agencies': typeof AgenciesRoute
   '/area-managers': typeof AreaManagersRoute
+  '/hierarchy-roll-up': typeof HierarchyRollUpRoute
   '/inventory': typeof InventoryRoute
   '/not-authorised': typeof NotAuthorisedRoute
   '/orders': typeof OrdersRoute
@@ -124,6 +132,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/agencies': typeof AgenciesRoute
   '/area-managers': typeof AreaManagersRoute
+  '/hierarchy-roll-up': typeof HierarchyRollUpRoute
   '/inventory': typeof InventoryRoute
   '/not-authorised': typeof NotAuthorisedRoute
   '/orders': typeof OrdersRoute
@@ -141,6 +150,7 @@ export interface FileRouteTypes {
     | '/'
     | '/agencies'
     | '/area-managers'
+    | '/hierarchy-roll-up'
     | '/inventory'
     | '/not-authorised'
     | '/orders'
@@ -156,6 +166,7 @@ export interface FileRouteTypes {
     | '/'
     | '/agencies'
     | '/area-managers'
+    | '/hierarchy-roll-up'
     | '/inventory'
     | '/not-authorised'
     | '/orders'
@@ -171,6 +182,7 @@ export interface FileRouteTypes {
     | '/'
     | '/agencies'
     | '/area-managers'
+    | '/hierarchy-roll-up'
     | '/inventory'
     | '/not-authorised'
     | '/orders'
@@ -187,6 +199,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AgenciesRoute: typeof AgenciesRoute
   AreaManagersRoute: typeof AreaManagersRoute
+  HierarchyRollUpRoute: typeof HierarchyRollUpRoute
   InventoryRoute: typeof InventoryRoute
   NotAuthorisedRoute: typeof NotAuthorisedRoute
   OrdersRoute: typeof OrdersRoute
@@ -220,6 +233,13 @@ declare module '@tanstack/react-router' {
       path: '/area-managers'
       fullPath: '/area-managers'
       preLoaderRoute: typeof AreaManagersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hierarchy-roll-up': {
+      id: '/hierarchy-roll-up'
+      path: '/hierarchy-roll-up'
+      fullPath: '/hierarchy-roll-up'
+      preLoaderRoute: typeof HierarchyRollUpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/inventory': {
@@ -299,6 +319,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AgenciesRoute: AgenciesRoute,
   AreaManagersRoute: AreaManagersRoute,
+  HierarchyRollUpRoute: HierarchyRollUpRoute,
   InventoryRoute: InventoryRoute,
   NotAuthorisedRoute: NotAuthorisedRoute,
   OrdersRoute: OrdersRoute,

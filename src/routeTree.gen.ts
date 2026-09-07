@@ -22,6 +22,7 @@ import { Route as SalesRepsRouteImport } from './routes/sales-reps'
 import { Route as ShopsRouteImport } from './routes/shops'
 import { Route as TerritoriesRouteImport } from './routes/territories'
 import { Route as TerritoryAssignmentsRouteImport } from './routes/territory-assignments'
+import { Route as ProductsNewRouteImport } from './routes/products_.new.tsxw'
 import { Route as RecordsEntityIdRouteImport } from './routes/records.$entity.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -89,6 +90,11 @@ const TerritoryAssignmentsRoute = TerritoryAssignmentsRouteImport.update({
   path: '/territory-assignments',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProductsNewRoute = ProductsNewRouteImport.update({
+  id: '/products_/new',
+  path: '/products/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RecordsEntityIdRoute = RecordsEntityIdRouteImport.update({
   id: '/records/$entity/$id',
   path: '/records/$entity/$id',
@@ -109,6 +115,7 @@ export interface FileRoutesByFullPath {
   '/shops': typeof ShopsRoute
   '/territories': typeof TerritoriesRoute
   '/territory-assignments': typeof TerritoryAssignmentsRoute
+  '/products/new': typeof ProductsNewRoute
   '/records/$entity/$id': typeof RecordsEntityIdRoute
 }
 export interface FileRoutesByTo {
@@ -125,6 +132,7 @@ export interface FileRoutesByTo {
   '/shops': typeof ShopsRoute
   '/territories': typeof TerritoriesRoute
   '/territory-assignments': typeof TerritoryAssignmentsRoute
+  '/products/new': typeof ProductsNewRoute
   '/records/$entity/$id': typeof RecordsEntityIdRoute
 }
 export interface FileRoutesById {
@@ -142,57 +150,61 @@ export interface FileRoutesById {
   '/shops': typeof ShopsRoute
   '/territories': typeof TerritoriesRoute
   '/territory-assignments': typeof TerritoryAssignmentsRoute
+  '/products_/new': typeof ProductsNewRoute
   '/records/$entity/$id': typeof RecordsEntityIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
-    | '/agencies'
-    | '/area-managers'
-    | '/hierarchy-roll-up'
-    | '/inventory'
-    | '/not-authorised'
-    | '/orders'
-    | '/products'
-    | '/provinces'
-    | '/sales-reps'
-    | '/shops'
-    | '/territories'
-    | '/territory-assignments'
-    | '/records/$entity/$id'
+  | '/'
+  | '/agencies'
+  | '/area-managers'
+  | '/hierarchy-roll-up'
+  | '/inventory'
+  | '/not-authorised'
+  | '/orders'
+  | '/products'
+  | '/provinces'
+  | '/sales-reps'
+  | '/shops'
+  | '/territories'
+  | '/territory-assignments'
+  | '/products/new'
+  | '/records/$entity/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
-    | '/agencies'
-    | '/area-managers'
-    | '/hierarchy-roll-up'
-    | '/inventory'
-    | '/not-authorised'
-    | '/orders'
-    | '/products'
-    | '/provinces'
-    | '/sales-reps'
-    | '/shops'
-    | '/territories'
-    | '/territory-assignments'
-    | '/records/$entity/$id'
+  | '/'
+  | '/agencies'
+  | '/area-managers'
+  | '/hierarchy-roll-up'
+  | '/inventory'
+  | '/not-authorised'
+  | '/orders'
+  | '/products'
+  | '/provinces'
+  | '/sales-reps'
+  | '/shops'
+  | '/territories'
+  | '/territory-assignments'
+  | '/products/new'
+  | '/records/$entity/$id'
   id:
-    | '__root__'
-    | '/'
-    | '/agencies'
-    | '/area-managers'
-    | '/hierarchy-roll-up'
-    | '/inventory'
-    | '/not-authorised'
-    | '/orders'
-    | '/products'
-    | '/provinces'
-    | '/sales-reps'
-    | '/shops'
-    | '/territories'
-    | '/territory-assignments'
-    | '/records/$entity/$id'
+  | '__root__'
+  | '/'
+  | '/agencies'
+  | '/area-managers'
+  | '/hierarchy-roll-up'
+  | '/inventory'
+  | '/not-authorised'
+  | '/orders'
+  | '/products'
+  | '/provinces'
+  | '/sales-reps'
+  | '/shops'
+  | '/territories'
+  | '/territory-assignments'
+  | '/products_/new'
+  | '/records/$entity/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -209,6 +221,7 @@ export interface RootRouteChildren {
   ShopsRoute: typeof ShopsRoute
   TerritoriesRoute: typeof TerritoriesRoute
   TerritoryAssignmentsRoute: typeof TerritoryAssignmentsRoute
+  ProductsNewRoute: typeof ProductsNewRoute
   RecordsEntityIdRoute: typeof RecordsEntityIdRoute
 }
 
@@ -305,6 +318,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TerritoryAssignmentsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/products_/new': {
+      id: '/products_/new'
+      path: '/products/new'
+      fullPath: '/products/new'
+      preLoaderRoute: typeof ProductsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/records/$entity/$id': {
       id: '/records/$entity/$id'
       path: '/records/$entity/$id'
@@ -329,6 +349,7 @@ const rootRouteChildren: RootRouteChildren = {
   ShopsRoute: ShopsRoute,
   TerritoriesRoute: TerritoriesRoute,
   TerritoryAssignmentsRoute: TerritoryAssignmentsRoute,
+  ProductsNewRoute: ProductsNewRoute,
   RecordsEntityIdRoute: RecordsEntityIdRoute,
 }
 export const routeTree = rootRouteImport

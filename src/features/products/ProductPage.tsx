@@ -112,8 +112,7 @@ export function ProductPage() {
         actions={
           canManage ? (
             <Link
-              to="/records/$entity/$id"
-              params={{ entity: "products", id: "new" }}
+              to="/products/new"
               className="inline-flex h-9 items-center gap-2 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90"
             >
               <Plus className="size-4" />

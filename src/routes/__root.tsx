@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { AppShell } from "@/components/AppShell";
 import { AuthGate } from "@/auth/AuthGate";
 import { TokenSync } from "@/auth/TokenSync";
+import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -132,6 +133,7 @@ function RootComponent() {
           <AppShell>
             <Outlet />
           </AppShell>
+          <Toaster />
         </AuthGate>
       </AuthProvider>
     </QueryClientProvider>

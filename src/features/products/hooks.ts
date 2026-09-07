@@ -1,6 +1,7 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { deactivateProduct, fetchProducts } from "./api";
-import type { ProductListQuery } from "./types";
+import { createProduct, deactivateProduct, fetchProducts } from "./api";
+
+import type { CreateProductInput, ProductListQuery } from "./types";
 
 export const productsQueryKey = ["products"] as const;
 
@@ -18,5 +19,18 @@ export function useDeactivateProduct() {
   return useMutation({
     mutationFn: deactivateProduct,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: productsQueryKey }),
+  });
+}
+
+export function useCreateProduct() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: CreateProductInput) => createProduct(input),
+
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: productsQueryKey,
+      }),
   });
 }

@@ -36,6 +36,40 @@ export interface ProductListQuery {
   pageSize: number;
 }
 
+export interface CreateProductInput {
+  sku: string;
+  name: string;
+  description: string | null;
+  unitOfMeasure: string;
+  currentUnitPrice: number;
+  batchCode: string;
+  manufacturingDate: string;
+  expiryDate: string;
+}
+
+export interface CreateProductFormValues {
+  sku: string;
+  name: string;
+  description: string;
+  unitOfMeasure: string;
+  currentUnitPrice: string;
+  batchCode: string;
+  manufacturingDate: string;
+  expiryDate: string;
+}
+
+export interface CreateProductFormErrors {
+  sku?: string;
+  name?: string;
+  description?: string;
+  unitOfMeasure?: string;
+  currentUnitPrice?: string;
+  batchCode?: string;
+  manufacturingDate?: string;
+  expiryDate?: string;
+  form?: string;
+}
+
 export interface ApiErrorBody {
   message?: string;
   title?: string;
@@ -48,6 +82,7 @@ export class ProductApiError extends Error {
     public readonly body: ApiErrorBody,
   ) {
     super(body.message ?? body.detail ?? body.title ?? `Request failed with status ${status}`);
+
     this.name = "ProductApiError";
   }
 }

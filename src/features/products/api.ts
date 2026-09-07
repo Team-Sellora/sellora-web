@@ -2,6 +2,7 @@ import { apiFetch } from "@/api/client";
 import {
   ProductApiError,
   type ApiErrorBody,
+  type CreateProductInput,
   type PagedProducts,
   type Product,
   type ProductListQuery,
@@ -39,5 +40,15 @@ export function fetchProducts(query: ProductListQuery): Promise<PagedProducts> {
 export function deactivateProduct(productId: string): Promise<Product> {
   return apiFetch(`/api/products/${productId}/deactivate`, {
     method: "PATCH",
+  }).then(unwrap<Product>);
+}
+
+export function createProduct(input: CreateProductInput): Promise<Product> {
+  return apiFetch("/api/products", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(input),
   }).then(unwrap<Product>);
 }

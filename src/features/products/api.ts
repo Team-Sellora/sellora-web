@@ -6,6 +6,7 @@ import {
   type PagedProducts,
   type Product,
   type ProductListQuery,
+  type UpdateProductInput,
 } from "./types";
 
 async function unwrap<T>(response: Response): Promise<T> {
@@ -46,6 +47,16 @@ export function deactivateProduct(productId: string): Promise<Product> {
 export function createProduct(input: CreateProductInput): Promise<Product> {
   return apiFetch("/api/products", {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(input),
+  }).then(unwrap<Product>);
+}
+
+export function updateProduct(productId: string, input: UpdateProductInput): Promise<Product> {
+  return apiFetch(`/api/products/${productId}`, {
+    method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },

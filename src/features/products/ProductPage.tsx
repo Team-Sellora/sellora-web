@@ -154,8 +154,8 @@ export function ProductPage() {
           {canManage && (
             <td className="whitespace-nowrap px-4 py-3 text-right text-xs">
               <Link
-                to="/records/$entity/$id"
-                params={{ entity: "products", id: product.productId }}
+                to="/products/$productId/edit"
+                params={{ productId: product.productId }}
                 className="mr-3 font-medium text-primary hover:underline"
               >
                 Edit

@@ -70,6 +70,28 @@ export interface CreateProductFormErrors {
   form?: string;
 }
 
+export interface UpdateProductInput {
+  sku: string;
+  name: string;
+  description: string | null;
+  unitOfMeasure: string;
+}
+
+export interface UpdateProductFormValues {
+  sku: string;
+  name: string;
+  description: string;
+  unitOfMeasure: string;
+}
+
+export interface UpdateProductFormErrors {
+  sku?: string;
+  name?: string;
+  description?: string;
+  unitOfMeasure?: string;
+  form?: string;
+}
+
 export interface ApiErrorBody {
   message?: string;
   title?: string;

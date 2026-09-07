@@ -192,15 +192,14 @@ export function ProductDetailsPage({ productId }: Readonly<ProductDetailsPagePro
         ]}
         actions={
           canManage ? (
-            <button
-              type="button"
-              disabled
-              title="The product edit page will be connected next."
-              className="inline-flex h-9 cursor-not-allowed items-center gap-2 rounded-md border border-input bg-background px-4 text-sm font-medium opacity-60"
+            <Link
+              to="/products/$productId/edit"
+              params={{ productId: product.productId }}
+              className="inline-flex h-9 items-center gap-2 rounded-md border border-input bg-background px-4 text-sm font-medium hover:bg-muted"
             >
               <Pencil className="size-4" />
               Edit
-            </button>
+            </Link>
           ) : undefined
         }
       />

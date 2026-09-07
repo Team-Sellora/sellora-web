@@ -24,6 +24,7 @@ import { Route as TerritoriesRouteImport } from './routes/territories'
 import { Route as TerritoryAssignmentsRouteImport } from './routes/territory-assignments'
 import { Route as ProductsProductIdRouteImport } from './routes/products_.$productId'
 import { Route as ProductsNewRouteImport } from './routes/products_.new'
+import { Route as ProductsProductIdEditRouteImport } from './routes/products_.$productId_.edit'
 import { Route as RecordsEntityIdRouteImport } from './routes/records.$entity.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -101,6 +102,11 @@ const ProductsNewRoute = ProductsNewRouteImport.update({
   path: '/products/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProductsProductIdEditRoute = ProductsProductIdEditRouteImport.update({
+  id: '/products_/$productId_/edit',
+  path: '/products/$productId/edit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RecordsEntityIdRoute = RecordsEntityIdRouteImport.update({
   id: '/records/$entity/$id',
   path: '/records/$entity/$id',
@@ -123,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/territory-assignments': typeof TerritoryAssignmentsRoute
   '/products/$productId': typeof ProductsProductIdRoute
   '/products/new': typeof ProductsNewRoute
+  '/products/$productId/edit': typeof ProductsProductIdEditRoute
   '/records/$entity/$id': typeof RecordsEntityIdRoute
 }
 export interface FileRoutesByTo {
@@ -141,6 +148,7 @@ export interface FileRoutesByTo {
   '/territory-assignments': typeof TerritoryAssignmentsRoute
   '/products/$productId': typeof ProductsProductIdRoute
   '/products/new': typeof ProductsNewRoute
+  '/products/$productId/edit': typeof ProductsProductIdEditRoute
   '/records/$entity/$id': typeof RecordsEntityIdRoute
 }
 export interface FileRoutesById {
@@ -160,6 +168,7 @@ export interface FileRoutesById {
   '/territory-assignments': typeof TerritoryAssignmentsRoute
   '/products_/$productId': typeof ProductsProductIdRoute
   '/products_/new': typeof ProductsNewRoute
+  '/products_/$productId_/edit': typeof ProductsProductIdEditRoute
   '/records/$entity/$id': typeof RecordsEntityIdRoute
 }
 export interface FileRouteTypes {
@@ -180,6 +189,7 @@ export interface FileRouteTypes {
     | '/territory-assignments'
     | '/products/$productId'
     | '/products/new'
+    | '/products/$productId/edit'
     | '/records/$entity/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -198,6 +208,7 @@ export interface FileRouteTypes {
     | '/territory-assignments'
     | '/products/$productId'
     | '/products/new'
+    | '/products/$productId/edit'
     | '/records/$entity/$id'
   id:
     | '__root__'
@@ -216,6 +227,7 @@ export interface FileRouteTypes {
     | '/territory-assignments'
     | '/products_/$productId'
     | '/products_/new'
+    | '/products_/$productId_/edit'
     | '/records/$entity/$id'
   fileRoutesById: FileRoutesById
 }
@@ -235,6 +247,7 @@ export interface RootRouteChildren {
   TerritoryAssignmentsRoute: typeof TerritoryAssignmentsRoute
   ProductsProductIdRoute: typeof ProductsProductIdRoute
   ProductsNewRoute: typeof ProductsNewRoute
+  ProductsProductIdEditRoute: typeof ProductsProductIdEditRoute
   RecordsEntityIdRoute: typeof RecordsEntityIdRoute
 }
 
@@ -345,6 +358,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductsNewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/products_/$productId_/edit': {
+      id: '/products_/$productId_/edit'
+      path: '/products/$productId/edit'
+      fullPath: '/products/$productId/edit'
+      preLoaderRoute: typeof ProductsProductIdEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/records/$entity/$id': {
       id: '/records/$entity/$id'
       path: '/records/$entity/$id'
@@ -371,6 +391,7 @@ const rootRouteChildren: RootRouteChildren = {
   TerritoryAssignmentsRoute: TerritoryAssignmentsRoute,
   ProductsProductIdRoute: ProductsProductIdRoute,
   ProductsNewRoute: ProductsNewRoute,
+  ProductsProductIdEditRoute: ProductsProductIdEditRoute,
   RecordsEntityIdRoute: RecordsEntityIdRoute,
 }
 export const routeTree = rootRouteImport

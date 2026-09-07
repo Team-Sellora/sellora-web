@@ -103,6 +103,80 @@ export function ProductPage() {
     }
   };
 
+  const renderProductRows = () => {
+    if (productsQuery.isLoading) {
+      return Array.from({ length: 5 }).map((_, index) => (
+        <tr key={index}>
+          <td colSpan={canManage ? 7 : 6} className="px-4 py-4">
+            <div className="h-4 animate-pulse rounded bg-muted" />
+          </td>
+        </tr>
+      ));
+    }
+
+    if (visibleProducts.length === 0) {
+      return (
+        <tr>
+          <td colSpan={canManage ? 7 : 6} className="px-4 py-14 text-center text-muted-foreground">
+            No products match the current filters.
+          </td>
+        </tr>
+      );
+    }
+
+    return visibleProducts.map((product) => {
+      const expiry = nearestExpiry(product);
+
+      return (
+        <tr key={product.productId} className="hover:bg-muted/40">
+          <td className="whitespace-nowrap px-4 py-3 font-mono text-xs">{product.sku}</td>
+          <td className="px-4 py-3 font-medium">
+            <Link
+              to="/products/$productId"
+              params={{ productId: product.productId }}
+              className="text-foreground hover:text-primary hover:underline"
+            >
+              {product.name}
+            </Link>
+          </td>
+          <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
+            {product.unitOfMeasure}
+          </td>
+          <td className="whitespace-nowrap px-4 py-3 text-right font-mono font-medium">
+            {formatPrice(product.currentUnitPrice)}
+          </td>
+          <td className="whitespace-nowrap px-4 py-3 font-mono text-xs text-muted-foreground">
+            {expiry ?? "—"}
+          </td>
+          <td className="px-4 py-3">
+            <StatusBadge status={product.status as "Active" | "Inactive"} />
+          </td>
+          {canManage && (
+            <td className="whitespace-nowrap px-4 py-3 text-right text-xs">
+              <Link
+                to="/records/$entity/$id"
+                params={{ entity: "products", id: product.productId }}
+                className="mr-3 font-medium text-primary hover:underline"
+              >
+                Edit
+              </Link>
+              {product.status === "Active" && (
+                <button
+                  type="button"
+                  disabled={deactivateMutation.isPending}
+                  onClick={() => void handleDeactivate(product)}
+                  className="font-medium text-muted-foreground hover:text-destructive disabled:opacity-50"
+                >
+                  Deactivate
+                </button>
+              )}
+            </td>
+          )}
+        </tr>
+      );
+    });
+  };
+
   return (
     <>
       <PageHeader
@@ -212,71 +286,7 @@ export function ProductPage() {
                 {canManage && <th className="px-4 py-3 text-right font-semibold">Actions</th>}
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
-              {productsQuery.isLoading ? (
-                Array.from({ length: 5 }).map((_, index) => (
-                  <tr key={index}>
-                    <td colSpan={canManage ? 7 : 6} className="px-4 py-4">
-                      <div className="h-4 animate-pulse rounded bg-muted" />
-                    </td>
-                  </tr>
-                ))
-              ) : visibleProducts.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={canManage ? 7 : 6}
-                    className="px-4 py-14 text-center text-muted-foreground"
-                  >
-                    No products match the current filters.
-                  </td>
-                </tr>
-              ) : (
-                visibleProducts.map((product) => {
-                  const expiry = nearestExpiry(product);
-                  return (
-                    <tr key={product.productId} className="hover:bg-muted/40">
-                      <td className="whitespace-nowrap px-4 py-3 font-mono text-xs">
-                        {product.sku}
-                      </td>
-                      <td className="px-4 py-3 font-medium">{product.name}</td>
-                      <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
-                        {product.unitOfMeasure}
-                      </td>
-                      <td className="whitespace-nowrap px-4 py-3 text-right font-mono font-medium">
-                        {formatPrice(product.currentUnitPrice)}
-                      </td>
-                      <td className="whitespace-nowrap px-4 py-3 font-mono text-xs text-muted-foreground">
-                        {expiry ?? "—"}
-                      </td>
-                      <td className="px-4 py-3">
-                        <StatusBadge status={product.status as "Active" | "Inactive"} />
-                      </td>
-                      {canManage && (
-                        <td className="whitespace-nowrap px-4 py-3 text-right text-xs">
-                          <Link
-                            to="/records/$entity/$id"
-                            params={{ entity: "products", id: product.productId }}
-                            className="mr-3 font-medium text-primary hover:underline"
-                          >
-                            Edit
-                          </Link>
-                          {product.status === "Active" && (
-                            <button
-                              type="button"
-                              disabled={deactivateMutation.isPending}
-                              onClick={() => void handleDeactivate(product)}
-                              className="font-medium text-muted-foreground hover:text-destructive disabled:opacity-50"
-                            >
-                              Deactivate
-                            </button>
-                          )}
-                        </td>
-                      )}
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
+            <tbody className="divide-y divide-border">{renderProductRows()}</tbody>
           </table>
         </div>
 

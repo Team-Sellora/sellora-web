@@ -1,5 +1,5 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createProduct, deactivateProduct, fetchProducts } from "./api";
+import { createProduct, deactivateProduct, fetchProduct, fetchProducts } from "./api";
 
 import type { CreateProductInput, ProductListQuery } from "./types";
 
@@ -10,6 +10,14 @@ export function useProducts(query: ProductListQuery) {
     queryKey: [...productsQueryKey, query],
     queryFn: () => fetchProducts(query),
     placeholderData: keepPreviousData,
+  });
+}
+
+export function useProduct(productId: string) {
+  return useQuery({
+    queryKey: [...productsQueryKey, productId],
+    queryFn: () => fetchProduct(productId),
+    enabled: productId.length > 0,
   });
 }
 

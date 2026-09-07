@@ -18,8 +18,19 @@ export const routeAccess: Record<string, SelloraRole[]> = {
 };
 
 export function isRoleAllowed(path: string, role: SelloraRole | null): boolean {
-  const allowed = routeAccess[path];
-  if (!allowed) return true;
-  if (!role) return false;
-  return allowed.includes(role);
+  const exactRoles = routeAccess[path];
+
+  if (exactRoles) {
+    return role !== null && exactRoles.includes(role);
+  }
+
+  const isProductDetailsRoute = /^\/products\/[^/]+$/.test(path);
+
+  if (isProductDetailsRoute) {
+    const productReaderRoles = routeAccess["/products"] ?? [];
+
+    return role !== null && productReaderRoles.includes(role);
+  }
+
+  return true;
 }

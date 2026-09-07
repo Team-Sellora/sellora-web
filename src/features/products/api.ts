@@ -52,3 +52,7 @@ export function createProduct(input: CreateProductInput): Promise<Product> {
     body: JSON.stringify(input),
   }).then(unwrap<Product>);
 }
+
+export function fetchProduct(productId: string): Promise<Product> {
+  return apiFetch(`/api/products/${productId}`).then(unwrap<Product>);
+}

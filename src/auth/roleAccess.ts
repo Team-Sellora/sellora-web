@@ -24,6 +24,12 @@ export function isRoleAllowed(path: string, role: SelloraRole | null): boolean {
     return role !== null && exactRoles.includes(role);
   }
 
+  const isProductEditRoute = /^\/products\/[^/]+\/edit$/.test(path);
+
+  if (isProductEditRoute) {
+    return role === "CompanyAdmin";
+  }
+
   const isProductDetailsRoute = /^\/products\/[^/]+$/.test(path);
 
   if (isProductDetailsRoute) {

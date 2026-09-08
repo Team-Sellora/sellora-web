@@ -3,8 +3,8 @@ import { AlertCircle, CircleAlert, Info, Pencil, Save, ShieldCheck } from "lucid
 import { useEffect, useState, type SubmitEvent } from "react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/PageHeader";
-import { cn } from "@/lib/utils";
 import { useProduct, useUpdateProduct } from "./hooks";
+import { ProductCoreFields } from "./ProductCoreFields";
 import { hasValidationErrors, validateUpdateProduct } from "./validation";
 import {
   ProductApiError,
@@ -14,46 +14,6 @@ import {
 
 interface EditProductPageProps {
   productId: string;
-}
-
-interface FieldErrorProps {
-  message: string | undefined;
-}
-
-function FieldError({ message }: Readonly<FieldErrorProps>) {
-  if (!message) {
-    return null;
-  }
-
-  return (
-    <p className="flex items-center gap-1 text-xs font-medium text-destructive">
-      <AlertCircle className="size-3.5" />
-      {message}
-    </p>
-  );
-}
-
-interface FieldLabelProps {
-  htmlFor: string;
-  children: React.ReactNode;
-  required?: boolean;
-  hint?: string;
-}
-
-function FieldLabel({ htmlFor, children, required = false, hint }: Readonly<FieldLabelProps>) {
-  return (
-    <div className="flex items-center justify-between gap-3">
-      <label htmlFor={htmlFor} className="text-sm font-medium">
-        {children}
-
-        {required && <span className="ml-1 text-destructive">*</span>}
-      </label>
-
-      {hint && (
-        <span className="text-xs uppercase tracking-wide text-muted-foreground">{hint}</span>
-      )}
-    </div>
-  );
 }
 
 export function EditProductPage({ productId }: Readonly<EditProductPageProps>) {
@@ -142,12 +102,6 @@ export function EditProductPage({ productId }: Readonly<EditProductPageProps>) {
       toast.error(message);
     }
   };
-
-  const inputClass = (hasError: boolean) =>
-    cn(
-      "h-10 w-full rounded-lg border bg-background px-3 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:ring-2 focus:ring-ring/40",
-      hasError ? "border-destructive text-destructive" : "border-input focus:border-ring",
-    );
 
   if (productQuery.isLoading || values === null) {
     return (
@@ -256,105 +210,7 @@ export function EditProductPage({ productId }: Readonly<EditProductPageProps>) {
             </div>
           )}
 
-          <div className="space-y-5">
-            <div className="space-y-1.5">
-              <FieldLabel htmlFor="sku" required hint="Unique key">
-                SKU
-              </FieldLabel>
-
-              <input
-                id="sku"
-                name="sku"
-                type="text"
-                value={values.sku}
-                maxLength={80}
-                autoComplete="off"
-                aria-invalid={!!errors.sku}
-                onChange={(event) => setValue("sku", event.target.value.toUpperCase())}
-                className={cn(inputClass(!!errors.sku), "font-mono")}
-              />
-
-              <FieldError message={errors.sku} />
-
-              {!errors.sku && (
-                <p className="text-xs text-muted-foreground">
-                  The SKU must remain unique within your company.
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-1.5">
-              <FieldLabel htmlFor="name" required>
-                Product name
-              </FieldLabel>
-
-              <input
-                id="name"
-                name="name"
-                type="text"
-                value={values.name}
-                maxLength={200}
-                aria-invalid={!!errors.name}
-                onChange={(event) => setValue("name", event.target.value)}
-                className={inputClass(!!errors.name)}
-              />
-
-              <FieldError message={errors.name} />
-            </div>
-
-            <div className="space-y-1.5">
-              <FieldLabel htmlFor="description" hint={`${values.description.length}/1000`}>
-                Description
-              </FieldLabel>
-
-              <textarea
-                id="description"
-                name="description"
-                rows={4}
-                value={values.description}
-                maxLength={1000}
-                aria-invalid={!!errors.description}
-                onChange={(event) => setValue("description", event.target.value)}
-                className={cn(
-                  "w-full resize-y rounded-lg border bg-background p-3 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:ring-2 focus:ring-ring/40",
-                  errors.description ? "border-destructive" : "border-input focus:border-ring",
-                )}
-              />
-
-              <FieldError message={errors.description} />
-            </div>
-
-            <div className="space-y-1.5">
-              <FieldLabel htmlFor="unitOfMeasure" required>
-                Unit of measure
-              </FieldLabel>
-
-              <select
-                id="unitOfMeasure"
-                name="unitOfMeasure"
-                value={values.unitOfMeasure}
-                aria-invalid={!!errors.unitOfMeasure}
-                onChange={(event) => setValue("unitOfMeasure", event.target.value)}
-                className={inputClass(!!errors.unitOfMeasure)}
-              >
-                <option value="">Select a unit</option>
-                <option value="Bottle">Bottle</option>
-                <option value="Can">Can</option>
-                <option value="Case">Case</option>
-                <option value="Pack">Pack</option>
-                <option value="Piece">Piece</option>
-                <option value="Box">Box</option>
-                <option value="Kg">Kilogram</option>
-                <option value="Litre">Litre</option>
-
-                {!["", "Bottle", "Can", "Case", "Pack", "Piece", "Box", "Kg", "Litre"].includes(
-                  values.unitOfMeasure,
-                ) && <option value={values.unitOfMeasure}>{values.unitOfMeasure}</option>}
-              </select>
-
-              <FieldError message={errors.unitOfMeasure} />
-            </div>
-          </div>
+          <ProductCoreFields values={values} errors={errors} onChange={setValue} editing />
 
           <div className="mt-7 flex items-start gap-3 rounded-lg border border-border bg-muted/50 p-4">
             <Info className="mt-0.5 size-5 shrink-0 text-primary" />

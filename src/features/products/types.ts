@@ -47,22 +47,28 @@ export interface CreateProductInput {
   expiryDate: string;
 }
 
-export interface CreateProductFormValues {
+export interface ProductCoreFormValues {
   sku: string;
   name: string;
   description: string;
   unitOfMeasure: string;
+}
+
+export interface ProductCoreFormErrors {
+  sku?: string;
+  name?: string;
+  description?: string;
+  unitOfMeasure?: string;
+}
+
+export interface CreateProductFormValues extends ProductCoreFormValues {
   currentUnitPrice: string;
   batchCode: string;
   manufacturingDate: string;
   expiryDate: string;
 }
 
-export interface CreateProductFormErrors {
-  sku?: string;
-  name?: string;
-  description?: string;
-  unitOfMeasure?: string;
+export interface CreateProductFormErrors extends ProductCoreFormErrors {
   currentUnitPrice?: string;
   batchCode?: string;
   manufacturingDate?: string;
@@ -77,18 +83,9 @@ export interface UpdateProductInput {
   unitOfMeasure: string;
 }
 
-export interface UpdateProductFormValues {
-  sku: string;
-  name: string;
-  description: string;
-  unitOfMeasure: string;
-}
+export type UpdateProductFormValues = ProductCoreFormValues;
 
-export interface UpdateProductFormErrors {
-  sku?: string;
-  name?: string;
-  description?: string;
-  unitOfMeasure?: string;
+export interface UpdateProductFormErrors extends ProductCoreFormErrors {
   form?: string;
 }
 

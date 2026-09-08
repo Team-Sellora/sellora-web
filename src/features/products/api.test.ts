@@ -16,9 +16,17 @@ describe("product catalogue filters", () => {
     expect(url.searchParams.get("status")).toBe("Active");
   });
 
-  it.each(["Active", "Inactive", "all"])("sends %s with search and pagination to the server", async (status) => {
-    await fetchProducts({ status, search: " tea ", page: 2, pageSize: 10 });
-    const url = new URL(String(vi.mocked(apiFetch).mock.calls[0]![0]), "https://localhost");
-    expect(Object.fromEntries(url.searchParams)).toEqual({ status, search: "tea", page: "2", pageSize: "10" });
-  });
+  it.each(["Active", "Inactive", "all"])(
+    "sends %s with search and pagination to the server",
+    async (status) => {
+      await fetchProducts({ status, search: " tea ", page: 2, pageSize: 10 });
+      const url = new URL(String(vi.mocked(apiFetch).mock.calls[0]![0]), "https://localhost");
+      expect(Object.fromEntries(url.searchParams)).toEqual({
+        status,
+        search: "tea",
+        page: "2",
+        pageSize: "10",
+      });
+    },
+  );
 });

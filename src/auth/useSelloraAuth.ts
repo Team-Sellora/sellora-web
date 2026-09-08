@@ -28,6 +28,29 @@ const KNOWN_ROLES: SelloraRole[] = [
   "ShopOwner",
 ];
 
+/** Claims we read from the (access) token. */
+interface SelloraClaims {
+  roles?: unknown;
+  companyId?: unknown;
+}
+
+/** Decode a JWT payload (access token) into its claims object. */
+function decodeJwtPayload(token: string): SelloraClaims {
+  try {
+    const base64Url = token.split(".")[1]!;
+    const base64 = base64Url.replaceAll("-", "+").replaceAll("_", "/");
+    const json = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map((c) => "%" + ("00" + c.codePointAt(0)!.toString(16)).slice(-2))
+        .join(""),
+    );
+    return JSON.parse(json) as SelloraClaims;
+  } catch {
+    return {};
+  }
+}
+
 /**
  * Typed accessor for Sellora auth state.
  * Reads decoded claims (role, companyId) from the OIDC token so components
@@ -36,10 +59,14 @@ const KNOWN_ROLES: SelloraRole[] = [
 export function useSelloraAuth(): SelloraAuth {
   const auth = useAuth();
   const profile = auth.user?.profile;
+  const accessToken = auth.user?.access_token ?? null;
 
-  const roles: string[] = Array.isArray(profile?.roles) ? (profile.roles as string[]) : [];
+  // Roles and companyId live in the ACCESS token, not the ID token.
+  const claims = accessToken ? decodeJwtPayload(accessToken) : {};
+
+  const roles: string[] = Array.isArray(claims.roles) ? (claims.roles as string[]) : [];
   const role = KNOWN_ROLES.find((r) => roles.includes(r)) ?? null;
-  const companyId = typeof profile?.companyId === "string" ? profile.companyId : null;
+  const companyId = typeof claims.companyId === "string" ? claims.companyId : null;
 
   return {
     isAuthenticated: auth.isAuthenticated,
@@ -47,14 +74,11 @@ export function useSelloraAuth(): SelloraAuth {
     role,
     roles,
     companyId,
-    accessToken: auth.user?.access_token ?? null,
+    accessToken,
     username:
       (typeof profile?.preferred_username === "string" ? profile.preferred_username : null) ??
       profile?.sub ??
       null,
-    // Ends the Identity Server session (end-session endpoint) AND clears
-    // local state — not just removeUser(), which would leave the IS session
-    // alive and let back/new-tab silently sign the user back in.
     logout: () => auth.signoutRedirect(),
   };
 }

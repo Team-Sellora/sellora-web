@@ -37,9 +37,9 @@ export function useSelloraAuth(): SelloraAuth {
   const auth = useAuth();
   const profile = auth.user?.profile;
 
-  const roles: string[] = Array.isArray(profile?.roles) ? (profile.roles as string[]) : [];
+  const roles: string[] = Array.isArray(profile?.["roles"]) ? (profile["roles"] as string[]) : [];
   const role = KNOWN_ROLES.find((r) => roles.includes(r)) ?? null;
-  const companyId = typeof profile?.companyId === "string" ? profile.companyId : null;
+  const companyId = typeof profile?.["companyId"] === "string" ? profile["companyId"] : null;
 
   return {
     isAuthenticated: auth.isAuthenticated,

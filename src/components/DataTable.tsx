@@ -95,7 +95,7 @@ export function DataTable({
 
   return (
     <div className="rounded-lg border border-border bg-card">
-      <div className="flex flex-wrap items-center gap-3 border-b border-border p-4">
+      <div className="stitch-table-toolbar flex flex-wrap items-center gap-3 p-4">
         <input
           value={searchValue}
           onChange={(e) => {
@@ -103,9 +103,11 @@ export function DataTable({
             setPage(1);
           }}
           placeholder="Search…"
+          aria-label="Search records"
           className="h-9 w-64 rounded-md border border-input bg-background px-3 text-sm outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-ring/40"
         />
         <select
+          aria-label="Filter by status"
           value={statusFilter}
           onChange={(e) => {
             onStatusFilter(e.target.value);

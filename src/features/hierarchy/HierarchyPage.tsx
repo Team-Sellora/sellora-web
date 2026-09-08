@@ -4,6 +4,9 @@ import { useSelloraAuth } from "@/auth/useSelloraAuth";
 import { PageHeader } from "@/components/PageHeader";
 import { FormField } from "@/components/FormField";
 import { Button } from "@/components/ui/button";
+import { OverviewCards } from "@/components/OverviewCards";
+import { StatusBadge } from "@/components/StatusBadge";
+import type { Status } from "@/lib/mock-data";
 import {
   ApiProblem,
   createAgency,
@@ -86,6 +89,30 @@ export function HierarchyPage({ kind }: Readonly<{ kind: Kind }>) {
             <Button onClick={() => setOpen(!open)}>{open ? "Close" : `Register ${kind}`}</Button>
           ) : undefined
         }
+      />
+      <OverviewCards
+        items={[
+          {
+            label: kind === "agency" ? "Operational Hubs" : "Active Territories",
+            value: entities.data
+              ? rows.filter((item: { status: string }) => item.status === "Active").length
+              : undefined,
+            detail: "In the loaded records",
+          },
+          { label: "Loaded Records", value: entities.data ? rows.length : undefined },
+          {
+            label: "Provinces Represented",
+            value: entities.data
+              ? new Set(rows.map((item: { provinceId: string }) => item.provinceId)).size
+              : undefined,
+          },
+          {
+            label: "Inactive Records",
+            value: entities.data
+              ? rows.filter((item: { status: string }) => item.status !== "Active").length
+              : undefined,
+          },
+        ]}
       />
       {!canCreate && (
         <p className="mb-4 rounded-md border border-border bg-muted/40 p-3 text-sm text-muted-foreground">
@@ -210,12 +237,21 @@ export function HierarchyPage({ kind }: Readonly<{ kind: Kind }>) {
                 key={kind === "agency" ? item.agencyId : item.territoryId}
                 className="border-t border-border"
               >
-                <td className="px-4 py-3">{item.name}</td>
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <span aria-hidden="true" className="metric-icon rounded">
+                      {item.name.slice(0, 2).toUpperCase()}
+                    </span>
+                    {item.name}
+                  </div>
+                </td>
                 {kind === "territory" && <td className="px-4 py-3">{item.code}</td>}
                 <td className="px-4 py-3">
                   {provinceNames.get(item.provinceId) ?? item.provinceId}
                 </td>
-                <td className="px-4 py-3">{item.status}</td>
+                <td className="px-4 py-3">
+                  <StatusBadge status={item.status as Status} />
+                </td>
               </tr>
             ))}
           </tbody>

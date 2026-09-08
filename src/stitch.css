@@ -1,0 +1,569 @@
+/* Source: the code.html files in Frontend/stich. Kept outside Tailwind layers so
+   component presentation takes precedence over the original utility styles. */
+:root {
+  --radius: 0.5rem;
+  --background: #f8f9ff;
+  --foreground: #0b1c30;
+  --card: #ffffff;
+  --card-foreground: #0b1c30;
+  --popover: #ffffff;
+  --popover-foreground: #0b1c30;
+  --primary: #006a67;
+  --primary-foreground: #ffffff;
+  --secondary: #d5e0f8;
+  --secondary-foreground: #545f73;
+  --muted: #eff4ff;
+  --muted-foreground: #545f73;
+  --accent: #eff4ff;
+  --accent-foreground: #006a67;
+  --destructive: #ba1a1a;
+  --destructive-foreground: #ffffff;
+  --success: #dcf5ed;
+  --success-foreground: #006c49;
+  --border: #bbc9c8;
+  --input: #bbc9c8;
+  --ring: #12b5b0;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #3c4948;
+  --sidebar-primary: #006a67;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #eff4ff;
+  --sidebar-accent-foreground: #006a67;
+  --sidebar-border: #bbc9c8;
+  --sidebar-ring: #12b5b0;
+  --chart-1: #006a67;
+  --chart-2: #12b5b0;
+  --chart-3: #10b981;
+  --chart-4: #d5e0f8;
+  --chart-5: #545f73;
+}
+
+body {
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: -0.005em;
+  -webkit-font-smoothing: antialiased;
+}
+.sellora-app {
+  min-height: 100dvh;
+}
+.sellora-main {
+  min-width: 0;
+}
+.sellora-brand {
+  display: flex;
+  flex-direction: column;
+  line-height: 20px;
+}
+.sellora-brand strong {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.sellora-brand span {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--sidebar-foreground);
+}
+.sellora-navigation a {
+  border-left: 4px solid transparent;
+  padding-left: 12px;
+  border-radius: 0;
+}
+.sellora-navigation a[aria-current="page"] {
+  border-left-color: var(--primary);
+  font-weight: 600;
+}
+.sellora-navigation a:hover {
+  background: var(--sidebar-accent);
+}
+.sellora-topbar {
+  gap: 16px;
+}
+.sellora-topbar > div > button {
+  border-left: 1px solid var(--border);
+  border-radius: 0;
+  padding-left: 24px;
+  margin-left: 12px;
+}
+.person-avatar {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background: #d5e0f8;
+  color: #545f73;
+  font-size: 11px;
+  font-weight: 600;
+}
+.page-heading nav {
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+.page-heading h1 {
+  font-size: 24px;
+  line-height: 32px;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+}
+.page-heading > div {
+  align-items: center;
+}
+.page-heading p {
+  margin-top: 4px;
+  line-height: 20px;
+}
+.sellora-main :is(div, section, form).bg-card {
+  border-color: #edf0f6;
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgb(11 28 48 / 5%);
+}
+.sellora-main :is(div, section).bg-card:has(> table) {
+  overflow-x: auto;
+}
+.sellora-main table {
+  width: 100%;
+  min-width: 580px;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.sellora-main table thead,
+.sellora-main table thead tr {
+  background: #eff4ff;
+}
+.sellora-main table th {
+  height: 36px;
+  padding: 10px 16px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #545f73;
+  border: 0;
+}
+.sellora-main table tbody tr {
+  border-color: #eff4ff;
+}
+.sellora-main table td {
+  padding: 12px 16px;
+  line-height: 20px;
+  font-variant-numeric: tabular-nums;
+}
+.sellora-main table td:first-child {
+  font-weight: 600;
+}
+.sellora-main table tbody tr:hover {
+  background: #f8f9ff;
+}
+.sellora-main table td.text-right {
+  white-space: nowrap;
+}
+.sellora-main table button {
+  font-size: 12px;
+}
+.sellora-main table button[data-slot="button"] {
+  background: transparent;
+  color: #006a67;
+  border: 0;
+  box-shadow: none;
+}
+.status-chip {
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+.sellora-app :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea),
+[role="dialog"] [role="combobox"] {
+  border-radius: 8px;
+  min-height: 36px;
+  background-color: white;
+}
+.sellora-app :is(input, select, textarea):focus-visible,
+[role="dialog"] [role="combobox"]:focus-visible {
+  outline: 0;
+  border-color: #12b5b0;
+  box-shadow: 0 0 0 3px rgb(18 181 176 / 20%);
+}
+.sellora-app :is(input, select, textarea)[aria-invalid="true"] {
+  border-color: var(--destructive);
+}
+.sellora-app input:disabled,
+.sellora-app input[readonly] {
+  background: #eff4ff;
+}
+.sellora-app :is(button, a).bg-primary,
+[role="dialog"] button.bg-primary {
+  background: #12b5b0;
+  font-weight: 600;
+  border-radius: 6px;
+}
+.sellora-app :is(button, a).bg-primary:hover,
+[role="dialog"] button.bg-primary:hover {
+  background: #0ea5a0;
+}
+.sellora-app :is(button, a):focus-visible {
+  outline: 3px solid rgb(18 181 176 / 35%);
+  outline-offset: 3px;
+}
+.sellora-main > form.bg-card {
+  max-width: 760px;
+  padding: 32px;
+}
+.sellora-main > form.bg-card > div:last-child {
+  justify-content: flex-end;
+  padding-top: 24px;
+}
+.sellora-main form label {
+  font-weight: 600;
+}
+[data-slot="dialog-overlay"] {
+  background: rgb(15 23 42 / 38%);
+  backdrop-filter: blur(3px);
+}
+[data-slot="dialog-content"] {
+  background: #ffffff;
+  border: 0;
+  border-radius: 12px;
+  box-shadow: 0 24px 48px rgb(15 23 42 / 20%);
+  padding: 24px;
+}
+[data-slot="dialog-title"] {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+[data-slot="dialog-description"] {
+  font-size: 14px;
+  line-height: 20px;
+}
+[data-slot="dialog-footer"] {
+  border-top: 1px solid #eff4ff;
+  margin: 24px -24px -24px;
+  padding: 16px 24px 24px;
+  background: #f8f9ff;
+  border-radius: 0 0 12px 12px;
+}
+.overview-cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+.overview-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 16px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgb(11 28 48 / 5%);
+}
+.metric-label {
+  font-size: 11px;
+  line-height: 16px;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  color: #545f73;
+}
+.metric-value {
+  font-size: 26px;
+  line-height: 34px;
+  font-weight: 600;
+  margin-top: 4px;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.metric-detail {
+  color: #006c49;
+  font-size: 12px;
+  margin-top: 4px;
+}
+.metric-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eff4ff;
+  color: #006a67;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.stitch-panel {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgb(11 28 48 / 5%);
+}
+.stitch-panel h2,
+.stitch-panel h3 {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 22px;
+  letter-spacing: -0.01em;
+}
+.stitch-panel > p {
+  color: #545f73;
+  margin-top: 4px;
+}
+.stitch-info {
+  background: #e1fbf9;
+  color: #00403e;
+  border-radius: 8px;
+  padding: 16px;
+  font-size: 12px;
+  line-height: 20px;
+}
+.stitch-info strong {
+  display: block;
+  margin-bottom: 4px;
+}
+.stitch-incumbent {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f8f9ff;
+  border: 1px solid #eff4ff;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 24px 0 8px;
+}
+.stitch-incumbent small {
+  display: block;
+  color: #545f73;
+  margin-bottom: 2px;
+}
+.table-caption {
+  padding: 16px;
+  color: #545f73;
+  font-size: 12px;
+}
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+  margin-top: 24px;
+}
+.sellora-main:has(.coverage-panel) > .overview-cards .overview-card {
+  position: relative;
+  min-height: 152px;
+  padding: 24px;
+  overflow: hidden;
+  align-items: flex-start;
+}
+.sellora-main:has(.coverage-panel) > .overview-cards .metric-icon {
+  position: absolute;
+  right: -24px;
+  top: -24px;
+  width: 104px;
+  height: 104px;
+  border-radius: 0 0 0 100%;
+  padding-right: 16px;
+  padding-top: 16px;
+  color: #545f73;
+}
+.sellora-main:has(.coverage-panel) > .overview-cards .metric-value {
+  font-size: 30px;
+  line-height: 36px;
+  margin-top: 8px;
+}
+.record-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(240px, 1fr);
+  gap: 24px;
+  max-width: 1100px;
+  margin-inline: auto;
+}
+.record-layout form {
+  min-width: 0;
+}
+.record-layout form > div:last-child {
+  justify-content: flex-end;
+}
+.stitch-table-toolbar input,
+.stitch-table-toolbar select {
+  background: #eff4ff;
+  border-color: transparent;
+}
+.stitch-table-toolbar input {
+  flex: 1;
+  max-width: 460px;
+  min-width: 160px;
+}
+.record-layout .stitch-panel {
+  border: 1px solid #e2e8f0;
+}
+@media (max-width: 1000px) {
+  .record-layout {
+    grid-template-columns: 1fr;
+  }
+}
+.dashboard-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.coverage-panel {
+  min-height: 275px;
+  margin-top: 16px;
+  border-radius: 8px;
+  background: linear-gradient(#eff4ff, #a8b6c8 62%, #213145);
+  display: flex;
+  align-items: flex-end;
+  padding: 20px;
+  color: white;
+}
+.coverage-panel p {
+  color: #72f7f1;
+  font-size: 12px;
+}
+.coverage-panel strong {
+  display: block;
+  margin-top: 4px;
+}
+.dashboard-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 110px;
+  background: #eff4ff;
+  border-radius: 8px;
+  margin-top: 24px;
+  color: #545f73;
+  font-size: 12px;
+  text-align: center;
+  padding: 16px;
+}
+.dashboard-shortcut {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  gap: 12px;
+  background: #eff4ff;
+  border-radius: 8px;
+  margin-top: 12px;
+  color: #006a67;
+}
+.dashboard-shortcut:hover {
+  background: #e5eeff;
+}
+.dashboard-activity {
+  margin-top: 16px;
+}
+.dashboard-activity li {
+  display: flex;
+  gap: 12px;
+  padding: 16px 0;
+  align-items: flex-start;
+}
+.dashboard-activity time {
+  display: block;
+  color: #545f73;
+  font-size: 11px;
+  margin-top: 4px;
+}
+.access-card {
+  max-width: 576px;
+  margin: 32px auto;
+  padding: 48px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 16px 24px rgb(11 28 48 / 12%);
+  text-align: center;
+}
+.access-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #e5eeff;
+  color: #006a67;
+  margin: 0 auto 24px;
+}
+.access-label {
+  display: inline-block;
+  background: #ffdad6;
+  color: #93000a;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+}
+.access-card h1 {
+  font-size: 24px;
+  line-height: 32px;
+}
+.access-card > p {
+  line-height: 24px;
+}
+@media (max-width: 1100px) {
+  .sellora-main {
+    padding: 24px 16px;
+  }
+  .overview-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 700px) {
+  .sellora-sidebar.w-60 {
+    width: 64px;
+  }
+  .sellora-sidebar .sellora-brand,
+  .sellora-sidebar nav a > span,
+  .sellora-sidebar > button span {
+    display: none;
+  }
+  .sellora-sidebar + .pl-60 {
+    padding-left: 64px;
+  }
+  .sellora-topbar {
+    padding-inline: 16px;
+  }
+  .sellora-topbar > span {
+    font-size: 12px;
+  }
+  .sellora-topbar > div > .person-avatar,
+  .sellora-topbar > div > div,
+  .sellora-topbar button span {
+    display: none;
+  }
+  .sellora-topbar > div > button {
+    margin: 0;
+    padding: 8px;
+    border: 0;
+  }
+  .page-heading > div {
+    flex-wrap: wrap;
+  }
+  .overview-card {
+    padding: 16px 12px;
+  }
+  .metric-icon {
+    display: none;
+  }
+  .access-card {
+    padding: 24px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sellora-app *,
+  [role="dialog"] {
+    transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
+  }
+}

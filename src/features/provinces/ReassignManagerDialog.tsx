@@ -80,10 +80,12 @@ export function ReassignManagerDialog({ open, onOpenChange, province }: Readonly
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-lg">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Assign Area Manager</DialogTitle>
+            <DialogTitle>
+              {province.currentManager ? "Reassign Area Manager" : "Assign Area Manager"}
+            </DialogTitle>
             <DialogDescription>
               Province: <span className="font-medium">{province.name}</span>{" "}
               <span className="text-muted-foreground">({province.code})</span>
@@ -95,6 +97,21 @@ export function ReassignManagerDialog({ open, onOpenChange, province }: Readonly
               )}
             </DialogDescription>
           </DialogHeader>
+          {province.currentManager && (
+            <div className="stitch-incumbent">
+              <span className="person-avatar" aria-hidden="true">
+                {province.currentManager.displayName
+                  .split(" ")
+                  .map((part) => part[0])
+                  .slice(0, 2)
+                  .join("")}
+              </span>
+              <div>
+                <small>Current Incumbent</small>
+                <strong>{province.currentManager.displayName}</strong>
+              </div>
+            </div>
+          )}
 
           <div className="space-y-1.5 py-4">
             <label htmlFor="area-manager-select" className="block text-sm font-medium">
@@ -142,6 +159,11 @@ export function ReassignManagerDialog({ open, onOpenChange, province }: Readonly
               </p>
             )}
           </div>
+          <div className="stitch-info">
+            <strong>Province assignment scope</strong>
+            This province contains {province.agencyCount} agencies and {province.shopCount}{" "}
+            registered shops. Select the Area Manager responsible for its leadership.
+          </div>
 
           <DialogFooter>
             <Button
@@ -154,7 +176,7 @@ export function ReassignManagerDialog({ open, onOpenChange, province }: Readonly
             </Button>
             <Button type="submit" disabled={isSubmitting || isManagersLoading}>
               {isSubmitting && <Loader2 className="mr-2 size-4 animate-spin" />}
-              Assign
+              {province.currentManager ? "Confirm Reassignment" : "Assign"}
             </Button>
           </DialogFooter>
         </form>

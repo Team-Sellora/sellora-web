@@ -3,6 +3,7 @@ import {
   createProduct,
   deactivateProduct,
   fetchProduct,
+  fetchProductPriceHistory,
   fetchProducts,
   updateProduct,
 } from "./api";
@@ -24,6 +25,14 @@ export function useProduct(productId: string) {
     queryKey: [...productsQueryKey, productId],
     queryFn: () => fetchProduct(productId),
     enabled: productId.length > 0,
+  });
+}
+
+export function useProductPriceHistory(productId: string, enabled: boolean) {
+  return useQuery({
+    queryKey: [...productsQueryKey, productId, "price-history"],
+    queryFn: () => fetchProductPriceHistory(productId),
+    enabled: enabled && productId.length > 0,
   });
 }
 

@@ -1,9 +1,10 @@
-import { apiFetch } from "@/api/client";
+import { catalogApiFetch as apiFetch } from "@/api/client";
 import {
   ProductApiError,
   type ApiErrorBody,
   type CreateProductInput,
   type PagedProducts,
+  type PriceHistoryEntry,
   type Product,
   type ProductListQuery,
   type UpdateProductInput,
@@ -66,4 +67,8 @@ export function updateProduct(productId: string, input: UpdateProductInput): Pro
 
 export function fetchProduct(productId: string): Promise<Product> {
   return apiFetch(`/api/products/${productId}`).then(unwrap<Product>);
+}
+
+export function fetchProductPriceHistory(productId: string): Promise<PriceHistoryEntry[]> {
+  return apiFetch(`/api/products/${productId}/price-history`).then(unwrap<PriceHistoryEntry[]>);
 }

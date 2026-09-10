@@ -21,6 +21,17 @@ export interface Product {
   batches: ProductBatch[];
 }
 
+export interface PriceHistoryEntry {
+  priceHistoryId: string;
+  productId: string;
+  oldUnitPrice: number;
+  newUnitPrice: number;
+  changedBy: string;
+  reason: string;
+  changedAt: string;
+  effectiveFrom: string;
+}
+
 export interface PagedProducts {
   items: Product[];
   page: number;

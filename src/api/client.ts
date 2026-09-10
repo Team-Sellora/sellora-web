@@ -9,11 +9,11 @@ export function setUnauthorizedHandler(handler: () => void): void {
   onUnauthorized = handler;
 }
 
-/**
- * Single gateway HTTP client. Automatically attaches the bearer token to
- * every request, so callers never handle auth headers themselves.
- */
-export async function apiFetch(path: string, options: RequestInit = {}): Promise<Response> {
+async function fetchWithBase(
+  baseUrl: string,
+  path: string,
+  options: RequestInit = {},
+): Promise<Response> {
   const token = getAccessToken();
 
   const headers = new Headers(options.headers);
@@ -22,7 +22,7 @@ export async function apiFetch(path: string, options: RequestInit = {}): Promise
   }
   headers.set("Accept", "application/json");
 
-  const url = `${env.gatewayBaseUrl}${path}`;
+  const url = `${baseUrl}${path}`;
   const response = await fetch(url, { ...options, headers });
 
   if (response.status === 401) {
@@ -31,4 +31,17 @@ export async function apiFetch(path: string, options: RequestInit = {}): Promise
   }
 
   return response;
+}
+
+/**
+ * Gateway HTTP client for the organization service. Automatically attaches
+ * the bearer token to every request, so callers never handle auth headers.
+ */
+export function apiFetch(path: string, options: RequestInit = {}): Promise<Response> {
+  return fetchWithBase(env.gatewayBaseUrl, path, options);
+}
+
+/** Gateway HTTP client for the catalog service (products). */
+export function catalogApiFetch(path: string, options: RequestInit = {}): Promise<Response> {
+  return fetchWithBase(env.catalogGatewayBaseUrl, path, options);
 }

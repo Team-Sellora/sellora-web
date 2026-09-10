@@ -5,6 +5,7 @@ import {
   type CreateProductInput,
   type PagedProducts,
   type PriceHistoryEntry,
+  type ProductCategory,
   type Product,
   type ProductListQuery,
   type UpdateProductInput,
@@ -36,7 +37,15 @@ export function fetchProducts(query: ProductListQuery): Promise<PagedProducts> {
     parameters.set("search", query.search.trim());
   }
 
+  if (query.categoryId) {
+    parameters.set("categoryId", query.categoryId);
+  }
+
   return apiFetch(`/api/products?${parameters.toString()}`).then(unwrap<PagedProducts>);
+}
+
+export function fetchActiveCategories(): Promise<ProductCategory[]> {
+  return apiFetch("/api/categories?status=Active").then(unwrap<ProductCategory[]>);
 }
 
 export function deactivateProduct(productId: string): Promise<Product> {

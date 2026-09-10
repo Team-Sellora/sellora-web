@@ -2,6 +2,7 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tansta
 import {
   createProduct,
   deactivateProduct,
+  fetchActiveCategories,
   fetchProduct,
   fetchProductPriceHistory,
   fetchProducts,
@@ -11,6 +12,14 @@ import {
 import type { CreateProductInput, ProductListQuery, UpdateProductInput } from "./types";
 
 export const productsQueryKey = ["products"] as const;
+
+export function useActiveCategories() {
+  return useQuery({
+    queryKey: ["categories", "active"],
+    queryFn: fetchActiveCategories,
+    staleTime: 60_000,
+  });
+}
 
 export function useProducts(query: ProductListQuery) {
   return useQuery({

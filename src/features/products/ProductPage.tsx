@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { useSelloraAuth } from "@/auth/useSelloraAuth";
 import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
-import { useDeactivateProduct, useProducts } from "./hooks";
+import { useActiveCategories, useDeactivateProduct, useProducts } from "./hooks";
 import type { Product } from "./types";
 
 const PAGE_SIZE = 10;
@@ -62,6 +62,7 @@ export function ProductPage() {
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("Active");
+  const [categoryId, setCategoryId] = useState("");
   const [page, setPage] = useState(1);
 
   useEffect(() => {
@@ -72,7 +73,14 @@ export function ProductPage() {
     return () => window.clearTimeout(timer);
   }, [searchInput]);
 
-  const productsQuery = useProducts({ search, status, page, pageSize: PAGE_SIZE });
+  const categoriesQuery = useActiveCategories();
+  const productsQuery = useProducts({
+    search,
+    status,
+    categoryId: categoryId || undefined,
+    page,
+    pageSize: PAGE_SIZE,
+  });
   const deactivateMutation = useDeactivateProduct();
   const products = useMemo(() => productsQuery.data?.items ?? [], [productsQuery.data?.items]);
 
@@ -247,11 +255,30 @@ export function ProductPage() {
               <option value="Active">Active</option>
               <option value="Inactive">Inactive</option>
             </select>
+            <select
+              value={categoryId}
+              disabled={categoriesQuery.isLoading}
+              onChange={(event) => {
+                setCategoryId(event.target.value);
+                setPage(1);
+              }}
+              className="h-9 rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring/40"
+            >
+              <option value="">
+                {categoriesQuery.isLoading ? "Loading categories..." : "All categories"}
+              </option>
+              {(categoriesQuery.data ?? []).map((category) => (
+                <option key={category.categoryId} value={category.categoryId}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
             <button
               type="button"
               onClick={() => {
                 setSearchInput("");
                 setStatus("Active");
+                setCategoryId("");
                 setPage(1);
               }}
               className="h-9 rounded-md bg-muted px-3 text-xs font-medium text-muted-foreground hover:text-foreground"

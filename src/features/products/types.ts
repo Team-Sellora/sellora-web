@@ -1,3 +1,12 @@
+export interface ProductCategory {
+  categoryId: string;
+  name: string;
+  description: string | null;
+  status: "Active" | "Inactive";
+  createdAt: string;
+  updatedAt: string | null;
+}
+
 export interface ProductBatch {
   batchId: string;
   batchCode: string;
@@ -10,6 +19,7 @@ export interface ProductBatch {
 
 export interface Product {
   productId: string;
+  categoryId: string | null;
   sku: string;
   name: string;
   description: string | null;
@@ -43,6 +53,7 @@ export interface PagedProducts {
 export interface ProductListQuery {
   status?: string;
   search?: string;
+  categoryId?: string;
   page: number;
   pageSize: number;
 }
@@ -56,6 +67,7 @@ export interface CreateProductInput {
   batchCode: string;
   manufacturingDate: string;
   expiryDate: string;
+  categoryId: string | null;
 }
 
 export interface ProductCoreFormValues {
@@ -63,6 +75,7 @@ export interface ProductCoreFormValues {
   name: string;
   description: string;
   unitOfMeasure: string;
+  categoryId: string;
 }
 
 export interface ProductCoreFormErrors {
@@ -92,6 +105,7 @@ export interface UpdateProductInput {
   name: string;
   description: string | null;
   unitOfMeasure: string;
+  categoryId: string | null;
 }
 
 export type UpdateProductFormValues = ProductCoreFormValues;

@@ -2,11 +2,7 @@ import { AlertCircle } from "lucide-react";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { productInputClass } from "./productFormStyles";
-import type {
-  ProductCategory,
-  ProductCoreFormErrors,
-  ProductCoreFormValues,
-} from "./types";
+import type { ProductCategory, ProductCoreFormErrors, ProductCoreFormValues } from "./types";
 
 const unitOptions = ["Bottle", "Can", "Case", "Pack", "Piece", "Box", "Kg", "Litre"];
 
@@ -148,9 +144,7 @@ export function ProductCoreFields({
           onChange={(event) => onChange("categoryId", event.target.value)}
           className={productInputClass(false)}
         >
-          <option value="">
-            {categoriesLoading ? "Loading categories..." : "Uncategorised"}
-          </option>
+          <option value="">{categoriesLoading ? "Loading categories..." : "Uncategorised"}</option>
           {categories.map((category) => (
             <option key={category.categoryId} value={category.categoryId}>
               {category.name}

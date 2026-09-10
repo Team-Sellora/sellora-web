@@ -2,7 +2,7 @@ import { AlertCircle } from "lucide-react";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { productInputClass } from "./productFormStyles";
-import type { ProductCoreFormErrors, ProductCoreFormValues } from "./types";
+import type { ProductCategory, ProductCoreFormErrors, ProductCoreFormValues } from "./types";
 
 const unitOptions = ["Bottle", "Can", "Case", "Pack", "Piece", "Box", "Kg", "Litre"];
 
@@ -49,6 +49,8 @@ interface ProductCoreFieldsProps {
   values: ProductCoreFormValues;
   errors: ProductCoreFormErrors;
   onChange: (field: keyof ProductCoreFormValues, value: string) => void;
+  categories: ProductCategory[];
+  categoriesLoading: boolean;
   editing?: boolean;
 }
 
@@ -56,6 +58,8 @@ export function ProductCoreFields({
   values,
   errors,
   onChange,
+  categories,
+  categoriesLoading,
   editing = false,
 }: Readonly<ProductCoreFieldsProps>) {
   const hasCustomUnit =
@@ -126,6 +130,30 @@ export function ProductCoreFields({
           )}
         />
         <FieldError message={errors.description} />
+      </div>
+
+      <div className="space-y-1.5">
+        <FieldLabel htmlFor="categoryId" hint="Optional">
+          Category
+        </FieldLabel>
+        <select
+          id="categoryId"
+          name="categoryId"
+          value={values.categoryId}
+          disabled={categoriesLoading}
+          onChange={(event) => onChange("categoryId", event.target.value)}
+          className={productInputClass(false)}
+        >
+          <option value="">{categoriesLoading ? "Loading categories..." : "Uncategorised"}</option>
+          {categories.map((category) => (
+            <option key={category.categoryId} value={category.categoryId}>
+              {category.name}
+            </option>
+          ))}
+        </select>
+        <p className="text-xs text-muted-foreground">
+          Deactivated categories automatically leave products uncategorised.
+        </p>
       </div>
 
       <div className="space-y-1.5">

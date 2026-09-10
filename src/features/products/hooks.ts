@@ -2,7 +2,9 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tansta
 import {
   createProduct,
   deactivateProduct,
+  fetchActiveCategories,
   fetchProduct,
+  fetchProductPriceHistory,
   fetchProducts,
   updateProduct,
 } from "./api";
@@ -10,6 +12,14 @@ import {
 import type { CreateProductInput, ProductListQuery, UpdateProductInput } from "./types";
 
 export const productsQueryKey = ["products"] as const;
+
+export function useActiveCategories() {
+  return useQuery({
+    queryKey: ["categories", "active"],
+    queryFn: fetchActiveCategories,
+    staleTime: 60_000,
+  });
+}
 
 export function useProducts(query: ProductListQuery) {
   return useQuery({
@@ -24,6 +34,14 @@ export function useProduct(productId: string) {
     queryKey: [...productsQueryKey, productId],
     queryFn: () => fetchProduct(productId),
     enabled: productId.length > 0,
+  });
+}
+
+export function useProductPriceHistory(productId: string, enabled: boolean) {
+  return useQuery({
+    queryKey: [...productsQueryKey, productId, "price-history"],
+    queryFn: () => fetchProductPriceHistory(productId),
+    enabled: enabled && productId.length > 0,
   });
 }
 

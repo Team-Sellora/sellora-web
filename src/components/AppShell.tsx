@@ -44,35 +44,42 @@ export function AppShell({ children }: { readonly children: ReactNode }) {
   const { username, role, logout } = useSelloraAuth();
 
   return (
-    <div className="min-h-screen w-full bg-background text-foreground">
+    <div className="sellora-app min-h-screen w-full bg-background text-foreground">
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-20 flex flex-col border-r border-sidebar-border bg-sidebar transition-[width] duration-200",
+          "sellora-sidebar fixed inset-y-0 left-0 z-20 flex flex-col border-r border-sidebar-border bg-sidebar transition-[width] duration-200",
           collapsed ? "w-16" : "w-60",
         )}
       >
         <div className="flex h-14 items-center gap-2 border-b border-sidebar-border px-4">
-          <div className="flex size-7 shrink-0 items-center justify-center rounded bg-primary text-xs font-semibold text-primary-foreground">
-            S
-          </div>
-          {!collapsed && <span className="text-sm font-semibold tracking-tight">Sellora</span>}
+          <img src="/sellora-logo.svg" alt="" className="size-8 shrink-0" />
+          {!collapsed && (
+            <div className="sellora-brand">
+              <strong>Sellora</strong>
+              <span>B2B Field Sales</span>
+            </div>
+          )}
         </div>
 
-        <nav className="flex-1 space-y-0.5 overflow-y-auto p-2">
+        <nav
+          aria-label="Main navigation"
+          className="sellora-navigation flex-1 overflow-y-auto py-2"
+        >
           {navItems.map((item) => (
             <Link
               key={item.to}
               to={item.to as "/"}
               title={item.label}
+              aria-current={isActive(item.to, item.exact) ? "page" : undefined}
 
               className={cn(
-                "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
+                "flex h-10 items-center gap-2 px-4 text-sm transition-colors",
                 isActive(item.to, item.exact)
                   ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
                   : "text-sidebar-foreground hover:bg-sidebar-accent/60",
               )}
             >
-              <item.icon className="size-4 shrink-0" />
+              <item.icon className="size-[18px] shrink-0" />
               {!collapsed && <span className="truncate">{item.label}</span>}
             </Link>
           ))}
@@ -81,6 +88,8 @@ export function AppShell({ children }: { readonly children: ReactNode }) {
         <button
           type="button"
           onClick={() => setCollapsed((c) => !c)}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          aria-expanded={!collapsed}
           className="flex items-center gap-3 border-t border-sidebar-border px-4 py-3 text-sm text-muted-foreground hover:text-foreground"
         >
           {collapsed ? (
@@ -88,19 +97,22 @@ export function AppShell({ children }: { readonly children: ReactNode }) {
           ) : (
             <>
               <PanelLeftClose className="size-4" />
-              <span>Collapse</span>
+              <span>Collapse sidebar</span>
             </>
           )}
         </button>
       </aside>
 
       <div className={cn("transition-[padding] duration-200", collapsed ? "pl-16" : "pl-60")}>
-        <header className="sticky top-0 z-10 flex h-14 items-center justify-between border-b border-border bg-background px-6">
+        <header className="sellora-topbar sticky top-0 z-10 flex h-14 items-center justify-between border-b border-border bg-card px-8">
           <span className="text-sm font-semibold tracking-tight">
             Sellora <span className="font-normal text-muted-foreground">Management Console</span>
           </span>
           {/* Placeholder for the authenticated user (wired up via OIDC later) */}
           <div className="flex items-center gap-3">
+            <span aria-hidden="true" className="person-avatar">
+              {username?.slice(0, 2).toUpperCase() ?? "S"}
+            </span>
             <div className="text-right leading-tight">
               <div className="text-sm font-medium">{username ?? "—"}</div>
               <div className="text-xs text-muted-foreground">{role ?? "—"}</div>
@@ -117,7 +129,7 @@ export function AppShell({ children }: { readonly children: ReactNode }) {
           </div>
         </header>
 
-        <main className="mx-auto max-w-7xl px-6 py-8">{children}</main>
+        <main className="sellora-main px-8 py-8">{children}</main>
       </div>
     </div>
   );

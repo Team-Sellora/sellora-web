@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { useSelloraAuth } from "@/auth/useSelloraAuth";
 import { PageHeader } from "@/components/PageHeader";
 import { cn } from "@/lib/utils";
-import { useCreateProduct } from "./hooks";
+import { useActiveCategories, useCreateProduct } from "./hooks";
 import { FieldError, FieldLabel, ProductCoreFields } from "./ProductCoreFields";
 import { productInputClass } from "./productFormStyles";
 import { hasValidationErrors, validateCreateProduct } from "./validation";
@@ -24,12 +24,14 @@ const initialValues: CreateProductFormValues = {
   batchCode: "",
   manufacturingDate: "",
   expiryDate: "",
+  categoryId: "",
 };
 
 export function CreateProductPage() {
   const navigate = useNavigate();
   const { username } = useSelloraAuth();
   const createMutation = useCreateProduct();
+  const categoriesQuery = useActiveCategories();
 
   const [values, setValues] = useState<CreateProductFormValues>(initialValues);
 
@@ -71,6 +73,7 @@ export function CreateProductPage() {
         batchCode: values.batchCode.trim(),
         manufacturingDate: values.manufacturingDate,
         expiryDate: values.expiryDate,
+        categoryId: values.categoryId || null,
       });
 
       toast.success(`${product.name} was created successfully.`);
@@ -163,7 +166,13 @@ export function CreateProductPage() {
             </div>
           )}
 
-          <ProductCoreFields values={values} errors={errors} onChange={setValue} />
+          <ProductCoreFields
+            values={values}
+            errors={errors}
+            onChange={setValue}
+            categories={categoriesQuery.data ?? []}
+            categoriesLoading={categoriesQuery.isLoading}
+          />
 
           <div className="mt-5 space-y-1.5">
             <FieldLabel htmlFor="currentUnitPrice" required hint="Tax exclusive">

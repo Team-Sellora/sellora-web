@@ -3,7 +3,7 @@ import { CalendarDays, History, Info, Package, Pencil, ShieldCheck, Tag } from "
 import { useSelloraAuth } from "@/auth/useSelloraAuth";
 import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
-import { useProduct } from "./hooks";
+import { useProduct, useProductPriceHistory } from "./hooks";
 import { ProductLoadError } from "./ProductLoadError";
 import type { ProductBatch } from "./types";
 
@@ -118,6 +118,7 @@ export function ProductDetailsPage({ productId }: Readonly<ProductDetailsPagePro
   const { role } = useSelloraAuth();
   const productQuery = useProduct(productId);
   const canManage = role === "CompanyAdmin";
+  const priceHistoryQuery = useProductPriceHistory(productId, canManage);
 
   if (productQuery.isLoading) {
     return (
@@ -269,37 +270,95 @@ export function ProductDetailsPage({ productId }: Readonly<ProductDetailsPagePro
             </div>
           </section>
 
-          <section className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
-            <div className="flex flex-col justify-between gap-3 border-b border-border p-6 sm:flex-row sm:items-center">
-              <div>
-                <div className="flex items-center gap-2">
-                  <History className="size-5 text-primary" />
+          {canManage ? (
+            <section className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+              <div className="flex flex-col justify-between gap-3 border-b border-border p-6 sm:flex-row sm:items-center">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <History className="size-5 text-primary" />
 
-                  <h2 className="font-semibold">Price history</h2>
+                    <h2 className="font-semibold">Price history</h2>
+                  </div>
+
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Every accepted price change will be permanently recorded.
+                  </p>
                 </div>
 
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Every accepted price change will be permanently recorded.
-                </p>
+                <span className="inline-flex w-fit items-center gap-1 rounded-md bg-muted px-2.5 py-1 font-mono text-xs text-muted-foreground">
+                  <ShieldCheck className="size-3.5" />
+                  Immutable audit log
+                </span>
               </div>
 
-              <span className="inline-flex w-fit items-center gap-1 rounded-md bg-muted px-2.5 py-1 font-mono text-xs text-muted-foreground">
-                <ShieldCheck className="size-3.5" />
-                Immutable audit log
-              </span>
-            </div>
-
-            <div className="flex flex-col items-center justify-center px-6 py-12 text-center">
-              <History className="size-9 text-muted-foreground/50" />
-
-              <h3 className="mt-3 text-sm font-semibold">Price history is not available yet</h3>
-
-              <p className="mt-1 max-w-md text-xs leading-5 text-muted-foreground">
-                Audited price changes and their history endpoint will be introduced under US-E2-2.
-                The current price shown above is supplied by the Catalog service.
-              </p>
-            </div>
-          </section>
+              {priceHistoryQuery.isLoading ? (
+                <div className="space-y-3 p-6">
+                  <div className="h-12 animate-pulse rounded-md bg-muted" />
+                  <div className="h-12 animate-pulse rounded-md bg-muted" />
+                </div>
+              ) : priceHistoryQuery.isError ? (
+                <div className="px-6 py-10 text-center">
+                  <p className="text-sm font-semibold text-destructive">
+                    Could not load price history
+                  </p>
+                  <button
+                    type="button"
+                    className="mt-3 text-sm font-medium text-primary hover:underline"
+                    onClick={() => priceHistoryQuery.refetch()}
+                  >
+                    Try again
+                  </button>
+                </div>
+              ) : priceHistoryQuery.data?.length ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-sm">
+                    <thead className="bg-muted/50 text-xs uppercase tracking-wide text-muted-foreground">
+                      <tr>
+                        <th className="px-6 py-3 font-semibold">Changed</th>
+                        <th className="px-6 py-3 font-semibold">Old price</th>
+                        <th className="px-6 py-3 font-semibold">New price</th>
+                        <th className="px-6 py-3 font-semibold">Effective from</th>
+                        <th className="px-6 py-3 font-semibold">Changed by</th>
+                        <th className="px-6 py-3 font-semibold">Reason</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border">
+                      {priceHistoryQuery.data.map((entry) => (
+                        <tr key={entry.priceHistoryId}>
+                          <td className="whitespace-nowrap px-6 py-4">
+                            {formatTimestamp(entry.changedAt)}
+                          </td>
+                          <td className="whitespace-nowrap px-6 py-4">
+                            {formatPrice(entry.oldUnitPrice)}
+                          </td>
+                          <td className="whitespace-nowrap px-6 py-4 font-semibold">
+                            {formatPrice(entry.newUnitPrice)}
+                          </td>
+                          <td className="whitespace-nowrap px-6 py-4">
+                            {formatTimestamp(entry.effectiveFrom)}
+                          </td>
+                          <td className="whitespace-nowrap px-6 py-4 font-mono text-xs">
+                            {entry.changedBy}
+                          </td>
+                          <td className="min-w-48 px-6 py-4 text-muted-foreground">
+                            {entry.reason}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center px-6 py-12 text-center">
+                  <History className="size-9 text-muted-foreground/50" />
+                  <h3 className="mt-3 text-sm font-semibold">No price changes recorded</h3>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    The first accepted price change will appear here.
+                  </p>
+                </div>
+              )}
+            </section>
+          ) : null}
         </div>
 
         <aside className="flex flex-col gap-6 lg:col-span-4">

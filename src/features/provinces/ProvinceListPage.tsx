@@ -6,6 +6,7 @@ import type { Status } from "@/lib/mock-data";
 import { useProvinces } from "./hooks";
 import { ReassignManagerDialog } from "./ReassignManagerDialog";
 import type { Province } from "./types";
+import { OverviewCards } from "@/components/OverviewCards";
 
 export function ProvinceListPage() {
   const { data, isPending, isError, error } = useProvinces();
@@ -15,10 +16,21 @@ export function ProvinceListPage() {
     <>
       <PageHeader
         title="Provinces"
-        description="Provinces in your company, their current Area Manager, and size at a glance."
+        description="Manage provincial jurisdictions, assigned leadership, and regional distribution nodes."
         crumbs={[{ label: "Provinces" }]}
       />
 
+      <OverviewCards
+        items={[
+          { label: "Total Jurisdictions", value: data?.length },
+          { label: "Active Leadership", value: data?.filter((p) => p.currentManager).length },
+          { label: "Distribution Nodes", value: data?.reduce((sum, p) => sum + p.agencyCount, 0) },
+          {
+            label: "Commercial Outlets",
+            value: data?.reduce((sum, p) => sum + p.shopCount, 0).toLocaleString(),
+          },
+        ]}
+      />
       <div className="overflow-hidden rounded-lg border border-border bg-card">
         <table className="w-full text-sm">
           <thead className="border-b border-border bg-muted/40 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -67,21 +79,34 @@ export function ProvinceListPage() {
                   className="border-b border-border last:border-0 hover:bg-muted/40"
                 >
                   <td className="px-4 py-3">
-                    <div className="font-medium">{p.name}</div>
-                    <div className="text-xs text-muted-foreground">{p.code}</div>
+                    <div className="flex items-center gap-2">
+                      <span className="rounded bg-secondary px-1.5 py-0.5 font-mono text-xs">
+                        {p.code}
+                      </span>
+                      <span>{p.name}</span>
+                    </div>
                   </td>
                   <td className="px-4 py-3">
                     <StatusBadge status={p.status as Status} />
                   </td>
                   <td className="px-4 py-3">
                     {p.currentManager ? (
-                      <div>
-                        <div>{p.currentManager.displayName}</div>
-                        {p.currentManager.email && (
-                          <div className="text-xs text-muted-foreground">
-                            {p.currentManager.email}
-                          </div>
-                        )}
+                      <div className="flex items-center gap-2">
+                        <span className="person-avatar" aria-hidden="true">
+                          {p.currentManager.displayName
+                            .split(" ")
+                            .map((part) => part[0])
+                            .slice(0, 2)
+                            .join("")}
+                        </span>
+                        <div>
+                          <div>{p.currentManager.displayName}</div>
+                          {p.currentManager.email && (
+                            <div className="text-xs text-muted-foreground">
+                              {p.currentManager.email}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     ) : (
                       <span className="text-muted-foreground">—</span>
@@ -102,6 +127,21 @@ export function ProvinceListPage() {
               ))}
           </tbody>
         </table>
+        {data && <div className="table-caption">Showing {data.length} provinces</div>}
+      </div>
+      <div className="dashboard-grid">
+        <section className="stitch-panel">
+          <h2>Hierarchy Alignment</h2>
+          <p>Provincial leadership, agencies, and commercial outlets in your company.</p>
+        </section>
+        <section className="stitch-panel">
+          <h2>Unassigned Leadership</h2>
+          <p>
+            {data
+              ? `${data.filter((p) => !p.currentManager).length} provinces without an assigned Area Manager.`
+              : "Province information is unavailable."}
+          </p>
+        </section>
       </div>
 
       <ReassignManagerDialog

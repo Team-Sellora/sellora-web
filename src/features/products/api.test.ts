@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { apiFetch } from "@/api/client";
-import { fetchProducts } from "./api";
+import { catalogApiFetch as apiFetch } from "@/api/client";
+import { fetchProductPriceHistory, fetchProducts } from "./api";
 
-vi.mock("@/api/client", () => ({ apiFetch: vi.fn() }));
+vi.mock("@/api/client", () => ({ catalogApiFetch: vi.fn() }));
 
 describe("product catalogue filters", () => {
   beforeEach(() => {
@@ -29,4 +29,17 @@ describe("product catalogue filters", () => {
       });
     },
   );
+});
+
+describe("product price history", () => {
+  beforeEach(() => {
+    vi.mocked(apiFetch).mockReset();
+    vi.mocked(apiFetch).mockResolvedValue(new Response(JSON.stringify([])));
+  });
+
+  it("requests the audit history for the selected product", async () => {
+    await fetchProductPriceHistory("product-123");
+
+    expect(apiFetch).toHaveBeenCalledWith("/api/products/product-123/price-history");
+  });
 });

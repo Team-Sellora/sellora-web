@@ -3,7 +3,7 @@ import { AlertCircle, Info, Pencil, Save, ShieldCheck } from "lucide-react";
 import { useEffect, useState, type SubmitEvent } from "react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/PageHeader";
-import { useProduct, useUpdateProduct } from "./hooks";
+import { useActiveCategories, useProduct, useUpdateProduct } from "./hooks";
 import { ProductCoreFields } from "./ProductCoreFields";
 import { ProductLoadError } from "./ProductLoadError";
 import { hasValidationErrors, validateUpdateProduct } from "./validation";
@@ -21,6 +21,7 @@ export function EditProductPage({ productId }: Readonly<EditProductPageProps>) {
   const navigate = useNavigate();
   const productQuery = useProduct(productId);
   const updateMutation = useUpdateProduct(productId);
+  const categoriesQuery = useActiveCategories();
 
   const [values, setValues] = useState<UpdateProductFormValues | null>(null);
 
@@ -36,6 +37,7 @@ export function EditProductPage({ productId }: Readonly<EditProductPageProps>) {
       name: productQuery.data.name,
       description: productQuery.data.description ?? "",
       unitOfMeasure: productQuery.data.unitOfMeasure,
+      categoryId: productQuery.data.categoryId ?? "",
     });
   }, [productQuery.data, values]);
 
@@ -81,6 +83,7 @@ export function EditProductPage({ productId }: Readonly<EditProductPageProps>) {
         name: values.name.trim(),
         description: values.description.trim() || null,
         unitOfMeasure: values.unitOfMeasure.trim(),
+        categoryId: values.categoryId || null,
       });
 
       toast.success(`${product.name} was updated successfully.`);
@@ -185,7 +188,14 @@ export function EditProductPage({ productId }: Readonly<EditProductPageProps>) {
             </div>
           )}
 
-          <ProductCoreFields values={values} errors={errors} onChange={setValue} editing />
+          <ProductCoreFields
+            values={values}
+            errors={errors}
+            onChange={setValue}
+            categories={categoriesQuery.data ?? []}
+            categoriesLoading={categoriesQuery.isLoading}
+            editing
+          />
 
           <div className="mt-7 flex items-start gap-3 rounded-lg border border-border bg-muted/50 p-4">
             <Info className="mt-0.5 size-5 shrink-0 text-primary" />

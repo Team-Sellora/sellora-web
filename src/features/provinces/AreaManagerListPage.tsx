@@ -2,6 +2,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import type { Status } from "@/lib/mock-data";
 import { useAreaManagers } from "./hooks";
+import { OverviewCards } from "@/components/OverviewCards";
 
 export function AreaManagerListPage() {
   const { data, isPending, isError, error } = useAreaManagers();
@@ -10,10 +11,24 @@ export function AreaManagerListPage() {
     <>
       <PageHeader
         title="Area Managers"
-        description="Active Area Managers in your company."
+        description="Directory of regional personnel overseeing provincial sales teams and agency networks."
         crumbs={[{ label: "Area Managers" }]}
       />
 
+      <OverviewCards
+        items={[
+          {
+            label: "Active Managers",
+            value: data?.filter((manager) => manager.status === "Active").length,
+          },
+          { label: "Directory Records", value: data?.length },
+          { label: "Email Contacts", value: data?.filter((manager) => manager.email).length },
+          {
+            label: "Inactive Managers",
+            value: data?.filter((manager) => manager.status !== "Active").length,
+          },
+        ]}
+      />
       <div className="overflow-hidden rounded-lg border border-border bg-card">
         <table className="w-full text-sm">
           <thead className="border-b border-border bg-muted/40 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -58,8 +73,21 @@ export function AreaManagerListPage() {
                   key={manager.staffProfileId}
                   className="border-b border-border last:border-0 hover:bg-muted/40"
                 >
-                  <td className="px-4 py-3 font-medium">{manager.displayName}</td>
-                  <td className="px-4 py-3">{manager.email ?? "—"}</td>
+                  <td className="px-4 py-3 font-medium">
+                    <div className="flex items-center gap-2">
+                      <span aria-hidden="true" className="person-avatar">
+                        {manager.displayName
+                          .split(" ")
+                          .map((part) => part[0])
+                          .slice(0, 2)
+                          .join("")}
+                      </span>
+                      {manager.displayName}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 font-mono text-xs text-muted-foreground">
+                    {manager.email ?? "—"}
+                  </td>
                   <td className="px-4 py-3">
                     <StatusBadge status={manager.status as Status} />
                   </td>
@@ -67,6 +95,7 @@ export function AreaManagerListPage() {
               ))}
           </tbody>
         </table>
+        {data && <div className="table-caption">Showing {data.length} Area Managers</div>}
       </div>
     </>
   );

@@ -89,6 +89,7 @@ export interface ProductCoreFormErrors {
   name?: string;
   description?: string;
   unitOfMeasure?: string;
+  categoryId?: string;
 }
 
 export interface CreateProductFormValues extends ProductCoreFormValues {

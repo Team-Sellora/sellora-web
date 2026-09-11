@@ -77,7 +77,7 @@ export function ProductPage() {
   const productsQuery = useProducts({
     search,
     status,
-    categoryId: categoryId || undefined,
+    ...(categoryId ? { categoryId } : {}),
     page,
     pageSize: PAGE_SIZE,
   });

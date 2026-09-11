@@ -23,7 +23,11 @@ function CategoryDialog({
   category,
   open,
   onOpenChange,
-}: Readonly<{ category?: ProductCategory; open: boolean; onOpenChange(open: boolean): void }>) {
+}: Readonly<{
+  category?: ProductCategory | undefined;
+  open: boolean;
+  onOpenChange(open: boolean): void;
+}>) {
   const create = useCreateCategory();
   const update = useUpdateCategory(category?.categoryId ?? "");
   const [name, setName] = useState(category?.name ?? "");

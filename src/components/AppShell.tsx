@@ -31,6 +31,7 @@ const navItems: { to: string; label: string; icon: typeof LayoutDashboard; exact
   { to: "/sales-reps", label: "Sales Reps", icon: Users },
   { to: "/shops", label: "Shops", icon: Store },
   { to: "/products", label: "Products", icon: Package },
+  { to: "/product-categories", label: "Product categories", icon: Package },
   { to: "/inventory", label: "Inventory", icon: Boxes },
   { to: "/orders", label: "Orders", icon: ClipboardList },
 ];

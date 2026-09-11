@@ -1,11 +1,13 @@
 import { Link } from "@tanstack/react-router";
 import { CalendarDays, History, Info, Package, Pencil, ShieldCheck, Tag } from "lucide-react";
+import { useState } from "react";
 import { useSelloraAuth } from "@/auth/useSelloraAuth";
 import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { useProduct, useProductPriceHistory } from "./hooks";
 import { ProductLoadError } from "./ProductLoadError";
 import type { ProductBatch } from "./types";
+import { ChangePriceDialog } from "./ChangePriceDialog";
 
 interface ProductDetailsPageProps {
   productId: string;
@@ -119,6 +121,7 @@ export function ProductDetailsPage({ productId }: Readonly<ProductDetailsPagePro
   const productQuery = useProduct(productId);
   const canManage = role === "CompanyAdmin";
   const priceHistoryQuery = useProductPriceHistory(productId, canManage);
+  const [priceDialogOpen, setPriceDialogOpen] = useState(false);
 
   if (productQuery.isLoading) {
     return (
@@ -230,6 +233,15 @@ export function ProductDetailsPage({ productId }: Readonly<ProductDetailsPagePro
                   <span className="text-xs text-muted-foreground">
                     per {product.unitOfMeasure.toLowerCase()}
                   </span>
+                  {canManage && (
+                    <button
+                      type="button"
+                      onClick={() => setPriceDialogOpen(true)}
+                      className="ml-auto text-sm font-medium text-primary hover:underline"
+                    >
+                      Change price
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -426,6 +438,15 @@ export function ProductDetailsPage({ productId }: Readonly<ProductDetailsPagePro
           </div>
         </aside>
       </div>
+      {canManage && (
+        <ChangePriceDialog
+          open={priceDialogOpen}
+          onOpenChange={setPriceDialogOpen}
+          productId={product.productId}
+          productName={product.name}
+          currentPrice={product.currentUnitPrice}
+        />
+      )}
     </>
   );
 }

@@ -3,6 +3,7 @@ import {
   ProductApiError,
   type ApiErrorBody,
   type CreateProductInput,
+  type ChangeProductPriceInput,
   type PagedProducts,
   type PriceHistoryEntry,
   type ProductCategory,
@@ -80,4 +81,15 @@ export function fetchProduct(productId: string): Promise<Product> {
 
 export function fetchProductPriceHistory(productId: string): Promise<PriceHistoryEntry[]> {
   return apiFetch(`/api/products/${productId}/price-history`).then(unwrap<PriceHistoryEntry[]>);
+}
+
+export function changeProductPrice(
+  productId: string,
+  input: ChangeProductPriceInput,
+): Promise<Product> {
+  return apiFetch(`/api/products/${productId}/price`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  }).then(unwrap<Product>);
 }

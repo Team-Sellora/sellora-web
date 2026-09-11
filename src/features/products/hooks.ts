@@ -1,6 +1,7 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createProduct,
+  changeProductPrice,
   deactivateProduct,
   fetchActiveCategories,
   fetchProduct,
@@ -9,7 +10,12 @@ import {
   updateProduct,
 } from "./api";
 
-import type { CreateProductInput, ProductListQuery, UpdateProductInput } from "./types";
+import type {
+  ChangeProductPriceInput,
+  CreateProductInput,
+  ProductListQuery,
+  UpdateProductInput,
+} from "./types";
 
 export const productsQueryKey = ["products"] as const;
 
@@ -42,6 +48,20 @@ export function useProductPriceHistory(productId: string, enabled: boolean) {
     queryKey: [...productsQueryKey, productId, "price-history"],
     queryFn: () => fetchProductPriceHistory(productId),
     enabled: enabled && productId.length > 0,
+  });
+}
+
+export function useChangeProductPrice(productId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: ChangeProductPriceInput) => changeProductPrice(productId, input),
+    onSuccess: (product) => {
+      queryClient.setQueryData([...productsQueryKey, productId], product);
+      queryClient.invalidateQueries({
+        queryKey: [...productsQueryKey, productId, "price-history"],
+      });
+      queryClient.invalidateQueries({ queryKey: productsQueryKey });
+    },
   });
 }
 

@@ -16,6 +16,7 @@ import { Route as HierarchyRollUpRouteImport } from './routes/hierarchy-roll-up'
 import { Route as InventoryRouteImport } from './routes/inventory'
 import { Route as NotAuthorisedRouteImport } from './routes/not-authorised'
 import { Route as OrdersRouteImport } from './routes/orders'
+import { Route as ProductCategoriesRouteImport } from './routes/product-categories'
 import { Route as ProductsRouteImport } from './routes/products'
 import { Route as ProvincesRouteImport } from './routes/provinces'
 import { Route as SalesRepsRouteImport } from './routes/sales-reps'
@@ -60,6 +61,11 @@ const NotAuthorisedRoute = NotAuthorisedRouteImport.update({
 const OrdersRoute = OrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductCategoriesRoute = ProductCategoriesRouteImport.update({
+  id: '/product-categories',
+  path: '/product-categories',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProductsRoute = ProductsRouteImport.update({
@@ -121,6 +127,7 @@ export interface FileRoutesByFullPath {
   '/inventory': typeof InventoryRoute
   '/not-authorised': typeof NotAuthorisedRoute
   '/orders': typeof OrdersRoute
+  '/product-categories': typeof ProductCategoriesRoute
   '/products': typeof ProductsRoute
   '/provinces': typeof ProvincesRoute
   '/sales-reps': typeof SalesRepsRoute
@@ -140,6 +147,7 @@ export interface FileRoutesByTo {
   '/inventory': typeof InventoryRoute
   '/not-authorised': typeof NotAuthorisedRoute
   '/orders': typeof OrdersRoute
+  '/product-categories': typeof ProductCategoriesRoute
   '/products': typeof ProductsRoute
   '/provinces': typeof ProvincesRoute
   '/sales-reps': typeof SalesRepsRoute
@@ -160,6 +168,7 @@ export interface FileRoutesById {
   '/inventory': typeof InventoryRoute
   '/not-authorised': typeof NotAuthorisedRoute
   '/orders': typeof OrdersRoute
+  '/product-categories': typeof ProductCategoriesRoute
   '/products': typeof ProductsRoute
   '/provinces': typeof ProvincesRoute
   '/sales-reps': typeof SalesRepsRoute
@@ -181,6 +190,7 @@ export interface FileRouteTypes {
     | '/inventory'
     | '/not-authorised'
     | '/orders'
+    | '/product-categories'
     | '/products'
     | '/provinces'
     | '/sales-reps'
@@ -200,6 +210,7 @@ export interface FileRouteTypes {
     | '/inventory'
     | '/not-authorised'
     | '/orders'
+    | '/product-categories'
     | '/products'
     | '/provinces'
     | '/sales-reps'
@@ -219,6 +230,7 @@ export interface FileRouteTypes {
     | '/inventory'
     | '/not-authorised'
     | '/orders'
+    | '/product-categories'
     | '/products'
     | '/provinces'
     | '/sales-reps'
@@ -239,6 +251,7 @@ export interface RootRouteChildren {
   InventoryRoute: typeof InventoryRoute
   NotAuthorisedRoute: typeof NotAuthorisedRoute
   OrdersRoute: typeof OrdersRoute
+  ProductCategoriesRoute: typeof ProductCategoriesRoute
   ProductsRoute: typeof ProductsRoute
   ProvincesRoute: typeof ProvincesRoute
   SalesRepsRoute: typeof SalesRepsRoute
@@ -300,6 +313,13 @@ declare module '@tanstack/react-router' {
       path: '/orders'
       fullPath: '/orders'
       preLoaderRoute: typeof OrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/product-categories': {
+      id: '/product-categories'
+      path: '/product-categories'
+      fullPath: '/product-categories'
+      preLoaderRoute: typeof ProductCategoriesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/products': {
@@ -383,6 +403,7 @@ const rootRouteChildren: RootRouteChildren = {
   InventoryRoute: InventoryRoute,
   NotAuthorisedRoute: NotAuthorisedRoute,
   OrdersRoute: OrdersRoute,
+  ProductCategoriesRoute: ProductCategoriesRoute,
   ProductsRoute: ProductsRoute,
   ProvincesRoute: ProvincesRoute,
   SalesRepsRoute: SalesRepsRoute,

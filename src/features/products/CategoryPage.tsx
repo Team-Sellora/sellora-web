@@ -1,6 +1,7 @@
 import { Plus, Search } from "lucide-react";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { toast } from "sonner";
+import { useSelloraAuth } from "@/auth/useSelloraAuth";
 import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
@@ -99,6 +100,8 @@ function CategoryDialog({
 }
 
 export function CategoryPage() {
+  const { role } = useSelloraAuth();
+  const canManage = role === "CompanyAdmin";
   const [status, setStatus] = useState("All");
   const [search, setSearch] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -134,9 +137,11 @@ export function CategoryPage() {
         description="Organise your company catalogue into flat product groups."
         crumbs={[{ label: "Product categories" }]}
         actions={
-          <Button onClick={() => setDialogOpen(true)}>
-            <Plus /> Add category
-          </Button>
+          canManage ? (
+            <Button onClick={() => setDialogOpen(true)}>
+              <Plus /> Add category
+            </Button>
+          ) : undefined
         }
       />
       <section className="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
@@ -172,13 +177,16 @@ export function CategoryPage() {
                   <th className="px-4 py-3">Category name</th>
                   <th className="px-4 py-3">Description</th>
                   <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3 text-right">Actions</th>
+                  {canManage && <th className="px-4 py-3 text-right">Actions</th>}
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
                 {query.isLoading ? (
                   <tr>
-                    <td colSpan={4} className="p-6 text-center text-muted-foreground">
+                    <td
+                      colSpan={canManage ? 4 : 3}
+                      className="p-6 text-center text-muted-foreground"
+                    >
                       Loading categories...
                     </td>
                   </tr>
@@ -192,33 +200,38 @@ export function CategoryPage() {
                       <td className="px-4 py-3">
                         <StatusBadge status={category.status} />
                       </td>
-                      <td className="px-4 py-3 text-right">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setEditing(category);
-                            setDialogOpen(true);
-                          }}
-                          className="mr-3 font-medium text-primary hover:underline"
-                        >
-                          Edit
-                        </button>
-                        {category.status === "Active" && (
+                      {canManage && (
+                        <td className="px-4 py-3 text-right">
                           <button
                             type="button"
-                            disabled={deactivate.isPending}
-                            onClick={() => void deactivateCategory(category)}
-                            className="font-medium text-muted-foreground hover:text-destructive"
+                            onClick={() => {
+                              setEditing(category);
+                              setDialogOpen(true);
+                            }}
+                            className="mr-3 font-medium text-primary hover:underline"
                           >
-                            Deactivate
+                            Edit
                           </button>
-                        )}
-                      </td>
+                          {category.status === "Active" && (
+                            <button
+                              type="button"
+                              disabled={deactivate.isPending}
+                              onClick={() => void deactivateCategory(category)}
+                              className="font-medium text-muted-foreground hover:text-destructive"
+                            >
+                              Deactivate
+                            </button>
+                          )}
+                        </td>
+                      )}
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={4} className="p-12 text-center text-muted-foreground">
+                    <td
+                      colSpan={canManage ? 4 : 3}
+                      className="p-12 text-center text-muted-foreground"
+                    >
                       No categories match the current filters.
                     </td>
                   </tr>
@@ -228,7 +241,7 @@ export function CategoryPage() {
           </div>
         )}
       </section>
-      <CategoryDialog category={editing} open={dialogOpen} onOpenChange={close} />
+      {canManage && <CategoryDialog category={editing} open={dialogOpen} onOpenChange={close} />}
     </>
   );
 }

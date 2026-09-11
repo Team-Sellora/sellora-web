@@ -70,6 +70,12 @@ export interface CreateProductInput {
   categoryId: string | null;
 }
 
+export interface ChangeProductPriceInput {
+  newUnitPrice: number;
+  reason: string | null;
+  effectiveFrom: string;
+}
+
 export interface ProductCoreFormValues {
   sku: string;
   name: string;

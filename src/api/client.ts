@@ -45,3 +45,8 @@ export function apiFetch(path: string, options: RequestInit = {}): Promise<Respo
 export function catalogApiFetch(path: string, options: RequestInit = {}): Promise<Response> {
   return fetchWithBase(env.catalogGatewayBaseUrl, path, options);
 }
+
+/** Gateway HTTP client for the Inventory service (stock). */
+export function inventoryApiFetch(path: string, options: RequestInit = {}): Promise<Response> {
+  return fetchWithBase(env.inventoryGatewayBaseUrl, path, options);
+}

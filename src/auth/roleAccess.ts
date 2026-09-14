@@ -13,7 +13,7 @@ export const routeAccess: Record<string, SelloraRole[]> = {
   "/shops": ["AgencyOperator"],
   "/products": ["CompanyAdmin", "AreaManager", "AgencyOperator", "SalesRep"],
   "/products/new": ["CompanyAdmin"],
-  "/inventory": ["CompanyAdmin", "AreaManager", "AgencyOperator"],
+  "/inventory": ["CompanyAdmin", "AgencyOperator", "SalesRep"],
   "/orders": ["CompanyAdmin", "AreaManager", "AgencyOperator", "SalesRep"],
 };
 

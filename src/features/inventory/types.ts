@@ -18,6 +18,13 @@ export interface StockListQuery {
   inventoryOwnerId?: string;
 }
 
+export interface InventoryOwner {
+  inventoryOwnerId: string;
+  ownerType: "Company" | "Agency" | "SalesRep";
+  externalOwnerId: string;
+  displayName: string;
+}
+
 export interface StockAdjustmentInput {
   inventoryOwnerId: string;
   productId: string;

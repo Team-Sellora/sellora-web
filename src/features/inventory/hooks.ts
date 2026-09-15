@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   adjustStock,
   confirmReservation,
+  fetchInventoryOwners,
   fetchStock,
   releaseReservation,
   reserveStock,
@@ -29,6 +30,13 @@ export function useAdjustStock() {
   return useMutation({
     mutationFn: (input: StockAdjustmentInput) => adjustStock(input),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: stockQueryKey }),
+  });
+}
+
+export function useInventoryOwners() {
+  return useQuery({
+    queryKey: ["inventory", "owners"],
+    queryFn: fetchInventoryOwners,
   });
 }
 

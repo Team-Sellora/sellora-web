@@ -6,6 +6,7 @@ import {
   type StockApiErrorBody,
   type StockItem,
   type StockListQuery,
+  type InventoryOwner,
   type StockReservationInput,
   type StockReservationResponse,
   type ResolveFulfilmentInput,
@@ -47,6 +48,10 @@ export function adjustStock(input: StockAdjustmentInput): Promise<StockAdjustmen
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),
   }).then(unwrap<StockAdjustmentResponse>);
+}
+
+export function fetchInventoryOwners(): Promise<InventoryOwner[]> {
+  return inventoryApiFetch("/api/inventory-owners").then(unwrap<InventoryOwner[]>);
 }
 
 /** Holds stock while an order is being created. */

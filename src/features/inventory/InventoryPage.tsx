@@ -11,6 +11,7 @@ import { FormEvent, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useSelloraAuth } from "@/auth/useSelloraAuth";
 import { PageHeader } from "@/components/PageHeader";
+import { useProducts } from "@/features/products/hooks";
 import { useAdjustStock, useStock } from "./hooks";
 import type { StockItem } from "./types";
 
@@ -58,11 +59,14 @@ function AdjustmentDialog({
   onClose: () => void;
 }>) {
   const adjustment = useAdjustStock();
+  const productsQuery = useProducts({ page: 1, pageSize: 100, status: "Active" });
   const [inventoryOwnerId, setInventoryOwnerId] = useState(stockItem?.inventoryOwnerId ?? "");
   const [productId, setProductId] = useState(stockItem?.productId ?? "");
   const [batchId, setBatchId] = useState(stockItem?.batchId ?? "");
   const [quantityDelta, setQuantityDelta] = useState("");
   const [reason, setReason] = useState("");
+  const products = productsQuery.data?.items ?? [];
+  const selectedProduct = products.find((product) => product.productId === productId);
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -78,8 +82,8 @@ function AdjustmentDialog({
       return;
     }
 
-    if (!inventoryOwnerId.trim() || !productId.trim()) {
-      toast.error("Inventory owner ID and product ID are required.");
+    if (!inventoryOwnerId.trim() || !productId) {
+      toast.error("Select a catalog product and enter an inventory owner ID.");
       return;
     }
 
@@ -143,23 +147,59 @@ function AdjustmentDialog({
                 />
               </label>
               <label className="block text-sm font-medium">
-                Product ID
-                <input
+                Product
+                <select
                   required
                   value={productId}
-                  onChange={(event) => setProductId(event.target.value)}
-                  placeholder="Product UUID"
-                  className="mt-1 h-10 w-full rounded-md border border-input bg-background px-3 font-mono text-sm outline-none focus:ring-2 focus:ring-ring/40"
-                />
+                  onChange={(event) => {
+                    const product = products.find(
+                      (candidate) => candidate.productId === event.target.value,
+                    );
+                    setProductId(event.target.value);
+                    setBatchId(product?.batches[0]?.batchId ?? "");
+                  }}
+                  disabled={productsQuery.isLoading || products.length === 0}
+                  className="mt-1 h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring/40 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <option value="">
+                    {productsQuery.isLoading
+                      ? "Loading catalog products…"
+                      : "Select an active catalog product"}
+                  </option>
+                  {products.map((product) => (
+                    <option key={product.productId} value={product.productId}>
+                      {product.name} ({product.sku})
+                    </option>
+                  ))}
+                </select>
+                {productsQuery.isError && (
+                  <p className="mt-1 text-xs text-destructive">
+                    Catalog products could not be loaded. Check the catalog gateway access.
+                  </p>
+                )}
               </label>
               <label className="block text-sm font-medium">
                 Batch ID <span className="font-normal text-muted-foreground">(optional)</span>
-                <input
+                <select
                   value={batchId}
                   onChange={(event) => setBatchId(event.target.value)}
-                  placeholder="Batch UUID"
-                  className="mt-1 h-10 w-full rounded-md border border-input bg-background px-3 font-mono text-sm outline-none focus:ring-2 focus:ring-ring/40"
-                />
+                  disabled={!selectedProduct || selectedProduct.batches.length === 0}
+                  className="mt-1 h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring/40 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <option value="">
+                    {selectedProduct ? "No batch" : "Select a product first"}
+                  </option>
+                  {selectedProduct?.batches.map((batch) => (
+                    <option key={batch.batchId} value={batch.batchId}>
+                      {batch.batchCode} · expires {batch.expiryDate}
+                    </option>
+                  ))}
+                </select>
+                {selectedProduct?.batches.length === 0 && (
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    This product has no batch recorded in the catalog.
+                  </p>
+                )}
               </label>
             </>
           )}

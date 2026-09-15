@@ -33,6 +33,39 @@ export interface StockAdjustmentResponse extends StockItem {
   occurredAt: string;
 }
 
+export interface ReservationLineInput {
+  productId: string;
+  batchId: string | null;
+  quantity: number;
+}
+
+export interface StockReservationInput {
+  orderReference: string;
+  inventoryOwnerId: string;
+  lines: ReservationLineInput[];
+}
+
+export interface ResolveFulfilmentInput {
+  orderReference: string;
+  agencyId: string;
+  lines: ReservationLineInput[];
+}
+
+export interface StockReservationLine {
+  productId: string;
+  batchId: string | null;
+  quantity: number;
+}
+
+export interface StockReservationResponse {
+  reservationId: string;
+  orderReference: string;
+  inventoryOwnerId: string;
+  status: string;
+  expiresAt: string;
+  lines: StockReservationLine[];
+}
+
 export interface StockApiErrorBody {
   message?: string;
   title?: string;

@@ -13,6 +13,7 @@ async function fetchWithBase(
   baseUrl: string,
   path: string,
   options: RequestInit = {},
+  redirectOnUnauthorized = true,
 ): Promise<Response> {
   const token = getAccessToken();
 
@@ -25,7 +26,7 @@ async function fetchWithBase(
   const url = `${baseUrl}${path}`;
   const response = await fetch(url, { ...options, headers });
 
-  if (response.status === 401) {
+  if (response.status === 401 && redirectOnUnauthorized) {
     // Token rejected — trigger the login redirect wired up by the auth layer.
     onUnauthorized?.();
   }
@@ -48,5 +49,8 @@ export function catalogApiFetch(path: string, options: RequestInit = {}): Promis
 
 /** Gateway HTTP client for the Inventory service (stock). */
 export function inventoryApiFetch(path: string, options: RequestInit = {}): Promise<Response> {
-  return fetchWithBase(env.inventoryGatewayBaseUrl, path, options);
+  // Inventory can return 401 when APIM/backend role or tenant mapping is
+  // incomplete. Keep the user on the page so its actionable error is shown;
+  // a 401 from the identity or other APIs still follows the normal sign-in flow.
+  return fetchWithBase(env.inventoryGatewayBaseUrl, path, options, false);
 }

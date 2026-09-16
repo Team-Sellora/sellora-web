@@ -18,6 +18,13 @@ export interface StockListQuery {
   inventoryOwnerId?: string;
 }
 
+export interface InventoryOwner {
+  inventoryOwnerId: string;
+  ownerType: "Company" | "Agency" | "SalesRep";
+  externalOwnerId: string;
+  displayName: string;
+}
+
 export interface StockAdjustmentInput {
   inventoryOwnerId: string;
   productId: string;
@@ -31,6 +38,39 @@ export interface StockAdjustmentResponse extends StockItem {
   quantityDelta: number;
   reason: string;
   occurredAt: string;
+}
+
+export interface ReservationLineInput {
+  productId: string;
+  batchId: string | null;
+  quantity: number;
+}
+
+export interface StockReservationInput {
+  orderReference: string;
+  inventoryOwnerId: string;
+  lines: ReservationLineInput[];
+}
+
+export interface ResolveFulfilmentInput {
+  orderReference: string;
+  agencyId: string;
+  lines: ReservationLineInput[];
+}
+
+export interface StockReservationLine {
+  productId: string;
+  batchId: string | null;
+  quantity: number;
+}
+
+export interface StockReservationResponse {
+  reservationId: string;
+  orderReference: string;
+  inventoryOwnerId: string;
+  status: string;
+  expiresAt: string;
+  lines: StockReservationLine[];
 }
 
 export interface StockApiErrorBody {

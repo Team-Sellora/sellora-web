@@ -6,6 +6,10 @@ import {
   type StockApiErrorBody,
   type StockItem,
   type StockListQuery,
+  type InventoryOwner,
+  type StockReservationInput,
+  type StockReservationResponse,
+  type ResolveFulfilmentInput,
 } from "./types";
 
 async function unwrap<T>(response: Response): Promise<T> {
@@ -44,4 +48,44 @@ export function adjustStock(input: StockAdjustmentInput): Promise<StockAdjustmen
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),
   }).then(unwrap<StockAdjustmentResponse>);
+}
+
+export function fetchInventoryOwners(): Promise<InventoryOwner[]> {
+  return inventoryApiFetch("/api/inventory-owners").then(unwrap<InventoryOwner[]>);
+}
+
+/** Holds stock while an order is being created. */
+export function reserveStock(input: StockReservationInput): Promise<StockReservationResponse> {
+  return inventoryApiFetch("/api/stock/reservations", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  }).then(unwrap<StockReservationResponse>);
+}
+
+/**
+ * Chooses the fulfilment owner and creates its reservation for an agency order.
+ */
+export function resolveFulfilment(
+  input: ResolveFulfilmentInput,
+): Promise<StockReservationResponse> {
+  return inventoryApiFetch("/api/stock/fulfilment/resolve", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  }).then(unwrap<StockReservationResponse>);
+}
+
+/** Confirms a reservation, permanently decrementing on-hand stock. */
+export function confirmReservation(reservationId: string): Promise<StockReservationResponse> {
+  return inventoryApiFetch(`/api/stock/reservations/${reservationId}/confirm`, {
+    method: "POST",
+  }).then(unwrap<StockReservationResponse>);
+}
+
+/** Releases a reservation when an order cannot proceed. */
+export function releaseReservation(reservationId: string): Promise<StockReservationResponse> {
+  return inventoryApiFetch(`/api/stock/reservations/${reservationId}/release`, {
+    method: "POST",
+  }).then(unwrap<StockReservationResponse>);
 }

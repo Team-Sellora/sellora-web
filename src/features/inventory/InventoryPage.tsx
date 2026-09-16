@@ -11,7 +11,8 @@ import { FormEvent, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useSelloraAuth } from "@/auth/useSelloraAuth";
 import { PageHeader } from "@/components/PageHeader";
-import { useAdjustStock, useStock } from "./hooks";
+import { useProducts } from "@/features/products/hooks";
+import { useAdjustStock, useInventoryOwners, useStock } from "./hooks";
 import type { StockItem } from "./types";
 
 function shortId(value: string): string {
@@ -58,11 +59,16 @@ function AdjustmentDialog({
   onClose: () => void;
 }>) {
   const adjustment = useAdjustStock();
+  const ownersQuery = useInventoryOwners();
+  const productsQuery = useProducts({ page: 1, pageSize: 100, status: "Active" });
   const [inventoryOwnerId, setInventoryOwnerId] = useState(stockItem?.inventoryOwnerId ?? "");
   const [productId, setProductId] = useState(stockItem?.productId ?? "");
   const [batchId, setBatchId] = useState(stockItem?.batchId ?? "");
   const [quantityDelta, setQuantityDelta] = useState("");
   const [reason, setReason] = useState("");
+  const products = productsQuery.data?.items ?? [];
+  const owners = ownersQuery.data ?? [];
+  const selectedProduct = products.find((product) => product.productId === productId);
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -78,8 +84,8 @@ function AdjustmentDialog({
       return;
     }
 
-    if (!inventoryOwnerId.trim() || !productId.trim()) {
-      toast.error("Inventory owner ID and product ID are required.");
+    if (!inventoryOwnerId.trim() || !productId) {
+      toast.error("Select a catalog product and enter an inventory owner ID.");
       return;
     }
 
@@ -133,33 +139,86 @@ function AdjustmentDialog({
           ) : (
             <>
               <label className="block text-sm font-medium">
-                Inventory owner ID
-                <input
+                Inventory owner
+                <select
                   required
                   value={inventoryOwnerId}
                   onChange={(event) => setInventoryOwnerId(event.target.value)}
-                  placeholder="Inventory owner UUID"
-                  className="mt-1 h-10 w-full rounded-md border border-input bg-background px-3 font-mono text-sm outline-none focus:ring-2 focus:ring-ring/40"
-                />
+                  disabled={ownersQuery.isLoading || owners.length === 0}
+                  className="mt-1 h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring/40 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <option value="">
+                    {ownersQuery.isLoading
+                      ? "Loading inventory owners…"
+                      : "Select an inventory owner"}
+                  </option>
+                  {owners.map((owner) => (
+                    <option key={owner.inventoryOwnerId} value={owner.inventoryOwnerId}>
+                      {owner.displayName} ({owner.ownerType})
+                    </option>
+                  ))}
+                </select>
+                {!ownersQuery.isLoading && !ownersQuery.isError && owners.length === 0 && (
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    No owners exist yet. Create an agency in Organization and wait for its hierarchy
+                    event.
+                  </p>
+                )}
               </label>
               <label className="block text-sm font-medium">
-                Product ID
-                <input
+                Product
+                <select
                   required
                   value={productId}
-                  onChange={(event) => setProductId(event.target.value)}
-                  placeholder="Product UUID"
-                  className="mt-1 h-10 w-full rounded-md border border-input bg-background px-3 font-mono text-sm outline-none focus:ring-2 focus:ring-ring/40"
-                />
+                  onChange={(event) => {
+                    const product = products.find(
+                      (candidate) => candidate.productId === event.target.value,
+                    );
+                    setProductId(event.target.value);
+                    setBatchId(product?.batches[0]?.batchId ?? "");
+                  }}
+                  disabled={productsQuery.isLoading || products.length === 0}
+                  className="mt-1 h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring/40 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <option value="">
+                    {productsQuery.isLoading
+                      ? "Loading catalog products…"
+                      : "Select an active catalog product"}
+                  </option>
+                  {products.map((product) => (
+                    <option key={product.productId} value={product.productId}>
+                      {product.name} ({product.sku})
+                    </option>
+                  ))}
+                </select>
+                {productsQuery.isError && (
+                  <p className="mt-1 text-xs text-destructive">
+                    Catalog products could not be loaded. Check the catalog gateway access.
+                  </p>
+                )}
               </label>
               <label className="block text-sm font-medium">
                 Batch ID <span className="font-normal text-muted-foreground">(optional)</span>
-                <input
+                <select
                   value={batchId}
                   onChange={(event) => setBatchId(event.target.value)}
-                  placeholder="Batch UUID"
-                  className="mt-1 h-10 w-full rounded-md border border-input bg-background px-3 font-mono text-sm outline-none focus:ring-2 focus:ring-ring/40"
-                />
+                  disabled={!selectedProduct || selectedProduct.batches.length === 0}
+                  className="mt-1 h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring/40 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <option value="">
+                    {selectedProduct ? "No batch" : "Select a product first"}
+                  </option>
+                  {selectedProduct?.batches.map((batch) => (
+                    <option key={batch.batchId} value={batch.batchId}>
+                      {batch.batchCode} · expires {batch.expiryDate}
+                    </option>
+                  ))}
+                </select>
+                {selectedProduct?.batches.length === 0 && (
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    This product has no batch recorded in the catalog.
+                  </p>
+                )}
               </label>
             </>
           )}
@@ -219,6 +278,7 @@ export function InventoryPage() {
   const [inventoryOwnerId, setInventoryOwnerId] = useState("");
   const [selectedStockItem, setSelectedStockItem] = useState<StockItem | null>(null);
   const [isAdjustmentOpen, setIsAdjustmentOpen] = useState(false);
+  const productsQuery = useProducts({ page: 1, pageSize: 100, status: "Active" });
 
   const stockQuery = useStock({
     ...(productId.trim() ? { productId: productId.trim() } : {}),
@@ -226,6 +286,10 @@ export function InventoryPage() {
   });
 
   const stockItems = useMemo(() => stockQuery.data ?? [], [stockQuery.data]);
+  const productsById = useMemo(
+    () => new Map((productsQuery.data?.items ?? []).map((product) => [product.productId, product])),
+    [productsQuery.data],
+  );
   const summary = useMemo(
     () => ({
       onHand: stockItems.reduce((total, item) => total + item.quantityOnHand, 0),
@@ -370,13 +434,29 @@ export function InventoryPage() {
                       {stockItem.ownerType} · {shortId(stockItem.inventoryOwnerId)}
                     </div>
                   </td>
-                  <td className="px-4 py-3 font-mono text-xs">
-                    <div>{shortId(stockItem.productId)}</div>
-                    {stockItem.batchId && (
-                      <div className="mt-0.5 text-muted-foreground">
-                        Batch {shortId(stockItem.batchId)}
-                      </div>
-                    )}
+                  <td className="px-4 py-3">
+                    {(() => {
+                      const product = productsById.get(stockItem.productId);
+                      const batch = product?.batches.find(
+                        (item) => item.batchId === stockItem.batchId,
+                      );
+
+                      return (
+                        <>
+                          <div className="font-medium">
+                            {product?.name ?? "Catalog product unavailable"}
+                          </div>
+                          <div className="mt-0.5 text-xs text-muted-foreground">
+                            {product ? `${product.sku} · ` : ""}ID {shortId(stockItem.productId)}
+                          </div>
+                          {stockItem.batchId && (
+                            <div className="mt-0.5 text-xs text-muted-foreground">
+                              Batch {batch?.batchCode ?? shortId(stockItem.batchId)}
+                            </div>
+                          )}
+                        </>
+                      );
+                    })()}
                   </td>
                   <td className="px-4 py-3 text-right font-mono">
                     {stockItem.quantityOnHand.toLocaleString()}

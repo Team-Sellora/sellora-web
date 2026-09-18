@@ -54,3 +54,10 @@ export function inventoryApiFetch(path: string, options: RequestInit = {}): Prom
   // a 401 from the identity or other APIs still follows the normal sign-in flow.
   return fetchWithBase(env.inventoryGatewayBaseUrl, path, options, false);
 }
+
+/** Gateway HTTP client for the Order service. */
+export function orderApiFetch(path: string, options: RequestInit = {}): Promise<Response> {
+  // Like Inventory: keep the user on the page on 401 so the order screens can
+  // show an actionable message while token scope claims are still being wired.
+  return fetchWithBase(env.orderGatewayBaseUrl, path, options, false);
+}

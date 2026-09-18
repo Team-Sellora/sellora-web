@@ -14,7 +14,10 @@ export const routeAccess: Record<string, SelloraRole[]> = {
   "/products": ["CompanyAdmin", "AreaManager", "AgencyOperator", "SalesRep"],
   "/products/new": ["CompanyAdmin"],
   "/inventory": ["CompanyAdmin", "AgencyOperator", "SalesRep"],
-  "/orders": ["CompanyAdmin", "AreaManager", "AgencyOperator", "SalesRep"],
+  // Shop Owners can read their own shop's orders (server-side scoping).
+  "/orders": ["CompanyAdmin", "AreaManager", "AgencyOperator", "SalesRep", "ShopOwner"],
+  // POST /api/orders is RequireSalesRep on the server.
+  "/orders/new": ["SalesRep"],
 };
 
 export function isRoleAllowed(path: string, role: SelloraRole | null): boolean {
@@ -22,6 +25,14 @@ export function isRoleAllowed(path: string, role: SelloraRole | null): boolean {
 
   if (exactRoles) {
     return role !== null && exactRoles.includes(role);
+  }
+
+  const isOrderDetailsRoute = /^\/orders\/[^/]+$/.test(path);
+
+  if (isOrderDetailsRoute) {
+    const orderReaderRoles = routeAccess["/orders"] ?? [];
+
+    return role !== null && orderReaderRoles.includes(role);
   }
 
   const isProductEditRoute = /^\/products\/[^/]+\/edit$/.test(path);

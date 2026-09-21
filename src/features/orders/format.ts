@@ -19,3 +19,23 @@ export function formatOrderDate(value: string): string {
 export function shortId(id: string): string {
   return `${id.slice(0, 8)}…`;
 }
+
+const fulfilmentLabels: Record<string, string> = {
+  ImmediateCashSale: "Cash sale",
+  ScheduledDelivery: "Scheduled delivery",
+};
+
+const statusLabels: Record<string, string> = {
+  AwaitingCheckout: "Awaiting checkout",
+  Confirmed: "Confirmed",
+  Cancelled: "Cancelled",
+  PendingApproval: "Pending approval",
+};
+
+export function formatFulfilmentType(value: string): string {
+  return fulfilmentLabels[value] ?? value;
+}
+
+export function formatOrderStatus(value: string): string {
+  return statusLabels[value] ?? value;
+}

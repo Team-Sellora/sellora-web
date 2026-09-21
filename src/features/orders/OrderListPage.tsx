@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { cn } from "@/lib/utils";
 import { formatLkr, formatOrderDate, shortId } from "./format";
 import { useHierarchyNames, useOrders } from "./hooks";
-import { OrderStatusBadge } from "./OrderStatusBadge";
+import { FulfilmentTypeBadge, OrderStatusBadge } from "./OrderStatusBadge";
 import {
   canCreateOrder,
   emptyOrdersMessage,
@@ -26,6 +26,7 @@ const headers: Record<OrderColumn, { label: string; align?: "right" }> = {
   date: { label: "Order date" },
   lines: { label: "Lines", align: "right" },
   total: { label: "Total", align: "right" },
+  fulfilment: { label: "Type" },
   status: { label: "Status" },
 };
 
@@ -70,6 +71,8 @@ export function OrderListPage() {
         return order.lineCount;
       case "total":
         return <span className="font-mono font-medium">{formatLkr(order.total)}</span>;
+      case "fulfilment":
+        return <FulfilmentTypeBadge type={order.fulfilmentType} />;
       case "status":
         return <OrderStatusBadge status={order.status} />;
     }

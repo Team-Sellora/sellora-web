@@ -11,6 +11,13 @@ export function validateCreateOrder(values: CreateOrderFormValues): CreateOrderF
     errors.shopId = "Select the shop this order is for.";
   }
 
+  if (
+    values.fulfilmentType !== "ImmediateCashSale" &&
+    values.fulfilmentType !== "ScheduledDelivery"
+  ) {
+    errors.fulfilmentType = "Choose how the shop takes the goods.";
+  }
+
   if (values.lines.length === 0) {
     errors.lines = "Add at least one product.";
   } else if (values.lines.length > MAX_ORDER_LINES) {
@@ -45,5 +52,8 @@ export function validateCreateOrder(values: CreateOrderFormValues): CreateOrderF
 }
 
 export function hasValidationErrors(errors: CreateOrderFormErrors): boolean {
-  return Boolean(errors.shopId ?? errors.lines ?? errors.form) || errors.lineErrors !== undefined;
+  return (
+    Boolean(errors.shopId ?? errors.fulfilmentType ?? errors.lines ?? errors.form) ||
+    errors.lineErrors !== undefined
+  );
 }

@@ -1,6 +1,10 @@
 // Shapes mirror sellora-order's OrderResponse / OrderSummaryResponse (US-E4-1a).
 
-export type OrderStatus = "Submitted" | (string & {});
+export type OrderStatus =
+  "AwaitingCheckout" | "Confirmed" | "Cancelled" | "PendingApproval" | (string & {});
+
+/** How the shop takes the goods — fixed when the order is placed (US-E4-2). */
+export type FulfilmentType = "ImmediateCashSale" | "ScheduledDelivery";
 
 export interface OrderLine {
   orderLineId: string;
@@ -19,6 +23,7 @@ export interface Order {
   agencyId: string;
   territoryId: string;
   provinceId: string;
+  fulfilmentType: FulfilmentType;
   status: OrderStatus;
   orderDate: string;
   subtotal: number;
@@ -32,6 +37,7 @@ export interface OrderSummary {
   shopId: string;
   salesRepId: string;
   agencyId: string;
+  fulfilmentType: FulfilmentType;
   status: OrderStatus;
   orderDate: string;
   total: number;
@@ -57,6 +63,7 @@ export interface OrderListQuery {
  */
 export interface CreateOrderInput {
   shopId: string;
+  fulfilmentType: FulfilmentType;
   agencyId: string;
   territoryId: string;
   provinceId: string;
@@ -105,11 +112,13 @@ export interface OrderLineFormValues {
 
 export interface CreateOrderFormValues {
   shopId: string;
+  fulfilmentType: FulfilmentType;
   lines: OrderLineFormValues[];
 }
 
 export interface CreateOrderFormErrors {
   shopId?: string;
+  fulfilmentType?: string;
   lines?: string;
   lineErrors?: Record<string, string>;
   form?: string;

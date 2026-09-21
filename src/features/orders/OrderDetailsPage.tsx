@@ -1,11 +1,11 @@
 import { Link } from "@tanstack/react-router";
-import { AlertCircle, CalendarClock, Lock, Store, User, Warehouse } from "lucide-react";
+import { AlertCircle, Banknote, CalendarClock, Lock, Store, User, Warehouse } from "lucide-react";
 import type { ReactNode } from "react";
 import { useSelloraAuth } from "@/auth/useSelloraAuth";
 import { PageHeader } from "@/components/PageHeader";
 import { formatLkr, formatOrderDate, shortId } from "./format";
 import { useHierarchyNames, useOrder } from "./hooks";
-import { OrderStatusBadge } from "./OrderStatusBadge";
+import { FulfilmentTypeBadge, OrderStatusBadge } from "./OrderStatusBadge";
 import { orderColumnsFor } from "./roleView";
 import { OrderApiError } from "./types";
 
@@ -80,7 +80,12 @@ export function OrderDetailsPage({ orderId }: Readonly<{ orderId: string }>) {
         title={order.orderReference}
         description="Submitted orders are read-only."
         crumbs={[{ label: "Orders", to: "/orders" }, { label: order.orderReference }]}
-        actions={<OrderStatusBadge status={order.status} />}
+        actions={
+          <div className="flex items-center gap-2">
+            <FulfilmentTypeBadge type={order.fulfilmentType} />
+            <OrderStatusBadge status={order.status} />
+          </div>
+        }
       />
 
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -151,6 +156,16 @@ export function OrderDetailsPage({ orderId }: Readonly<{ orderId: string }>) {
           </table>
         </div>
       </section>
+
+      {order.status === "AwaitingCheckout" && (
+        <div className="mt-6 flex items-start gap-3 rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-sm">
+          <Banknote className="mt-0.5 size-5 shrink-0 text-amber-600 dark:text-amber-400" />
+          <p>
+            This cash sale is not finished. The stock is held in your van until you check in at the
+            shop and record the payment.
+          </p>
+        </div>
+      )}
 
       <div className="mt-6 flex items-start gap-3 rounded-lg border border-border bg-muted/50 p-4 text-sm text-muted-foreground">
         <Lock className="mt-0.5 size-5 shrink-0 text-primary" />

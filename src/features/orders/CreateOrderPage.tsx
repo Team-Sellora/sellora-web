@@ -1,5 +1,15 @@
 import { useNavigate } from "@tanstack/react-router";
-import { AlertCircle, ClipboardPlus, Info, Plus, Send, Store, Trash2 } from "lucide-react";
+import {
+  AlertCircle,
+  Banknote,
+  ClipboardPlus,
+  Info,
+  Plus,
+  Send,
+  Store,
+  Trash2,
+  Truck,
+} from "lucide-react";
 import { useMemo, useRef, useState, type SubmitEvent } from "react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/PageHeader";
@@ -31,6 +41,7 @@ export function CreateOrderPage() {
 
   const [values, setValues] = useState<CreateOrderFormValues>(() => ({
     shopId: "",
+    fulfilmentType: "ScheduledDelivery",
     lines: [{ key: "0", productId: "", quantity: "1" }],
   }));
   const [errors, setErrors] = useState<CreateOrderFormErrors>({});
@@ -111,6 +122,7 @@ export function CreateOrderPage() {
     try {
       const order = await createMutation.mutateAsync({
         shopId: selectedShop.shopId,
+        fulfilmentType: values.fulfilmentType,
         agencyId: selectedShop.agencyId,
         territoryId: selectedShop.territoryId,
         provinceId: selectedShop.provinceId,
@@ -126,8 +138,18 @@ export function CreateOrderPage() {
         }),
       });
 
+      if (order.fulfilmentType === "ImmediateCashSale") {
+        // The sale is not finished: the rep still has to check in at the shop
+        // and take the payment (US-E4-3). Send them to the order, not the list.
+        toast.success(
+          `Order ${order.orderReference} — ${formatLkr(order.total)}. Take payment at the shop to complete it.`,
+        );
+        await navigate({ to: "/orders/$orderId", params: { orderId: order.orderId } });
+        return;
+      }
+
       toast.success(
-        `Order ${order.orderReference} placed for ${selectedShop.name} — ${formatLkr(order.total)}.`,
+        `Order ${order.orderReference} confirmed for ${selectedShop.name} — ${formatLkr(order.total)}.`,
       );
 
       await navigate({ to: "/orders" });
@@ -214,6 +236,57 @@ export function CreateOrderPage() {
                 <Store className="size-3.5" />
                 {selectedShop.territoryName} · {selectedShop.agencyName}
                 {selectedShop.ownerName ? ` · Owner: ${selectedShop.ownerName}` : ""}
+              </p>
+            )}
+          </div>
+
+          <div className="mt-6 space-y-1.5">
+            <FieldLabel htmlFor="fulfilmentType" required>
+              How is the shop taking this order?
+            </FieldLabel>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              {[
+                {
+                  value: "ImmediateCashSale" as const,
+                  icon: <Banknote className="size-4" />,
+                  title: "Cash sale now",
+                  hint: "Paid at the shop, handed over from your van.",
+                },
+                {
+                  value: "ScheduledDelivery" as const,
+                  icon: <Truck className="size-4" />,
+                  title: "Scheduled delivery",
+                  hint: "On credit; the agency delivers later.",
+                },
+              ].map((option) => (
+                <button
+                  key={option.value}
+                  id={option.value === "ImmediateCashSale" ? "fulfilmentType" : undefined}
+                  type="button"
+                  aria-pressed={values.fulfilmentType === option.value}
+                  onClick={() => {
+                    setValues((current) => ({ ...current, fulfilmentType: option.value }));
+                    clearErrors();
+                  }}
+                  className={cn(
+                    "rounded-lg border p-3 text-left transition-colors",
+                    values.fulfilmentType === option.value
+                      ? "border-primary bg-primary/5"
+                      : "border-input hover:bg-muted",
+                  )}
+                >
+                  <span className="flex items-center gap-2 text-sm font-medium">
+                    {option.icon}
+                    {option.title}
+                  </span>
+                  <span className="mt-1 block text-xs text-muted-foreground">{option.hint}</span>
+                </button>
+              ))}
+            </div>
+            <FieldError message={errors.fulfilmentType} />
+            {values.fulfilmentType === "ImmediateCashSale" && (
+              <p className="text-xs text-muted-foreground">
+                A cash sale can only include products you are carrying in your van.
               </p>
             )}
           </div>

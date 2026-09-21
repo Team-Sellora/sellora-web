@@ -1,7 +1,15 @@
 import type { SelloraRole } from "@/auth/useSelloraAuth";
 
 export type OrderColumn =
-  "reference" | "shop" | "salesRep" | "agency" | "date" | "lines" | "total" | "status";
+  | "reference"
+  | "shop"
+  | "salesRep"
+  | "agency"
+  | "date"
+  | "lines"
+  | "total"
+  | "fulfilment"
+  | "status";
 
 /**
  * Which columns each role sees. The server already filters rows by role;
@@ -12,13 +20,23 @@ export function orderColumnsFor(role: SelloraRole | null): OrderColumn[] {
   switch (role) {
     case "CompanyAdmin":
     case "AreaManager":
-      return ["reference", "shop", "salesRep", "agency", "date", "lines", "total", "status"];
+      return [
+        "reference",
+        "shop",
+        "salesRep",
+        "agency",
+        "date",
+        "lines",
+        "total",
+        "fulfilment",
+        "status",
+      ];
     case "AgencyOperator":
-      return ["reference", "shop", "salesRep", "date", "lines", "total", "status"];
+      return ["reference", "shop", "salesRep", "date", "lines", "total", "fulfilment", "status"];
     case "SalesRep":
-      return ["reference", "shop", "date", "lines", "total", "status"];
+      return ["reference", "shop", "date", "lines", "total", "fulfilment", "status"];
     case "ShopOwner":
-      return ["reference", "date", "lines", "total", "status"];
+      return ["reference", "date", "lines", "total", "fulfilment", "status"];
     default:
       return ["reference", "date", "total", "status"];
   }

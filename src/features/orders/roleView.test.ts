@@ -30,4 +30,16 @@ describe("order list role view", () => {
     expect(emptyOrdersMessage("SalesRep")).toMatch(/you haven't placed/i);
     expect(emptyOrdersMessage("ShopOwner")).toMatch(/your shop/);
   });
+
+  it("shows the cash sale vs delivery split to every role", () => {
+    for (const role of [
+      "CompanyAdmin",
+      "AreaManager",
+      "AgencyOperator",
+      "SalesRep",
+      "ShopOwner",
+    ] as const) {
+      expect(orderColumnsFor(role)).toContain("fulfilment");
+    }
+  });
 });

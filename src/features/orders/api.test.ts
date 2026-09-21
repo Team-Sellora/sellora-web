@@ -23,6 +23,7 @@ describe("orders API", () => {
 
     await createOrder({
       shopId: "s",
+      fulfilmentType: "ImmediateCashSale",
       agencyId: "a",
       territoryId: "t",
       provinceId: "p",
@@ -34,6 +35,7 @@ describe("orders API", () => {
 
     expect(path).toBe("/api/orders");
     expect(options?.method).toBe("POST");
+    expect(body["fulfilmentType"]).toBe("ImmediateCashSale");
     expect(body).not.toHaveProperty("total");
     expect(body).not.toHaveProperty("subtotal");
   });

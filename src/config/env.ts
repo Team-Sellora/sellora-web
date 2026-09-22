@@ -17,6 +17,9 @@ export const env = {
   inventoryGatewayBaseUrl:
     import.meta.env["VITE_INVENTORY_GATEWAY_BASE_URL"] ??
     required(import.meta.env["VITE_GATEWAY_BASE_URL"], "VITE_GATEWAY_BASE_URL"),
+  orderGatewayBaseUrl:
+    import.meta.env["VITE_ORDER_GATEWAY_BASE_URL"] ??
+    required(import.meta.env["VITE_GATEWAY_BASE_URL"], "VITE_GATEWAY_BASE_URL"),
   oidcClientId: required(import.meta.env["VITE_OIDC_CLIENT_ID"], "VITE_OIDC_CLIENT_ID"),
   appOrigin: required(import.meta.env["VITE_APP_ORIGIN"], "VITE_APP_ORIGIN"),
 } as const;

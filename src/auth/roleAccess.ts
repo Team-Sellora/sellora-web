@@ -27,6 +27,11 @@ export function isRoleAllowed(path: string, role: SelloraRole | null): boolean {
     return role !== null && exactRoles.includes(role);
   }
 
+  // US-E4-3: only the rep takes payment at the counter.
+  if (/^\/orders\/[^/]+\/checkout$/.test(path)) {
+    return role === "SalesRep";
+  }
+
   const isOrderDetailsRoute = /^\/orders\/[^/]+$/.test(path);
 
   if (isOrderDetailsRoute) {

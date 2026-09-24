@@ -1,6 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { apiFetch, orderApiFetch } from "@/api/client";
-import { createOrder, fetchOrder, fetchOrderableShops, fetchOrders } from "./api";
+import {
+  checkInAtShop,
+  createOrder,
+  fetchOrder,
+  fetchOrderableShops,
+  fetchOrders,
+  recordCashPayment,
+} from "./api";
 import { OrderApiError } from "./types";
 
 vi.mock("@/api/client", () => ({
@@ -97,5 +104,43 @@ describe("orders API", () => {
         ownerName: null,
       }),
     ]);
+  });
+
+  it("posts the check-in position to the order's checkin route", async () => {
+    vi.mocked(orderApiFetch).mockImplementation(() => json({ accepted: true }));
+
+    await checkInAtShop("o-1", {
+      latitude: 6.9,
+      longitude: 79.8,
+      capturedAt: "2026-09-24T04:30:00.000Z",
+      accuracyMeters: 10,
+    });
+
+    const [path, options] = vi.mocked(orderApiFetch).mock.calls[0]!;
+    expect(path).toBe("/api/orders/o-1/checkin");
+    expect(JSON.parse(String(options?.body))).toMatchObject({ latitude: 6.9, accuracyMeters: 10 });
+  });
+
+  it("surfaces the measured distance from a rejected check-in", async () => {
+    vi.mocked(orderApiFetch).mockImplementation(() =>
+      json(
+        { detail: "You are 342 m from the shop", distanceMeters: 342.5, radiusMeters: 300 },
+        403,
+      ),
+    );
+
+    await expect(
+      checkInAtShop("o-1", { latitude: 6.9, longitude: 79.8, capturedAt: "x" }),
+    ).rejects.toMatchObject({ status: 403, body: { distanceMeters: 342.5, radiusMeters: 300 } });
+  });
+
+  it("records cash only", async () => {
+    vi.mocked(orderApiFetch).mockImplementation(() => json({ paymentId: "p-1" }, 201));
+
+    await recordCashPayment("o-1", 2400);
+
+    const [path, options] = vi.mocked(orderApiFetch).mock.calls[0]!;
+    expect(path).toBe("/api/orders/o-1/payment");
+    expect(JSON.parse(String(options?.body))).toEqual({ amount: 2400, method: "Cash" });
   });
 });

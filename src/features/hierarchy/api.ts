@@ -65,7 +65,7 @@ export type ShopInput = {
   territoryId: string;
   name: string;
   ownerName: string;
-  ownerIdentitySub: string;
+  /** A login is created for the owner with this email (no identity sub needed). */
   ownerEmail: string;
   ownerPhone: string;
   address: string;
@@ -219,12 +219,52 @@ export const fetchShops = (filters: {
   return apiFetch(`/api/shops?${query}`).then(unwrap<Page<Shop>>);
 };
 
+/** A login created by Organization in WSO2 IS. The password is shown once. */
+export type ProvisionedLogin = {
+  identitySub: string;
+  userName: string;
+  temporaryPassword?: string | null;
+};
+
+export type ShopCreated = Pick<Shop, "shopId" | "territoryId" | "name" | "status" | "createdAt"> & {
+  ownerLogin?: ProvisionedLogin | null;
+};
+
 export const createShop = (input: ShopInput) =>
   apiFetch("/api/shops", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),
-  }).then(unwrap<Shop>);
+  }).then(unwrap<ShopCreated>);
+
+export type StaffRole = "CompanyAdmin" | "AreaManager" | "AgencyOperator" | "SalesRep";
+
+export type StaffInput = {
+  role: StaffRole;
+  displayName: string;
+  email: string;
+  phone: string;
+};
+
+export type CreatedStaff = {
+  staffProfileId: string;
+  role: StaffRole;
+  displayName: string;
+  email: string;
+  phone?: string | null;
+  status: Status;
+  identitySub: string;
+  userName: string;
+  temporaryPassword?: string | null;
+};
+
+/** One call creates the WSO2 login and the staff profile, linked by the login's ID. */
+export const createStaff = (input: StaffInput) =>
+  apiFetch("/api/staff", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...input, phone: input.phone.trim() || null }),
+  }).then(unwrap<CreatedStaff>);
 
 export const fetchOperatorTerritories = async () => {
   const hierarchy = await apiFetch("/api/hierarchy").then(unwrap<HierarchyResponse>);

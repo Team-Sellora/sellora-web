@@ -2,6 +2,9 @@ import { apiFetch, catalogApiFetch, orderApiFetch } from "@/api/client";
 import {
   OrderApiError,
   type CatalogueProduct,
+  type CheckIn,
+  type CheckInInput,
+  type Payment,
   type CreateOrderInput,
   type HierarchyNames,
   type Order,
@@ -32,6 +35,23 @@ export function createOrder(input: CreateOrderInput): Promise<Order> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),
   }).then(unwrap<Order>);
+}
+
+export function checkInAtShop(orderId: string, input: CheckInInput): Promise<CheckIn> {
+  return orderApiFetch(`/api/orders/${encodeURIComponent(orderId)}/checkin`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  }).then(unwrap<CheckIn>);
+}
+
+/** Cash only (FR-4.4a); the amount must equal the order total. */
+export function recordCashPayment(orderId: string, amount: number): Promise<Payment> {
+  return orderApiFetch(`/api/orders/${encodeURIComponent(orderId)}/payment`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ amount, method: "Cash" }),
+  }).then(unwrap<Payment>);
 }
 
 export function fetchOrders(query: OrderListQuery): Promise<PagedOrders> {

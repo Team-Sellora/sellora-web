@@ -27,6 +27,7 @@ import { Route as OrdersOrderIdRouteImport } from './routes/orders_.$orderId'
 import { Route as OrdersNewRouteImport } from './routes/orders_.new'
 import { Route as ProductsProductIdRouteImport } from './routes/products_.$productId'
 import { Route as ProductsNewRouteImport } from './routes/products_.new'
+import { Route as OrdersOrderIdCheckoutRouteImport } from './routes/orders_.$orderId_.checkout'
 import { Route as ProductsProductIdEditRouteImport } from './routes/products_.$productId_.edit'
 import { Route as RecordsEntityIdRouteImport } from './routes/records.$entity.$id'
 
@@ -120,6 +121,11 @@ const ProductsNewRoute = ProductsNewRouteImport.update({
   path: '/products/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OrdersOrderIdCheckoutRoute = OrdersOrderIdCheckoutRouteImport.update({
+  id: '/orders_/$orderId_/checkout',
+  path: '/orders/$orderId/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProductsProductIdEditRoute = ProductsProductIdEditRouteImport.update({
   id: '/products_/$productId_/edit',
   path: '/products/$productId/edit',
@@ -150,6 +156,7 @@ export interface FileRoutesByFullPath {
   '/orders/new': typeof OrdersNewRoute
   '/products/$productId': typeof ProductsProductIdRoute
   '/products/new': typeof ProductsNewRoute
+  '/orders/$orderId/checkout': typeof OrdersOrderIdCheckoutRoute
   '/products/$productId/edit': typeof ProductsProductIdEditRoute
   '/records/$entity/$id': typeof RecordsEntityIdRoute
 }
@@ -172,6 +179,7 @@ export interface FileRoutesByTo {
   '/orders/new': typeof OrdersNewRoute
   '/products/$productId': typeof ProductsProductIdRoute
   '/products/new': typeof ProductsNewRoute
+  '/orders/$orderId/checkout': typeof OrdersOrderIdCheckoutRoute
   '/products/$productId/edit': typeof ProductsProductIdEditRoute
   '/records/$entity/$id': typeof RecordsEntityIdRoute
 }
@@ -195,6 +203,7 @@ export interface FileRoutesById {
   '/orders_/new': typeof OrdersNewRoute
   '/products_/$productId': typeof ProductsProductIdRoute
   '/products_/new': typeof ProductsNewRoute
+  '/orders_/$orderId_/checkout': typeof OrdersOrderIdCheckoutRoute
   '/products_/$productId_/edit': typeof ProductsProductIdEditRoute
   '/records/$entity/$id': typeof RecordsEntityIdRoute
 }
@@ -219,6 +228,7 @@ export interface FileRouteTypes {
     | '/orders/new'
     | '/products/$productId'
     | '/products/new'
+    | '/orders/$orderId/checkout'
     | '/products/$productId/edit'
     | '/records/$entity/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -241,6 +251,7 @@ export interface FileRouteTypes {
     | '/orders/new'
     | '/products/$productId'
     | '/products/new'
+    | '/orders/$orderId/checkout'
     | '/products/$productId/edit'
     | '/records/$entity/$id'
   id:
@@ -263,6 +274,7 @@ export interface FileRouteTypes {
     | '/orders_/new'
     | '/products_/$productId'
     | '/products_/new'
+    | '/orders_/$orderId_/checkout'
     | '/products_/$productId_/edit'
     | '/records/$entity/$id'
   fileRoutesById: FileRoutesById
@@ -286,6 +298,7 @@ export interface RootRouteChildren {
   OrdersNewRoute: typeof OrdersNewRoute
   ProductsProductIdRoute: typeof ProductsProductIdRoute
   ProductsNewRoute: typeof ProductsNewRoute
+  OrdersOrderIdCheckoutRoute: typeof OrdersOrderIdCheckoutRoute
   ProductsProductIdEditRoute: typeof ProductsProductIdEditRoute
   RecordsEntityIdRoute: typeof RecordsEntityIdRoute
 }
@@ -418,6 +431,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductsNewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/orders_/$orderId_/checkout': {
+      id: '/orders_/$orderId_/checkout'
+      path: '/orders/$orderId/checkout'
+      fullPath: '/orders/$orderId/checkout'
+      preLoaderRoute: typeof OrdersOrderIdCheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/products_/$productId_/edit': {
       id: '/products_/$productId_/edit'
       path: '/products/$productId/edit'
@@ -454,6 +474,7 @@ const rootRouteChildren: RootRouteChildren = {
   OrdersNewRoute: OrdersNewRoute,
   ProductsProductIdRoute: ProductsProductIdRoute,
   ProductsNewRoute: ProductsNewRoute,
+  OrdersOrderIdCheckoutRoute: OrdersOrderIdCheckoutRoute,
   ProductsProductIdEditRoute: ProductsProductIdEditRoute,
   RecordsEntityIdRoute: RecordsEntityIdRoute,
 }

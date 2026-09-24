@@ -157,13 +157,50 @@ export function OrderDetailsPage({ orderId }: Readonly<{ orderId: string }>) {
         </div>
       </section>
 
+      {order.checkout?.payment && (
+        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <InfoCard
+            icon={<Banknote className="size-4" />}
+            label="Cash received"
+            value={formatLkr(order.checkout.payment.amount)}
+          />
+          <InfoCard
+            icon={<CalendarClock className="size-4" />}
+            label="Paid at"
+            value={formatOrderDate(order.checkout.payment.recordedAt)}
+          />
+          <InfoCard
+            icon={<Store className="size-4" />}
+            label="Checked in"
+            value={`${Math.round(order.checkout.payment.distanceMeters)} m from the shop`}
+          />
+        </div>
+      )}
+
+      {order.status === "Cancelled" && order.checkout?.cancellationReason && (
+        <div className="mt-6 rounded-lg border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive">
+          {order.checkout.cancellationReason}
+        </div>
+      )}
+
       {order.status === "AwaitingCheckout" && (
         <div className="mt-6 flex items-start gap-3 rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-sm">
           <Banknote className="mt-0.5 size-5 shrink-0 text-amber-600 dark:text-amber-400" />
-          <p>
-            This cash sale is not finished. The stock is held in your van until you check in at the
-            shop and record the payment.
-          </p>
+          <div className="flex-1">
+            <p>
+              This cash sale is not finished. The stock is held in your van until you check in at
+              the shop and record the payment.
+            </p>
+            {role === "SalesRep" && (
+              <Link
+                to="/orders/$orderId/checkout"
+                params={{ orderId: order.orderId }}
+                className="mt-3 inline-flex h-9 items-center gap-1.5 rounded-md bg-primary px-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+              >
+                Go to checkout
+              </Link>
+            )}
+          </div>
         </div>
       )}
 

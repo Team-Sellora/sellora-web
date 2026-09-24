@@ -139,12 +139,11 @@ export function CreateOrderPage() {
       });
 
       if (order.fulfilmentType === "ImmediateCashSale") {
-        // The sale is not finished: the rep still has to check in at the shop
-        // and take the payment (US-E4-3). Send them to the order, not the list.
+        // Not finished yet: the rep checks in at the shop and takes the cash.
         toast.success(
-          `Order ${order.orderReference} — ${formatLkr(order.total)}. Take payment at the shop to complete it.`,
+          `Order ${order.orderReference} — ${formatLkr(order.total)}. Check in to take payment.`,
         );
-        await navigate({ to: "/orders/$orderId", params: { orderId: order.orderId } });
+        await navigate({ to: "/orders/$orderId/checkout", params: { orderId: order.orderId } });
         return;
       }
 

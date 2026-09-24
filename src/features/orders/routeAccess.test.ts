@@ -25,4 +25,13 @@ describe("order route access", () => {
     expect(isRoleAllowed("/orders", null)).toBe(false);
     expect(isRoleAllowed("/orders/abc", null)).toBe(false);
   });
+
+  it("only lets sales reps open checkout", () => {
+    const path = "/orders/3f2c8a1e-0000-0000-0000-000000000000/checkout";
+
+    expect(isRoleAllowed(path, "SalesRep")).toBe(true);
+    expect(isRoleAllowed(path, "CompanyAdmin")).toBe(false);
+    expect(isRoleAllowed(path, "AgencyOperator")).toBe(false);
+    expect(isRoleAllowed(path, "ShopOwner")).toBe(false);
+  });
 });

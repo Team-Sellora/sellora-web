@@ -29,6 +29,8 @@ export interface Order {
   subtotal: number;
   total: number;
   lines: OrderLine[];
+  /** Null until a check-in, payment or cancellation exists (US-E4-3). */
+  checkout?: OrderCheckout | null;
 }
 
 export interface OrderSummary {
@@ -128,6 +130,57 @@ export interface OrderApiErrorBody {
   message?: string;
   title?: string;
   detail?: string;
+  /** US-E4-3: present on a 403 outside-radius check-in. */
+  distanceMeters?: number;
+  radiusMeters?: number;
+  /** US-E4-3: present on a 422 amount mismatch. */
+  expectedAmount?: number;
+  submittedAmount?: number;
+}
+
+/** POST /api/orders/{id}/checkin response. */
+export interface CheckIn {
+  checkInId: string;
+  orderId: string;
+  accepted: boolean;
+  distanceMeters: number;
+  radiusMeters: number;
+  latitude: number;
+  longitude: number;
+  recordedAt: string;
+  validUntil: string | null;
+}
+
+export interface CheckInInput {
+  latitude: number;
+  longitude: number;
+  /** ISO 8601 time of the GPS fix, from the device. */
+  capturedAt: string;
+  accuracyMeters?: number;
+}
+
+/** POST /api/orders/{id}/payment response. */
+export interface Payment {
+  paymentId: string;
+  orderId: string;
+  amount: number;
+  method: string;
+  salesRepId: string;
+  checkInId: string;
+  latitude: number;
+  longitude: number;
+  distanceMeters: number;
+  recordedAt: string;
+}
+
+export interface OrderCheckout {
+  checkoutLatitude: number | null;
+  checkoutLongitude: number | null;
+  checkedOutAt: string | null;
+  payment: Payment | null;
+  latestCheckIn: CheckIn | null;
+  cancelledAt: string | null;
+  cancellationReason: string | null;
 }
 
 export class OrderApiError extends Error {

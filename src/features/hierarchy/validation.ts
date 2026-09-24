@@ -33,7 +33,7 @@ export function validateTerritory(
 export function validateShop(input: {
   territoryId: string;
   name: string;
-  ownerIdentitySub: string;
+  ownerEmail: string;
   address: string;
   latitude: string;
   longitude: string;
@@ -43,8 +43,10 @@ export function validateShop(input: {
 
   if (!input.territoryId) errors.territoryId = "Select a territory.";
   if (!input.name.trim()) errors.name = "Shop name is required.";
-  if (!input.ownerIdentitySub.trim()) {
-    errors.ownerIdentitySub = "Shop Owner identity sub is required.";
+  if (!input.ownerEmail.trim()) {
+    errors.ownerEmail = "Owner email is required; the owner's login is created with it.";
+  } else if (!isEmail(input.ownerEmail)) {
+    errors.ownerEmail = "Enter a valid email address.";
   }
   if (!input.address.trim()) errors.address = "Address is required.";
 
@@ -69,6 +71,30 @@ export function validateShop(input: {
   } else if (!Number.isFinite(creditLimit) || creditLimit <= 0) {
     errors.creditLimit = "Credit limit must be greater than zero.";
   }
+
+  return errors;
+}
+
+export function isEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+}
+
+export function validateStaff(input: {
+  role: string;
+  displayName: string;
+  email: string;
+  phone: string;
+}): FormErrors {
+  const errors: FormErrors = {};
+
+  if (!input.role) errors.role = "Choose a role.";
+  if (!input.displayName.trim()) errors.displayName = "Name is required.";
+  else if (input.displayName.trim().length > 200) errors.displayName = "Name is too long.";
+
+  if (!input.email.trim()) errors.email = "Email is required; it becomes their login.";
+  else if (!isEmail(input.email)) errors.email = "Enter a valid email address.";
+
+  if (input.phone.trim().length > 40) errors.phone = "Phone number is too long.";
 
   return errors;
 }

@@ -10,6 +10,8 @@ export const routeAccess: Record<string, SelloraRole[]> = {
   "/territories": ["AreaManager"],
   "/territory-assignments": ["AreaManager"],
   "/sales-reps": ["AgencyOperator"],
+  // POST /api/staff: Company Admins add any staff role, Agency Operators add Sales Reps.
+  "/staff": ["CompanyAdmin", "AgencyOperator"],
   "/shops": ["AgencyOperator"],
   "/products": ["CompanyAdmin", "AreaManager", "AgencyOperator", "SalesRep"],
   "/products/new": ["CompanyAdmin"],

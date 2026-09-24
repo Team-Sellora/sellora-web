@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { validateAgency, validateTerritory } from "./validation";
-import { validateShop } from "./validation";
+import { validateShop, validateStaff } from "./validation";
 
 describe("agency registration validation", () => {
   it("requires the province, agency operator, and agency name", () => {
@@ -24,7 +24,7 @@ describe("shop registration validation", () => {
   const validShop = {
     territoryId: "territory-1",
     name: "Lake View Stores",
-    ownerIdentitySub: "shop-owner-1",
+    ownerEmail: "owner@lakeview.lk",
     address: "18 Test Road",
     latitude: "6.927079",
     longitude: "79.861244",
@@ -53,5 +53,35 @@ describe("shop registration validation", () => {
     ).toEqual({
       creditLimit: "Credit limit must be greater than zero.",
     });
+  });
+});
+
+describe("shop owner email", () => {
+  const base = {
+    territoryId: "territory-1",
+    name: "Lake View Stores",
+    address: "18 Test Road",
+    latitude: "6.927079",
+    longitude: "79.861244",
+    creditLimit: "10000",
+  };
+
+  it("requires the owner's email instead of an identity sub", () => {
+    expect(validateShop({ ...base, ownerEmail: "" }).ownerEmail).toMatch(/required/);
+    expect(validateShop({ ...base, ownerEmail: "not-an-email" }).ownerEmail).toMatch(/valid/);
+    expect(validateShop({ ...base, ownerEmail: "owner@lakeview.lk" }).ownerEmail).toBeUndefined();
+  });
+});
+
+describe("staff validation", () => {
+  it("requires role, name and a valid email", () => {
+    expect(validateStaff({ role: "", displayName: "", email: "x", phone: "" })).toEqual({
+      role: "Choose a role.",
+      displayName: "Name is required.",
+      email: "Enter a valid email address.",
+    });
+    expect(
+      validateStaff({ role: "SalesRep", displayName: "Nimal", email: "nimal@acme.lk", phone: "" }),
+    ).toEqual({});
   });
 });

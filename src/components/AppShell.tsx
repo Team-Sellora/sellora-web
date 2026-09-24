@@ -15,6 +15,7 @@ import {
   GitFork,
   PanelLeftClose,
   PanelLeft,
+  UserPlus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSelloraAuth } from "@/auth/useSelloraAuth";
@@ -28,6 +29,7 @@ const navItems: { to: string; label: string; icon: typeof LayoutDashboard; exact
   { to: "/agencies", label: "Agencies", icon: Building2 },
   { to: "/territories", label: "Territories", icon: MapPin },
   { to: "/territory-assignments", label: "Assign territories", icon: ArrowLeftRight },
+  { to: "/staff", label: "Team", icon: UserPlus },
   { to: "/sales-reps", label: "Sales Reps", icon: Users },
   { to: "/shops", label: "Shops", icon: Store },
   { to: "/products", label: "Products", icon: Package },

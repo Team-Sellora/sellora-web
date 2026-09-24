@@ -2,14 +2,21 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/FormField";
-import { ApiProblem, createShop, fetchOperatorTerritories, fetchShops, type Status } from "./api";
+import { CredentialNotice } from "@/features/staff/CredentialNotice";
+import {
+  ApiProblem,
+  createShop,
+  fetchOperatorTerritories,
+  fetchShops,
+  type ShopCreated,
+  type Status,
+} from "./api";
 import { validateShop, type FormErrors } from "./validation";
 
 const initialForm = {
   territoryId: "",
   name: "",
   ownerName: "",
-  ownerIdentitySub: "",
   ownerEmail: "",
   ownerPhone: "",
   address: "",
@@ -34,8 +41,8 @@ function mapServerError(error: unknown): FormErrors {
     return { longitude: message };
   }
   if (text.includes("credit")) return { creditLimit: message };
-  if (text.includes("owneridentitysub") || text.includes("owner identity")) {
-    return { ownerIdentitySub: message };
+  if (text.includes("email") || text.includes("login")) {
+    return { ownerEmail: message };
   }
 
   return { form: message };
@@ -48,6 +55,7 @@ export function ShopPage() {
   const [territoryFilter, setTerritoryFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState<Status>("Active");
   const [page, setPage] = useState(1);
+  const [createdShop, setCreatedShop] = useState<ShopCreated | null>(null);
 
   const territories = useQuery({
     queryKey: ["operator-territories"],
@@ -73,7 +81,8 @@ export function ShopPage() {
         longitude: Number(form.longitude),
         creditLimit: Number(form.creditLimit),
       }),
-    onSuccess: async () => {
+    onSuccess: async (shop) => {
+      setCreatedShop(shop);
       setForm(initialForm);
       setErrors({});
       await queryClient.invalidateQueries({ queryKey: ["shops"] });
@@ -115,6 +124,15 @@ export function ShopPage() {
         </p>
       </div>
 
+      {createdShop?.ownerLogin && (
+        <CredentialNotice
+          title={`${createdShop.name} registered. Login created for the shop owner.`}
+          userName={createdShop.ownerLogin.userName}
+          temporaryPassword={createdShop.ownerLogin.temporaryPassword}
+          onDismiss={() => setCreatedShop(null)}
+        />
+      )}
+
       <form onSubmit={submit} className="rounded-lg border bg-card p-5">
         <h2 className="mb-4 text-lg font-semibold">Register shop</h2>
 
@@ -153,17 +171,11 @@ export function ShopPage() {
           />
 
           <FormField
-            label="Shop Owner identity sub"
-            value={form.ownerIdentitySub}
-            error={errors.ownerIdentitySub}
-            hint="The unique identity subject from WSO2."
-            onChange={(event) => updateField("ownerIdentitySub", event.target.value)}
-          />
-
-          <FormField
             label="Owner email"
             type="email"
             value={form.ownerEmail}
+            error={errors.ownerEmail}
+            hint="The shop owner's Sellora login is created with this email."
             onChange={(event) => updateField("ownerEmail", event.target.value)}
           />
 

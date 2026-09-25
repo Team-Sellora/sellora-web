@@ -1,12 +1,24 @@
 import { Link } from "@tanstack/react-router";
-import { AlertCircle, Banknote, CalendarClock, Lock, Store, User, Warehouse } from "lucide-react";
-import type { ReactNode } from "react";
+import {
+  AlertCircle,
+  Banknote,
+  CalendarClock,
+  Hourglass,
+  Lock,
+  Store,
+  User,
+  Warehouse,
+} from "lucide-react";
+import { useCallback, type ReactNode } from "react";
 import { useSelloraAuth } from "@/auth/useSelloraAuth";
 import { PageHeader } from "@/components/PageHeader";
+import { AgencyApprovalPanel } from "./AgencyApprovalPanel";
+import { canDecideApproval, formatDecision } from "./approvalView";
 import { formatLkr, formatOrderDate, shortId } from "./format";
 import { useHierarchyNames, useOrder } from "./hooks";
 import { FulfilmentTypeBadge, OrderStatusBadge } from "./OrderStatusBadge";
 import { orderColumnsFor } from "./roleView";
+import { ShopCancellationPanel } from "./ShopCancellationPanel";
 import { OrderApiError } from "./types";
 
 function InfoCard({
@@ -30,6 +42,11 @@ export function OrderDetailsPage({ orderId }: Readonly<{ orderId: string }>) {
   const orderQuery = useOrder(orderId);
   const namesQuery = useHierarchyNames();
   const columns = orderColumnsFor(role);
+  const { refetch } = orderQuery;
+  // Stable, so the countdown asks the server once when it reaches zero.
+  const refreshWindow = useCallback(() => {
+    void refetch();
+  }, [refetch]);
 
   const crumbs = [{ label: "Orders", to: "/orders" }, { label: "Order details" }];
 
@@ -181,6 +198,41 @@ export function OrderDetailsPage({ orderId }: Readonly<{ orderId: string }>) {
         <div className="mt-6 rounded-lg border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive">
           {order.checkout.cancellationReason}
         </div>
+      )}
+
+      {canDecideApproval(role, order) && <AgencyApprovalPanel order={order} />}
+
+      {order.status === "PendingApproval" && role !== "AgencyOperator" && (
+        <div className="mt-6 flex items-start gap-3 rounded-lg border border-primary/30 bg-primary/5 p-4 text-sm">
+          <Hourglass className="mt-0.5 size-5 shrink-0 text-primary" />
+          <p>
+            This scheduled delivery is waiting for the agency to approve it. It is not binding until
+            then.
+          </p>
+        </div>
+      )}
+
+      {role === "ShopOwner" && (
+        <ShopCancellationPanel
+          order={order}
+          receivedAt={orderQuery.dataUpdatedAt}
+          onExpired={refreshWindow}
+        />
+      )}
+
+      {order.decisions && order.decisions.length > 0 && (
+        <section className="mt-6 rounded-lg border border-border bg-card p-4 text-sm">
+          <h2 className="mb-2 font-medium">Decisions</h2>
+          <ol className="space-y-2">
+            {order.decisions.map((decision) => (
+              <li key={decision.orderDecisionId} className="flex flex-wrap gap-x-2">
+                <span className="font-medium">{formatDecision(decision.decision)}</span>
+                <span className="text-muted-foreground">{formatOrderDate(decision.decidedAt)}</span>
+                {decision.reason && <span className="w-full">“{decision.reason}”</span>}
+              </li>
+            ))}
+          </ol>
+        </section>
       )}
 
       {order.status === "AwaitingCheckout" && (

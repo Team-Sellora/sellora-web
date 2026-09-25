@@ -31,7 +31,54 @@ export interface Order {
   lines: OrderLine[];
   /** Null until a check-in, payment or cancellation exists (US-E4-3). */
   checkout?: OrderCheckout | null;
+  /** US-E4-5: when the order became binding (approval or payment). */
+  confirmedAt?: string | null;
+  /** US-E4-5: null for a cash sale, which is never approved. */
+  approval?: OrderApproval | null;
+  /** US-E4-5: the shop's cancellation window, computed by the server. */
+  cancellation?: CancellationWindow | null;
+  /** US-E4-5: every approval, rejection and cancellation, oldest first. */
+  decisions?: OrderDecision[];
 }
+
+export type ApprovalState = "Pending" | "Approved" | "Rejected" | "NotDecided" | (string & {});
+
+export interface OrderApproval {
+  state: ApprovalState;
+  decidedBy: string | null;
+  decidedByRole: string | null;
+  decidedAt: string | null;
+  reason: string | null;
+}
+
+/**
+ * Computed by sellora-order at `checkedAt`. The countdown runs from when the
+ * response arrived, so the device clock never decides anything; the cancel
+ * endpoint re-checks on the server regardless.
+ */
+export interface CancellationWindow {
+  canCancel: boolean;
+  confirmedAt: string | null;
+  closesAt: string | null;
+  windowMinutes: number;
+  remainingSeconds: number | null;
+  closedSecondsAgo: number | null;
+  reason: string | null;
+  checkedAt: string;
+}
+
+export interface OrderDecision {
+  orderDecisionId: string;
+  decision: "Approved" | "Rejected" | "CancelledByShop" | (string & {});
+  actorUserId: string;
+  actorRole: string;
+  reason: string | null;
+  statusBefore: OrderStatus;
+  statusAfter: OrderStatus;
+  decidedAt: string;
+}
+
+export type ApprovalDecision = "Approve" | "Reject";
 
 export interface OrderSummary {
   orderId: string;
@@ -136,6 +183,13 @@ export interface OrderApiErrorBody {
   /** US-E4-3: present on a 422 amount mismatch. */
   expectedAmount?: number;
   submittedAmount?: number;
+  /** US-E4-5: present on a 400 rejection without a reason. */
+  errors?: Record<string, string[]>;
+  /** US-E4-5: present on a 409 when the cancellation window has closed. */
+  closedAgo?: string;
+  closedMinutesAgo?: number;
+  elapsedSinceConfirmationMinutes?: number;
+  windowMinutes?: number;
 }
 
 /** POST /api/orders/{id}/checkin response. */

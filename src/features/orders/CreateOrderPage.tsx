@@ -148,7 +148,7 @@ export function CreateOrderPage() {
       }
 
       toast.success(
-        `Order ${order.orderReference} confirmed for ${selectedShop.name} — ${formatLkr(order.total)}.`,
+        `Order ${order.orderReference} for ${selectedShop.name} — ${formatLkr(order.total)} — sent to the agency for approval.`,
       );
 
       await navigate({ to: "/orders" });

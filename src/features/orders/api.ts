@@ -4,6 +4,7 @@ import {
   type CatalogueProduct,
   type CheckIn,
   type CheckInInput,
+  type ApprovalDecision,
   type Payment,
   type CreateOrderInput,
   type HierarchyNames,
@@ -52,6 +53,31 @@ export function recordCashPayment(orderId: string, amount: number): Promise<Paym
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ amount, method: "Cash" }),
   }).then(unwrap<Payment>);
+}
+
+/** US-E4-5: agency approves or rejects a scheduled delivery. Reason is required to reject. */
+export function decideApproval(
+  orderId: string,
+  decision: ApprovalDecision,
+  reason?: string,
+): Promise<Order> {
+  return orderApiFetch(`/api/orders/${encodeURIComponent(orderId)}/approval`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ decision, reason: reason?.trim() || undefined }),
+  }).then(unwrap<Order>);
+}
+
+/**
+ * US-E4-5: shop owner cancels their own order. No time is sent — the server
+ * measures the window from the stored confirmation time.
+ */
+export function cancelOrder(orderId: string, reason?: string): Promise<Order> {
+  return orderApiFetch(`/api/orders/${encodeURIComponent(orderId)}/cancellation`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ reason: reason?.trim() || undefined }),
+  }).then(unwrap<Order>);
 }
 
 export function fetchOrders(query: OrderListQuery): Promise<PagedOrders> {

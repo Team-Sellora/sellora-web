@@ -1,8 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { apiFetch, orderApiFetch } from "@/api/client";
 import {
+  cancelOrder,
   checkInAtShop,
   createOrder,
+  decideApproval,
   fetchOrder,
   fetchOrderableShops,
   fetchOrders,
@@ -142,5 +144,44 @@ describe("orders API", () => {
     const [path, options] = vi.mocked(orderApiFetch).mock.calls[0]!;
     expect(path).toBe("/api/orders/o-1/payment");
     expect(JSON.parse(String(options?.body))).toEqual({ amount: 2400, method: "Cash" });
+  });
+
+  it("sends the agency's decision as a PUT with the reason", async () => {
+    vi.mocked(orderApiFetch).mockImplementation(() => json({ orderId: "o-1" }));
+
+    await decideApproval("o-1", "Reject", "  Unpaid invoice ");
+
+    const [path, options] = vi.mocked(orderApiFetch).mock.calls[0]!;
+    expect(path).toBe("/api/orders/o-1/approval");
+    expect(options?.method).toBe("PUT");
+    expect(JSON.parse(String(options?.body))).toEqual({
+      decision: "Reject",
+      reason: "Unpaid invoice",
+    });
+  });
+
+  it("sends no time with a cancellation — the server owns the window", async () => {
+    vi.mocked(orderApiFetch).mockImplementation(() => json({ orderId: "o-1" }));
+
+    await cancelOrder("o-1");
+
+    const [path, options] = vi.mocked(orderApiFetch).mock.calls[0]!;
+    expect(path).toBe("/api/orders/o-1/cancellation");
+    expect(options?.method).toBe("POST");
+    expect(JSON.parse(String(options?.body))).toEqual({});
+  });
+
+  it("surfaces how long ago the window closed", async () => {
+    vi.mocked(orderApiFetch).mockImplementation(() =>
+      json(
+        { detail: "The cancellation window closed 30 minutes ago.", closedAgo: "30 minutes" },
+        409,
+      ),
+    );
+
+    await expect(cancelOrder("o-1")).rejects.toMatchObject({
+      status: 409,
+      body: { closedAgo: "30 minutes" },
+    });
   });
 });

@@ -1,7 +1,9 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  cancelOrder,
   checkInAtShop,
   createOrder,
+  decideApproval,
   recordCashPayment,
   fetchHierarchyNames,
   fetchOrder,
@@ -9,7 +11,7 @@ import {
   fetchOrderCatalogue,
   fetchOrders,
 } from "./api";
-import type { CheckInInput, CreateOrderInput, OrderListQuery } from "./types";
+import type { ApprovalDecision, CheckInInput, CreateOrderInput, OrderListQuery } from "./types";
 
 export const ordersQueryKey = ["orders"] as const;
 
@@ -79,6 +81,32 @@ export function useRecordPayment(orderId: string) {
 
   return useMutation({
     mutationFn: (amount: number) => recordCashPayment(orderId, amount),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ordersQueryKey }),
+  });
+}
+
+/** US-E4-5: agency approval; refreshes the list too, since the status changes. */
+export function useDecideApproval(orderId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      decision,
+      reason,
+    }: {
+      decision: ApprovalDecision;
+      reason?: string | undefined;
+    }) => decideApproval(orderId, decision, reason),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ordersQueryKey }),
+  });
+}
+
+/** US-E4-5: shop cancellation; a refused attempt refreshes too (the window may have closed). */
+export function useCancelOrder(orderId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (reason?: string) => cancelOrder(orderId, reason),
     onSettled: () => queryClient.invalidateQueries({ queryKey: ordersQueryKey }),
   });
 }

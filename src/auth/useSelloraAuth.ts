@@ -1,4 +1,5 @@
 import { useAuth } from "react-oidc-context";
+import { clearDashboardSnapshots } from "@/features/dashboard/snapshotCache";
 
 // The five Sellora roles from US-E0-1.
 export type SelloraRole =
@@ -79,6 +80,10 @@ export function useSelloraAuth(): SelloraAuth {
       (typeof profile?.preferred_username === "string" ? profile.preferred_username : null) ??
       profile?.sub ??
       null,
-    logout: () => auth.signoutRedirect(),
+    logout: () => {
+      // Dashboard snapshots belong to this user and company; none survive logout.
+      clearDashboardSnapshots();
+      return auth.signoutRedirect();
+    },
   };
 }

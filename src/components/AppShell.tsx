@@ -16,6 +16,7 @@ import {
   PanelLeftClose,
   PanelLeft,
   UserPlus,
+  Undo2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSelloraAuth } from "@/auth/useSelloraAuth";
@@ -36,6 +37,7 @@ const navItems: { to: string; label: string; icon: typeof LayoutDashboard; exact
   { to: "/product-categories", label: "Product categories", icon: Package },
   { to: "/inventory", label: "Inventory", icon: Boxes },
   { to: "/orders", label: "Orders", icon: ClipboardList },
+  { to: "/van-returns", label: "Van returns", icon: Undo2 },
 ];
 
 export function AppShell({ children }: { readonly children: ReactNode }) {

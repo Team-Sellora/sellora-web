@@ -20,6 +20,10 @@ export const routeAccess: Record<string, SelloraRole[]> = {
   "/orders": ["CompanyAdmin", "AreaManager", "AgencyOperator", "SalesRep", "ShopOwner"],
   // POST /api/orders is RequireSalesRep on the server.
   "/orders/new": ["SalesRep"],
+  // US-E4-6: reps see their own returns, operators their agency's, admins all.
+  "/van-returns": ["CompanyAdmin", "AgencyOperator", "SalesRep"],
+  // POST /api/van-returns is RequireSalesRep on the server.
+  "/van-returns/new": ["SalesRep"],
 };
 
 export function isRoleAllowed(path: string, role: SelloraRole | null): boolean {
@@ -32,6 +36,12 @@ export function isRoleAllowed(path: string, role: SelloraRole | null): boolean {
   // US-E4-3: only the rep takes payment at the counter.
   if (/^\/orders\/[^/]+\/checkout$/.test(path)) {
     return role === "SalesRep";
+  }
+
+  if (/^\/van-returns\/[^/]+$/.test(path)) {
+    const vanReturnReaderRoles = routeAccess["/van-returns"] ?? [];
+
+    return role !== null && vanReturnReaderRoles.includes(role);
   }
 
   const isOrderDetailsRoute = /^\/orders\/[^/]+$/.test(path);

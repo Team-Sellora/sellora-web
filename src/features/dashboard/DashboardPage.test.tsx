@@ -18,6 +18,7 @@ const calls = vi.hoisted(() => ({
   fetchProducts: vi.fn(),
   fetchVanReturns: vi.fn(),
   fetchStock: vi.fn(),
+  fetchNotificationHealth: vi.fn(),
 }));
 
 vi.mock("@/auth/useSelloraAuth", () => ({ useSelloraAuth: () => auth }));
@@ -26,6 +27,9 @@ vi.mock("@/features/orders/api", () => ({ fetchOrders: calls.fetchOrders }));
 vi.mock("@/features/products/api", () => ({ fetchProducts: calls.fetchProducts }));
 vi.mock("@/features/van-returns/api", () => ({ fetchVanReturns: calls.fetchVanReturns }));
 vi.mock("@/features/inventory/api", () => ({ fetchStock: calls.fetchStock }));
+vi.mock("@/features/notifications/api", () => ({
+  fetchNotificationHealth: calls.fetchNotificationHealth,
+}));
 vi.mock("@/components/PageHeader", () => ({
   PageHeader: ({ title, actions }: { title: string; actions?: ReactNode }) => (
     <header>
@@ -108,6 +112,14 @@ describe("company admin dashboard", () => {
       totalPages: 42,
     });
     calls.fetchVanReturns.mockResolvedValue({ items: [], totalCount: 3, page: 1, pageSize: 1 });
+    calls.fetchNotificationHealth.mockResolvedValue({
+      pending: 0,
+      failed: 1,
+      partiallySent: 0,
+      permanentlyFailed: 1,
+      needsAttention: 2,
+      oldestFailureAt: null,
+    });
     calls.fetchStock.mockResolvedValue([
       {
         stockItemId: "st1",
@@ -161,6 +173,10 @@ describe("company admin dashboard", () => {
     expect(calls.fetchVanReturns).toHaveBeenCalledTimes(1);
     expect(await screen.findByText("3 van returns are waiting to be counted")).toBeTruthy();
     expect(await screen.findByText("1 stock item is below the reorder threshold")).toBeTruthy();
+    expect(
+      await screen.findByText("2 notifications have not reached the shop or agency"),
+    ).toBeTruthy();
+    expect(calls.fetchNotificationHealth).toHaveBeenCalledTimes(1);
   });
 
   it("makes no request when this company's snapshot is still fresh", async () => {

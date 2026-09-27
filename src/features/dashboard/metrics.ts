@@ -65,6 +65,7 @@ export function attentionItems(input: {
   ordersAwaitingApproval: number | null;
   vanReturnsAwaitingCount: number | null;
   lowStockCount: number | null;
+  failedNotificationCount?: number | null;
 }): AttentionItem[] {
   const items: AttentionItem[] = [];
   const add = (item: AttentionItem) => {
@@ -113,6 +114,18 @@ export function attentionItems(input: {
         plural(input.vanReturnsAwaitingCount, "van return is", "van returns are") +
         " waiting to be counted",
       to: "/van-returns",
+    });
+  }
+
+  if (input.failedNotificationCount != null) {
+    add({
+      id: "failed-notifications",
+      tone: "warning",
+      count: input.failedNotificationCount,
+      label:
+        plural(input.failedNotificationCount, "notification has", "notifications have") +
+        " not reached the shop or agency",
+      to: "/notifications",
     });
   }
 

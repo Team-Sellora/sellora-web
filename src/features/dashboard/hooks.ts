@@ -5,6 +5,7 @@ import { fetchHierarchyRollUp } from "@/features/hierarchy/api";
 import { fetchStock } from "@/features/inventory/api";
 import { fetchOrders } from "@/features/orders/api";
 import { fetchProducts } from "@/features/products/api";
+import { fetchNotificationHealth } from "@/features/notifications/api";
 import { fetchVanReturns } from "@/features/van-returns/api";
 import { lowStockItems } from "./metrics";
 import {
@@ -114,6 +115,18 @@ export function useLowStock(enabled: boolean) {
           })),
       };
     },
+    enabled,
+  );
+}
+
+/**
+ * Notification: emails that did not reach everyone (US-E5-3-T5). One small
+ * grouped count — a rising number here is a mail outage made visible.
+ */
+export function useNotificationHealth(enabled: boolean) {
+  return useDashboardQuery(
+    "notification-health",
+    async () => (await fetchNotificationHealth()).needsAttention,
     enabled,
   );
 }

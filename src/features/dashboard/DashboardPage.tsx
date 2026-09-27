@@ -8,6 +8,7 @@ import {
   ClipboardList,
   GitFork,
   Info,
+  MailWarning,
   Map as MapIcon,
   MapPin,
   Package,
@@ -30,6 +31,7 @@ import {
   useInView,
   useLowStock,
   useNetworkRollUp,
+  useNotificationHealth,
   usePendingVanReturnCount,
   useRecentOrders,
 } from "./hooks";
@@ -68,6 +70,7 @@ function CompanyAdminDashboard() {
   const products = useActiveProductCount(tierTwo);
   const vanReturns = usePendingVanReturnCount(tierTwo);
   const lowStock = useLowStock(tierTwo);
+  const notifications = useNotificationHealth(tierTwo);
 
   const { refresh, coolingDown } = useDashboardRefresh();
 
@@ -80,12 +83,15 @@ function CompanyAdminDashboard() {
       : null,
     vanReturnsAwaitingCount: vanReturns.data ?? null,
     lowStockCount: lowStock.data?.count ?? null,
+    failedNotificationCount: notifications.data ?? null,
   });
 
   const updatedAt = Math.min(
     ...[rollUp.dataUpdatedAt, orders.dataUpdatedAt].filter((value) => value > 0),
   );
-  const anyFetching = [rollUp, orders, products, vanReturns, lowStock].some((q) => q.isFetching);
+  const anyFetching = [rollUp, orders, products, vanReturns, lowStock, notifications].some(
+    (q) => q.isFetching,
+  );
 
   return (
     <>
@@ -349,6 +355,7 @@ function CompanyAdminDashboard() {
           { to: "/provinces", label: "Provinces & area managers", icon: MapIcon },
           { to: "/staff", label: "Add team members", icon: UserPlus },
           { to: "/products", label: "Products", icon: Package },
+          { to: "/notifications", label: "Failed notifications", icon: MailWarning },
         ]}
       />
     </>

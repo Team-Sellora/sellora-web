@@ -61,3 +61,9 @@ export function orderApiFetch(path: string, options: RequestInit = {}): Promise<
   // show an actionable message while token scope claims are still being wired.
   return fetchWithBase(env.orderGatewayBaseUrl, path, options, false);
 }
+
+/** Gateway HTTP client for the Notification service (US-E5-3). */
+export function notificationApiFetch(path: string, options: RequestInit = {}): Promise<Response> {
+  // Like Order: stay on the page on 401 so the screen can say what is missing.
+  return fetchWithBase(env.notificationGatewayBaseUrl, path, options, false);
+}

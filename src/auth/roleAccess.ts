@@ -24,6 +24,8 @@ export const routeAccess: Record<string, SelloraRole[]> = {
   "/van-returns": ["CompanyAdmin", "AgencyOperator", "SalesRep"],
   // POST /api/van-returns is RequireSalesRep on the server.
   "/van-returns/new": ["SalesRep"],
+  // US-E5-3: the Notification service's admin endpoints are RequireCompanyAdmin.
+  "/notifications": ["CompanyAdmin"],
 };
 
 export function isRoleAllowed(path: string, role: SelloraRole | null): boolean {

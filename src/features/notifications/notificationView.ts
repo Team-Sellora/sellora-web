@@ -24,7 +24,20 @@ const eventLabels: Record<string, string> = {
   OrderPlaced: "Order placed",
   OrderConfirmed: "Order confirmed",
   OrderCancelled: "Order cancelled",
+  DeliveryStatusChanged: "Delivery update",
+  DeliveryDisputed: "Delivery disputed",
+  LowStockDetected: "Low stock",
 };
+
+const recipientLabels: Record<string, string> = {
+  Shop: "Shop",
+  Agency: "Agency",
+  CompanyAdmin: "Company admin",
+};
+
+export function formatRecipientKind(kind: string): string {
+  return recipientLabels[kind] ?? kind;
+}
 
 export function formatEventType(eventType: string): string {
   return eventLabels[eventType] ?? eventType;

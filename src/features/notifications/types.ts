@@ -1,7 +1,7 @@
 export type NotificationStatus =
   "Pending" | "Sent" | "PartiallySent" | "Failed" | "PermanentlyFailed" | (string & {});
 
-export type RecipientKind = "Shop" | "Agency" | (string & {});
+export type RecipientKind = "Shop" | "Agency" | "CompanyAdmin" | (string & {});
 
 export interface NotificationRecipient {
   kind: RecipientKind;
@@ -77,6 +77,13 @@ export interface NotificationHealth {
 export interface CorrectedAddress {
   kind: RecipientKind;
   email: string;
+}
+
+/** US-E5-4: where company alerts (low stock) go. */
+export interface NotificationSettings {
+  alertEmail: string | null;
+  updatedAt: string | null;
+  updatedBy: string | null;
 }
 
 export class NotificationApiError extends Error {

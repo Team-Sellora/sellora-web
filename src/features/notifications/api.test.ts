@@ -1,6 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { notificationApiFetch } from "@/api/client";
-import { fetchFailedNotifications, fetchNotificationHealth, resendNotification } from "./api";
+import {
+  fetchFailedNotifications,
+  fetchNotificationHealth,
+  fetchNotificationSettings,
+  resendNotification,
+  updateNotificationSettings,
+} from "./api";
 
 vi.mock("@/api/client", () => ({ notificationApiFetch: vi.fn() }));
 
@@ -49,5 +55,17 @@ describe("notifications API", () => {
 
     expect((await fetchNotificationHealth()).needsAttention).toBe(3);
     expect(vi.mocked(notificationApiFetch).mock.calls[0]![0]).toBe("/api/notifications/health");
+  });
+
+  it("reads and saves the company alert address", async () => {
+    vi.mocked(notificationApiFetch).mockImplementation(() => json({ alertEmail: "ops@acme.lk" }));
+
+    expect((await fetchNotificationSettings()).alertEmail).toBe("ops@acme.lk");
+    await updateNotificationSettings(null);
+
+    const [path, options] = vi.mocked(notificationApiFetch).mock.calls[1]!;
+    expect(path).toBe("/api/notifications/settings");
+    expect(options?.method).toBe("PUT");
+    expect(JSON.parse(String(options?.body))).toEqual({ alertEmail: null });
   });
 });

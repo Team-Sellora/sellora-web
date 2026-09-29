@@ -4,6 +4,7 @@ import {
   type CorrectedAddress,
   type NotificationHealth,
   type NotificationRequest,
+  type NotificationSettings,
   type PagedNotifications,
 } from "./types";
 
@@ -51,6 +52,21 @@ export function resendNotification(
       body: JSON.stringify({ recipients: corrected }),
     },
   ).then(unwrap<NotificationRequest>);
+}
+
+/** US-E5-4: the company alert address used for low-stock notifications. */
+export function fetchNotificationSettings(): Promise<NotificationSettings> {
+  return notificationApiFetch("/api/notifications/settings").then(unwrap<NotificationSettings>);
+}
+
+export function updateNotificationSettings(
+  alertEmail: string | null,
+): Promise<NotificationSettings> {
+  return notificationApiFetch("/api/notifications/settings", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ alertEmail }),
+  }).then(unwrap<NotificationSettings>);
 }
 
 /** US-E5-3-T5: counts for the dashboard. */

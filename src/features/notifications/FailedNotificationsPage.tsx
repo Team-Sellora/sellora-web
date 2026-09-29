@@ -4,10 +4,12 @@ import { toast } from "sonner";
 import { PageHeader } from "@/components/PageHeader";
 import { cn } from "@/lib/utils";
 import { formatOrderDate } from "@/features/orders/format";
+import { AlertSettingsCard } from "./AlertSettingsCard";
 import { useFailedNotifications, useResendNotification } from "./hooks";
 import {
   formatEventType,
   formatNotificationStatus,
+  formatRecipientKind,
   isWellFormedEmail,
   statusTone,
   unsentRecipients,
@@ -37,11 +39,13 @@ export function FailedNotificationsPage() {
         crumbs={[{ label: "Failed notifications" }]}
       />
 
+      <AlertSettingsCard />
+
       <div className="overflow-x-auto rounded-lg border border-border bg-card">
         <table className="w-full text-sm">
           <thead className="border-b border-border bg-muted/40 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">
             <tr>
-              <th className="px-4 py-3">Order</th>
+              <th className="px-4 py-3">Reference</th>
               <th className="px-4 py-3">Event</th>
               <th className="px-4 py-3">Recipients</th>
               <th className="px-4 py-3">Failure reason</th>
@@ -116,7 +120,9 @@ export function FailedNotificationsPage() {
                       <ul className="space-y-1">
                         {request.recipients.map((recipient) => (
                           <li key={recipient.kind} className="text-xs">
-                            <span className="font-medium">{recipient.kind}</span>{" "}
+                            <span className="font-medium">
+                              {formatRecipientKind(recipient.kind)}
+                            </span>{" "}
                             <span className="font-mono text-muted-foreground">
                               {recipient.email ?? "no email"}
                             </span>{" "}
@@ -279,7 +285,7 @@ function ResendForm({
       </p>
       {targets.map((recipient) => (
         <label key={recipient.kind} className="flex flex-wrap items-center gap-2">
-          <span className="w-16 text-xs font-medium">{recipient.kind}</span>
+          <span className="w-28 text-xs font-medium">{formatRecipientKind(recipient.kind)}</span>
           <input
             type="email"
             value={emails[recipient.kind] ?? ""}
@@ -351,7 +357,7 @@ function AttemptHistory({ request }: Readonly<{ request: NotificationRequest }>)
           <tr key={index} className="border-t border-border/60 align-top">
             <td className="py-1 pr-3">{formatOrderDate(attempt.attemptedAt)}</td>
             <td className="py-1 pr-3">
-              {attempt.recipientKind}{" "}
+              {formatRecipientKind(attempt.recipientKind)}{" "}
               <span className="font-mono text-muted-foreground">{attempt.emailAddress ?? "—"}</span>
             </td>
             <td className="py-1 pr-3 tabular-nums">{attempt.attemptNumber}</td>

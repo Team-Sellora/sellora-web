@@ -32,4 +32,11 @@ describe("failed notification view", () => {
       expect(isWellFormedEmail(bad)).toBe(false);
     }
   });
+
+  it("names the new event types and the company admin recipient", async () => {
+    const { formatEventType, formatRecipientKind } = await import("./notificationView");
+    expect(formatEventType("LowStockDetected")).toBe("Low stock");
+    expect(formatEventType("DeliveryStatusChanged")).toBe("Delivery update");
+    expect(formatRecipientKind("CompanyAdmin")).toBe("Company admin");
+  });
 });

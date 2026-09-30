@@ -1,46 +1,9 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
-import {
-  LayoutDashboard,
-  Map,
-  UserCog,
-  Building2,
-  MapPin,
-  ArrowLeftRight,
-  Users,
-  Store,
-  Package,
-  Boxes,
-  ClipboardList,
-  GitFork,
-  PanelLeftClose,
-  PanelLeft,
-  UserPlus,
-  Undo2,
-  MailWarning,
-} from "lucide-react";
+import { PanelLeftClose, PanelLeft, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSelloraAuth } from "@/auth/useSelloraAuth";
-import { LogOut } from "lucide-react";
-
-const navItems: { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean }[] = [
-  { to: "/", label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { to: "/provinces", label: "Provinces", icon: Map },
-  { to: "/area-managers", label: "Area Managers", icon: UserCog },
-  { to: "/hierarchy-roll-up", label: "Hierarchy roll-up", icon: GitFork },
-  { to: "/agencies", label: "Agencies", icon: Building2 },
-  { to: "/territories", label: "Territories", icon: MapPin },
-  { to: "/territory-assignments", label: "Assign territories", icon: ArrowLeftRight },
-  { to: "/staff", label: "Team", icon: UserPlus },
-  { to: "/sales-reps", label: "Sales Reps", icon: Users },
-  { to: "/shops", label: "Shops", icon: Store },
-  { to: "/products", label: "Products", icon: Package },
-  { to: "/product-categories", label: "Product categories", icon: Package },
-  { to: "/inventory", label: "Inventory", icon: Boxes },
-  { to: "/orders", label: "Orders", icon: ClipboardList },
-  { to: "/van-returns", label: "Van returns", icon: Undo2 },
-  { to: "/notifications", label: "Failed notifications", icon: MailWarning },
-];
+import { navigationFor } from "./navigation";
 
 export function AppShell({ children }: { readonly children: ReactNode }) {
   const [collapsed, setCollapsed] = useState(false);
@@ -49,6 +12,8 @@ export function AppShell({ children }: { readonly children: ReactNode }) {
   const isActive = (to: string, exact?: boolean) =>
     exact ? pathname === to : pathname.startsWith(to);
   const { username, role, logout } = useSelloraAuth();
+  // Only the screens this role can open, grouped (see navigation.ts).
+  const sections = navigationFor(role);
 
   return (
     <div className="sellora-app min-h-screen w-full bg-background text-foreground">
@@ -72,23 +37,34 @@ export function AppShell({ children }: { readonly children: ReactNode }) {
           aria-label="Main navigation"
           className="sellora-navigation flex-1 overflow-y-auto py-2"
         >
-          {navItems.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to as "/"}
-              title={item.label}
-              aria-current={isActive(item.to, item.exact) ? "page" : undefined}
-
-              className={cn(
-                "flex h-10 items-center gap-2 px-4 text-sm transition-colors",
-                isActive(item.to, item.exact)
-                  ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent/60",
-              )}
-            >
-              <item.icon className="size-[18px] shrink-0" />
-              {!collapsed && <span className="truncate">{item.label}</span>}
-            </Link>
+          {sections.map((section) => (
+            <div key={section.title ?? "main"} className={cn(section.title && "mt-3")}>
+              {section.title &&
+                (collapsed ? (
+                  <div className="mx-4 my-2 border-t border-sidebar-border" aria-hidden="true" />
+                ) : (
+                  <div className="px-4 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    {section.title}
+                  </div>
+                ))}
+              {section.items.map((item) => (
+                <Link
+                  key={item.to}
+                  to={item.to as "/"}
+                  title={item.label}
+                  aria-current={isActive(item.to, item.exact) ? "page" : undefined}
+                  className={cn(
+                    "flex h-10 items-center gap-2 px-4 text-sm transition-colors",
+                    isActive(item.to, item.exact)
+                      ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
+                      : "text-sidebar-foreground hover:bg-sidebar-accent/60",
+                  )}
+                >
+                  <item.icon className="size-[18px] shrink-0" />
+                  {!collapsed && <span className="truncate">{item.label}</span>}
+                </Link>
+              ))}
+            </div>
           ))}
         </nav>
 

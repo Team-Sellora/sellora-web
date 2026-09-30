@@ -15,6 +15,9 @@ export const routeAccess: Record<string, SelloraRole[]> = {
   "/shops": ["AgencyOperator"],
   "/products": ["CompanyAdmin", "AreaManager", "AgencyOperator", "SalesRep"],
   "/products/new": ["CompanyAdmin"],
+  // Categories are created and edited here (POST/PUT /api/categories are
+  // RequireCompanyAdmin); everyone else sees categories on the Products page.
+  "/product-categories": ["CompanyAdmin"],
   "/inventory": ["CompanyAdmin", "AgencyOperator", "SalesRep"],
   // Shop Owners can read their own shop's orders (server-side scoping).
   "/orders": ["CompanyAdmin", "AreaManager", "AgencyOperator", "SalesRep", "ShopOwner"],

@@ -67,3 +67,8 @@ export function notificationApiFetch(path: string, options: RequestInit = {}): P
   // Like Order: stay on the page on 401 so the screen can say what is missing.
   return fetchWithBase(env.notificationGatewayBaseUrl, path, options, false);
 }
+
+/** Gateway HTTP client for the Delivery service. */
+export function deliveryApiFetch(path: string, options: RequestInit = {}): Promise<Response> {
+  return fetchWithBase(env.deliveryGatewayBaseUrl, path, options, false);
+}

@@ -50,9 +50,17 @@ interface AssignDeliveryDialogProps {
   onClose: () => void;
 }
 
-export function AssignDeliveryDialog({ isOpen, deliveryJobId, onClose }: AssignDeliveryDialogProps) {
+export function AssignDeliveryDialog({
+  isOpen,
+  deliveryJobId,
+  onClose,
+}: AssignDeliveryDialogProps) {
   const { data: reps, isLoading: isLoadingReps } = useEligibleReps(deliveryJobId);
-  const { mutateAsync: assignJob, isPending: isAssigning, error: assignError } = useAssignDeliveryJob();
+  const {
+    mutateAsync: assignJob,
+    isPending: isAssigning,
+    error: assignError,
+  } = useAssignDeliveryJob();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -92,9 +100,10 @@ export function AssignDeliveryDialog({ isOpen, deliveryJobId, onClose }: AssignD
     }
   };
 
-  const apiErrorDetail = assignError instanceof DeliveryApiError 
-    ? (assignError.detail || `An unexpected error occurred (Status: ${assignError.status})`) 
-    : assignError?.message || "An unexpected error occurred.";
+  const apiErrorDetail =
+    assignError instanceof DeliveryApiError
+      ? assignError.detail || `An unexpected error occurred (Status: ${assignError.status})`
+      : assignError?.message || "An unexpected error occurred.";
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
@@ -122,10 +131,16 @@ export function AssignDeliveryDialog({ isOpen, deliveryJobId, onClose }: AssignD
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Sales Representative</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    value={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder={isLoadingReps ? "Loading reps..." : "Select a sales rep"} />
+                        <SelectValue
+                          placeholder={isLoadingReps ? "Loading reps..." : "Select a sales rep"}
+                        />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -159,14 +174,10 @@ export function AssignDeliveryDialog({ isOpen, deliveryJobId, onClose }: AssignD
                           variant="outline"
                           className={cn(
                             "w-full pl-3 text-left font-normal",
-                            !field.value && "text-muted-foreground"
+                            !field.value && "text-muted-foreground",
                           )}
                         >
-                          {field.value ? (
-                            format(field.value, "PPP")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
+                          {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
                           <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                         </Button>
                       </FormControl>

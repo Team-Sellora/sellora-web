@@ -21,10 +21,15 @@ async function unwrap<T>(response: Response): Promise<T> {
 }
 
 export function fetchEligibleReps(deliveryJobId: string): Promise<EligibleRep[]> {
-  return deliveryApiFetch(`/api/deliveries/${encodeURIComponent(deliveryJobId)}/eligible-reps`).then(unwrap<EligibleRep[]>);
+  return deliveryApiFetch(
+    `/api/deliveries/${encodeURIComponent(deliveryJobId)}/eligible-reps`,
+  ).then(unwrap<EligibleRep[]>);
 }
 
-export function assignDelivery(deliveryJobId: string, payload: AssignDeliveryPayload): Promise<void> {
+export function assignDelivery(
+  deliveryJobId: string,
+  payload: AssignDeliveryPayload,
+): Promise<void> {
   return deliveryApiFetch(`/api/deliveries/${encodeURIComponent(deliveryJobId)}/assignment`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },

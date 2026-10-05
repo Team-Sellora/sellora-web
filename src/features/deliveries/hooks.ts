@@ -16,8 +16,13 @@ export function useAssignDeliveryJob() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ deliveryJobId, payload }: { deliveryJobId: string; payload: AssignDeliveryPayload }) =>
-      assignDelivery(deliveryJobId, payload),
+    mutationFn: ({
+      deliveryJobId,
+      payload,
+    }: {
+      deliveryJobId: string;
+      payload: AssignDeliveryPayload;
+    }) => assignDelivery(deliveryJobId, payload),
     onSuccess: () => {
       // Invalidate the deliveries list and the specific delivery job
       queryClient.invalidateQueries({ queryKey: deliveriesQueryKey });

@@ -84,7 +84,7 @@ describe("DeliveryStatusActions", () => {
     expect(submitBtn.disabled).toBe(true);
 
     fireEvent.change(input, { target: { value: "Vehicle broke down" } });
-    
+
     await waitFor(() => {
       expect(submitBtn.disabled).toBe(false);
     });

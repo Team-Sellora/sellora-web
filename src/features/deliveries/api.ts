@@ -1,5 +1,10 @@
 import { deliveryApiFetch } from "@/api/client";
-import { DeliveryApiError, type AssignDeliveryPayload, type EligibleRep } from "./types";
+import {
+  DeliveryApiError,
+  type AssignDeliveryPayload,
+  type EligibleRep,
+  type UpdateDeliveryStatusPayload,
+} from "./types";
 
 async function unwrap<T>(response: Response): Promise<T> {
   if (response.ok) {
@@ -32,6 +37,17 @@ export function assignDelivery(
 ): Promise<void> {
   return deliveryApiFetch(`/api/deliveries/${encodeURIComponent(deliveryJobId)}/assignment`, {
     method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  }).then(unwrap<void>);
+}
+
+export function updateDeliveryStatus(
+  deliveryJobId: string,
+  payload: UpdateDeliveryStatusPayload,
+): Promise<void> {
+  return deliveryApiFetch(`/api/deliveries/${encodeURIComponent(deliveryJobId)}/status`, {
+    method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   }).then(unwrap<void>);

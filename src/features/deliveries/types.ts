@@ -17,3 +17,18 @@ export class DeliveryApiError extends Error {
     this.name = "DeliveryApiError";
   }
 }
+
+export type DeliveryStatus =
+  "Pending" | "Assigned" | "InTransit" | "Delivered" | "Failed" | "Cancelled";
+
+export interface UpdateDeliveryStatusPayload {
+  status: "InTransit" | "Delivered" | "Failed";
+  reason?: string;
+}
+
+export interface DeliveryStatusHistoryEntry {
+  status: DeliveryStatus;
+  actorRole: string;
+  occurredAt: string;
+  reason?: string;
+}

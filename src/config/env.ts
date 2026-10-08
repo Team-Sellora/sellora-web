@@ -20,6 +20,9 @@ export const env = {
   orderGatewayBaseUrl:
     import.meta.env["VITE_ORDER_GATEWAY_BASE_URL"] ??
     required(import.meta.env["VITE_GATEWAY_BASE_URL"], "VITE_GATEWAY_BASE_URL"),
+  deliveryGatewayBaseUrl:
+    import.meta.env["VITE_DELIVERY_GATEWAY_BASE_URL"] ??
+    required(import.meta.env["VITE_GATEWAY_BASE_URL"], "VITE_GATEWAY_BASE_URL"),
   // US-E5-3: the Notification service's APIM API (failed-notification list, resend, health).
   notificationGatewayBaseUrl:
     import.meta.env["VITE_NOTIFICATION_GATEWAY_BASE_URL"] ??

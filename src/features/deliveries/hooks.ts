@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { assignDelivery, fetchEligibleReps } from "./api";
-import type { AssignDeliveryPayload } from "./types";
+import { assignDelivery, fetchEligibleReps, updateDeliveryStatus } from "./api";
+import type { AssignDeliveryPayload, UpdateDeliveryStatusPayload } from "./types";
 
 export const deliveriesQueryKey = ["deliveries"] as const;
 
@@ -25,6 +25,23 @@ export function useAssignDeliveryJob() {
     }) => assignDelivery(deliveryJobId, payload),
     onSuccess: () => {
       // Invalidate the deliveries list and the specific delivery job
+      queryClient.invalidateQueries({ queryKey: deliveriesQueryKey });
+    },
+  });
+}
+
+export function useUpdateDeliveryStatus() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      deliveryJobId,
+      payload,
+    }: {
+      deliveryJobId: string;
+      payload: UpdateDeliveryStatusPayload;
+    }) => updateDeliveryStatus(deliveryJobId, payload),
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: deliveriesQueryKey });
     },
   });

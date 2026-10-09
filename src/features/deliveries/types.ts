@@ -32,3 +32,35 @@ export interface DeliveryStatusHistoryEntry {
   occurredAt: string;
   reason?: string;
 }
+
+export interface DeliverySummary {
+  id: string;
+  deliveryReference: string;
+  orderId: string;
+  orderReference: string;
+  shopName: string;
+  territory: string;
+  status: DeliveryStatus;
+  scheduledDate: string | null;
+  assignedRepName: string | null;
+}
+
+export interface DeliveryLine {
+  id: string;
+  productName: string;
+  quantity: number;
+  returnableQuantity: number;
+}
+
+export interface DeliveryDetail extends DeliverySummary {
+  lines: DeliveryLine[];
+  history: DeliveryStatusHistoryEntry[];
+  confirmation: any; // placeholder for later stories
+}
+
+export interface PaginatedDeliveries {
+  items: DeliverySummary[];
+  page: number;
+  pageSize: number;
+  totalCount: number;
+}

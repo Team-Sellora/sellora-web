@@ -16,10 +16,11 @@ import { AgencyApprovalPanel } from "./AgencyApprovalPanel";
 import { canDecideApproval, formatDecision } from "./approvalView";
 import { formatLkr, formatOrderDate, shortId } from "./format";
 import { useHierarchyNames, useOrder } from "./hooks";
-import { FulfilmentTypeBadge, OrderStatusBadge } from "./OrderStatusBadge";
+import { OrderStatusBadge, FulfilmentTypeBadge } from "./OrderStatusBadge";
 import { orderColumnsFor } from "./roleView";
 import { ShopCancellationPanel } from "./ShopCancellationPanel";
 import { OrderApiError } from "./types";
+import { DeliveryTrackingPanel } from "./DeliveryTrackingPanel";
 
 function InfoCard({
   icon,
@@ -233,6 +234,10 @@ export function OrderDetailsPage({ orderId }: Readonly<{ orderId: string }>) {
             ))}
           </ol>
         </section>
+      )}
+
+      {order.fulfilmentType === "ScheduledDelivery" && (
+        <DeliveryTrackingPanel orderId={order.orderId} />
       )}
 
       {order.status === "AwaitingCheckout" && (

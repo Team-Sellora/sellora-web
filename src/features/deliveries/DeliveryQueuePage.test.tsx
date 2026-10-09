@@ -7,6 +7,20 @@ import * as api from "./api";
 import type { PaginatedDeliveries } from "./types";
 import * as auth from "@/auth/useSelloraAuth";
 
+vi.mock("@/config/env", () => ({
+  env: {
+    isBaseUrl: "http://localhost:3000",
+    gatewayBaseUrl: "http://localhost:8080",
+    catalogGatewayBaseUrl: "http://localhost:8081",
+    inventoryGatewayBaseUrl: "http://localhost:8080",
+    orderGatewayBaseUrl: "http://localhost:8080",
+    deliveryGatewayBaseUrl: "http://localhost:8080",
+    notificationGatewayBaseUrl: "http://localhost:8080",
+    oidcClientId: "test-client-id",
+    appOrigin: "http://localhost:3000",
+  },
+}));
+
 vi.mock("@/auth/useSelloraAuth", () => ({
   useSelloraAuth: vi.fn(() => ({ role: "CompanyAdmin" })),
 }));

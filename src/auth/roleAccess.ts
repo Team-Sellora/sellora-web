@@ -27,6 +27,7 @@ export const routeAccess: Record<string, SelloraRole[]> = {
   "/van-returns": ["CompanyAdmin", "AgencyOperator", "SalesRep"],
   // POST /api/van-returns is RequireSalesRep on the server.
   "/van-returns/new": ["SalesRep"],
+  "/deliveries": ["CompanyAdmin", "AreaManager", "AgencyOperator", "SalesRep", "ShopOwner"],
   // US-E5-3: the Notification service's admin endpoints are RequireCompanyAdmin.
   "/notifications": ["CompanyAdmin"],
 };
@@ -69,6 +70,14 @@ export function isRoleAllowed(path: string, role: SelloraRole | null): boolean {
     const productReaderRoles = routeAccess["/products"] ?? [];
 
     return role !== null && productReaderRoles.includes(role);
+  }
+
+  const isDeliveryDetailsRoute = /^\/deliveries\/[^/]+$/.test(path);
+
+  if (isDeliveryDetailsRoute) {
+    const deliveryReaderRoles = routeAccess["/deliveries"] ?? [];
+
+    return role !== null && deliveryReaderRoles.includes(role);
   }
 
   return true;

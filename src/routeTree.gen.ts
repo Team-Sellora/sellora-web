@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AgenciesRouteImport } from './routes/agencies'
 import { Route as AreaManagersRouteImport } from './routes/area-managers'
+import { Route as DeliveriesRouteImport } from './routes/deliveries'
 import { Route as HierarchyRollUpRouteImport } from './routes/hierarchy-roll-up'
 import { Route as InventoryRouteImport } from './routes/inventory'
 import { Route as NotAuthorisedRouteImport } from './routes/not-authorised'
@@ -26,6 +27,7 @@ import { Route as StaffRouteImport } from './routes/staff'
 import { Route as TerritoriesRouteImport } from './routes/territories'
 import { Route as TerritoryAssignmentsRouteImport } from './routes/territory-assignments'
 import { Route as VanReturnsRouteImport } from './routes/van-returns'
+import { Route as DeliveriesDeliveryIdRouteImport } from './routes/deliveries_.$deliveryId'
 import { Route as OrdersOrderIdRouteImport } from './routes/orders_.$orderId'
 import { Route as OrdersNewRouteImport } from './routes/orders_.new'
 import { Route as ProductsProductIdRouteImport } from './routes/products_.$productId'
@@ -49,6 +51,11 @@ const AgenciesRoute = AgenciesRouteImport.update({
 const AreaManagersRoute = AreaManagersRouteImport.update({
   id: '/area-managers',
   path: '/area-managers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DeliveriesRoute = DeliveriesRouteImport.update({
+  id: '/deliveries',
+  path: '/deliveries',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HierarchyRollUpRoute = HierarchyRollUpRouteImport.update({
@@ -121,6 +128,11 @@ const VanReturnsRoute = VanReturnsRouteImport.update({
   path: '/van-returns',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DeliveriesDeliveryIdRoute = DeliveriesDeliveryIdRouteImport.update({
+  id: '/deliveries_/$deliveryId',
+  path: '/deliveries/$deliveryId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OrdersOrderIdRoute = OrdersOrderIdRouteImport.update({
   id: '/orders_/$orderId',
   path: '/orders/$orderId',
@@ -171,6 +183,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/agencies': typeof AgenciesRoute
   '/area-managers': typeof AreaManagersRoute
+  '/deliveries': typeof DeliveriesRoute
   '/hierarchy-roll-up': typeof HierarchyRollUpRoute
   '/inventory': typeof InventoryRoute
   '/not-authorised': typeof NotAuthorisedRoute
@@ -185,6 +198,7 @@ export interface FileRoutesByFullPath {
   '/territories': typeof TerritoriesRoute
   '/territory-assignments': typeof TerritoryAssignmentsRoute
   '/van-returns': typeof VanReturnsRoute
+  '/deliveries/$deliveryId': typeof DeliveriesDeliveryIdRoute
   '/orders/$orderId': typeof OrdersOrderIdRoute
   '/orders/new': typeof OrdersNewRoute
   '/products/$productId': typeof ProductsProductIdRoute
@@ -199,6 +213,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/agencies': typeof AgenciesRoute
   '/area-managers': typeof AreaManagersRoute
+  '/deliveries': typeof DeliveriesRoute
   '/hierarchy-roll-up': typeof HierarchyRollUpRoute
   '/inventory': typeof InventoryRoute
   '/not-authorised': typeof NotAuthorisedRoute
@@ -213,6 +228,7 @@ export interface FileRoutesByTo {
   '/territories': typeof TerritoriesRoute
   '/territory-assignments': typeof TerritoryAssignmentsRoute
   '/van-returns': typeof VanReturnsRoute
+  '/deliveries/$deliveryId': typeof DeliveriesDeliveryIdRoute
   '/orders/$orderId': typeof OrdersOrderIdRoute
   '/orders/new': typeof OrdersNewRoute
   '/products/$productId': typeof ProductsProductIdRoute
@@ -228,6 +244,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/agencies': typeof AgenciesRoute
   '/area-managers': typeof AreaManagersRoute
+  '/deliveries': typeof DeliveriesRoute
   '/hierarchy-roll-up': typeof HierarchyRollUpRoute
   '/inventory': typeof InventoryRoute
   '/not-authorised': typeof NotAuthorisedRoute
@@ -242,6 +259,7 @@ export interface FileRoutesById {
   '/territories': typeof TerritoriesRoute
   '/territory-assignments': typeof TerritoryAssignmentsRoute
   '/van-returns': typeof VanReturnsRoute
+  '/deliveries_/$deliveryId': typeof DeliveriesDeliveryIdRoute
   '/orders_/$orderId': typeof OrdersOrderIdRoute
   '/orders_/new': typeof OrdersNewRoute
   '/products_/$productId': typeof ProductsProductIdRoute
@@ -258,6 +276,7 @@ export interface FileRouteTypes {
     | '/'
     | '/agencies'
     | '/area-managers'
+    | '/deliveries'
     | '/hierarchy-roll-up'
     | '/inventory'
     | '/not-authorised'
@@ -272,6 +291,7 @@ export interface FileRouteTypes {
     | '/territories'
     | '/territory-assignments'
     | '/van-returns'
+    | '/deliveries/$deliveryId'
     | '/orders/$orderId'
     | '/orders/new'
     | '/products/$productId'
@@ -286,6 +306,7 @@ export interface FileRouteTypes {
     | '/'
     | '/agencies'
     | '/area-managers'
+    | '/deliveries'
     | '/hierarchy-roll-up'
     | '/inventory'
     | '/not-authorised'
@@ -300,6 +321,7 @@ export interface FileRouteTypes {
     | '/territories'
     | '/territory-assignments'
     | '/van-returns'
+    | '/deliveries/$deliveryId'
     | '/orders/$orderId'
     | '/orders/new'
     | '/products/$productId'
@@ -314,6 +336,7 @@ export interface FileRouteTypes {
     | '/'
     | '/agencies'
     | '/area-managers'
+    | '/deliveries'
     | '/hierarchy-roll-up'
     | '/inventory'
     | '/not-authorised'
@@ -328,6 +351,7 @@ export interface FileRouteTypes {
     | '/territories'
     | '/territory-assignments'
     | '/van-returns'
+    | '/deliveries_/$deliveryId'
     | '/orders_/$orderId'
     | '/orders_/new'
     | '/products_/$productId'
@@ -343,6 +367,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AgenciesRoute: typeof AgenciesRoute
   AreaManagersRoute: typeof AreaManagersRoute
+  DeliveriesRoute: typeof DeliveriesRoute
   HierarchyRollUpRoute: typeof HierarchyRollUpRoute
   InventoryRoute: typeof InventoryRoute
   NotAuthorisedRoute: typeof NotAuthorisedRoute
@@ -357,6 +382,7 @@ export interface RootRouteChildren {
   TerritoriesRoute: typeof TerritoriesRoute
   TerritoryAssignmentsRoute: typeof TerritoryAssignmentsRoute
   VanReturnsRoute: typeof VanReturnsRoute
+  DeliveriesDeliveryIdRoute: typeof DeliveriesDeliveryIdRoute
   OrdersOrderIdRoute: typeof OrdersOrderIdRoute
   OrdersNewRoute: typeof OrdersNewRoute
   ProductsProductIdRoute: typeof ProductsProductIdRoute
@@ -389,6 +415,13 @@ declare module '@tanstack/react-router' {
       path: '/area-managers'
       fullPath: '/area-managers'
       preLoaderRoute: typeof AreaManagersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/deliveries': {
+      id: '/deliveries'
+      path: '/deliveries'
+      fullPath: '/deliveries'
+      preLoaderRoute: typeof DeliveriesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/hierarchy-roll-up': {
@@ -489,6 +522,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VanReturnsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/deliveries_/$deliveryId': {
+      id: '/deliveries_/$deliveryId'
+      path: '/deliveries/$deliveryId'
+      fullPath: '/deliveries/$deliveryId'
+      preLoaderRoute: typeof DeliveriesDeliveryIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/orders_/$orderId': {
       id: '/orders_/$orderId'
       path: '/orders/$orderId'
@@ -559,6 +599,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AgenciesRoute: AgenciesRoute,
   AreaManagersRoute: AreaManagersRoute,
+  DeliveriesRoute: DeliveriesRoute,
   HierarchyRollUpRoute: HierarchyRollUpRoute,
   InventoryRoute: InventoryRoute,
   NotAuthorisedRoute: NotAuthorisedRoute,
@@ -573,6 +614,7 @@ const rootRouteChildren: RootRouteChildren = {
   TerritoriesRoute: TerritoriesRoute,
   TerritoryAssignmentsRoute: TerritoryAssignmentsRoute,
   VanReturnsRoute: VanReturnsRoute,
+  DeliveriesDeliveryIdRoute: DeliveriesDeliveryIdRoute,
   OrdersOrderIdRoute: OrdersOrderIdRoute,
   OrdersNewRoute: OrdersNewRoute,
   ProductsProductIdRoute: ProductsProductIdRoute,

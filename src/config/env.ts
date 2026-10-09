@@ -2,6 +2,9 @@
 // Change deployment targets via .env — never hardcode URLs elsewhere.
 function required(value: string | undefined, name: string): string {
   if (!value) {
+    if (import.meta.env?.MODE === "test") {
+      return `http://mock-${name.toLowerCase().replace(/_/g, "-")}.example`;
+    }
     throw new Error(`Missing required env var: ${name}`);
   }
   return value;

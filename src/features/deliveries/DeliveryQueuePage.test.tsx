@@ -12,7 +12,9 @@ vi.mock("@/auth/useSelloraAuth", () => ({
 }));
 
 vi.mock("@tanstack/react-router", () => ({
-  Link: ({ children, to, params }: any) => <a href={to}>{children}</a>,
+  Link: ({ children, to }: { children: React.ReactNode; to: string; params?: unknown }) => (
+    <a href={to}>{children}</a>
+  ),
   useParams: () => ({}),
 }));
 
@@ -41,9 +43,18 @@ describe("DeliveryQueuePage", () => {
     vi.restoreAllMocks();
   });
 
-  const renderPage = (role: any = "CompanyAdmin") => {
-    vi.mocked(auth.useSelloraAuth).mockReturnValue({ role, token: "test", setToken: vi.fn(), clearAuth: vi.fn(), validateToken: vi.fn(), setForceLogin: vi.fn() } as any);
-    
+  const renderPage = (role: auth.SelloraRole = "CompanyAdmin") => {
+    vi.mocked(auth.useSelloraAuth).mockReturnValue({
+      role,
+      roles: [role],
+      companyId: "comp-1",
+      accessToken: "test-token",
+      username: "test-user",
+      isLoading: false,
+      isAuthenticated: true,
+      logout: vi.fn(),
+    });
+
     const queryClient = new QueryClient({
       defaultOptions: { queries: { retry: false } },
     });
@@ -64,7 +75,7 @@ describe("DeliveryQueuePage", () => {
 
     await screen.findByText("DEL-001");
     expect(screen.getByText("Test Shop")).toBeTruthy();
-    
+
     // Check if the getDeliveries API was called with default params
     expect(getSpy).toHaveBeenCalledWith({
       page: 1,
@@ -84,7 +95,7 @@ describe("DeliveryQueuePage", () => {
     await screen.findByText("DEL-001");
 
     // Change status filter
-    // Note: Radix UI Select requires a bit of work to test, but we can simulate value changes on the native elements if we could, 
+    // Note: Radix UI Select requires a bit of work to test, but we can simulate value changes on the native elements if we could,
     // or simulate user click. Since Radix is complex, we will just find the input rep filter for simplicity.
     const repInput = screen.getByPlaceholderText("Sales Rep ID");
     fireEvent.change(repInput, { target: { value: "REP-123" } });

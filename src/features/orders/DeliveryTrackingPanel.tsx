@@ -22,14 +22,14 @@ export function DeliveryTrackingPanel({ orderId }: { orderId: string }) {
         <Truck className="size-4 text-primary" />
         Fulfilment Tracking
       </div>
-      
+
       <div className="p-4 text-sm">
         {isLoading && <p className="text-muted-foreground">Loading delivery information...</p>}
         {isError && <p className="text-destructive">Failed to load delivery information.</p>}
         {!isLoading && !isError && !delivery && (
           <p className="text-muted-foreground">No delivery job found for this order.</p>
         )}
-        
+
         {delivery && (
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
@@ -62,7 +62,7 @@ export function DeliveryTrackingPanel({ orderId }: { orderId: string }) {
                 </div>
               )}
             </div>
-            
+
             <Link
               to="/deliveries/$deliveryId"
               params={{ deliveryId: delivery.id }}

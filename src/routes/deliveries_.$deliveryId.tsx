@@ -4,9 +4,7 @@ import { DeliveryDetailPage } from "@/features/deliveries/DeliveryDetailPage";
 
 export const Route = createFileRoute("/deliveries_/$deliveryId")({
   head: () => ({
-    meta: [
-      { title: "Delivery Details — Sellora" },
-    ],
+    meta: [{ title: "Delivery Details — Sellora" }],
   }),
   component: () => (
     <RouteGuard>

@@ -16,19 +16,11 @@ export function DeliveryDetailPage() {
   const [isAssignOpen, setIsAssignOpen] = useState(false);
 
   if (deliveryQuery.isLoading) {
-    return (
-      <div className="p-8 text-center text-muted-foreground">
-        Loading delivery details...
-      </div>
-    );
+    return <div className="p-8 text-center text-muted-foreground">Loading delivery details...</div>;
   }
 
   if (deliveryQuery.isError || !deliveryQuery.data) {
-    return (
-      <div className="p-8 text-center text-destructive">
-        Failed to load delivery details.
-      </div>
-    );
+    return <div className="p-8 text-center text-destructive">Failed to load delivery details.</div>;
   }
 
   const delivery = deliveryQuery.data;
@@ -48,10 +40,7 @@ export function DeliveryDetailPage() {
       <PageHeader
         title={`Delivery ${delivery.deliveryReference}`}
         description={`For order ${delivery.orderReference} to ${delivery.shopName}`}
-        crumbs={[
-          { label: "Deliveries", to: "/deliveries" },
-          { label: delivery.deliveryReference },
-        ]}
+        crumbs={[{ label: "Deliveries", to: "/deliveries" }, { label: delivery.deliveryReference }]}
         actions={
           delivery.status === "Pending" ? (
             <Button onClick={() => setIsAssignOpen(true)}>Assign Delivery</Button>
@@ -104,12 +93,11 @@ export function DeliveryDetailPage() {
             <div className="mb-6">
               <DeliveryStatusBadge status={delivery.status} />
             </div>
-            
-            <h4 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">Actions</h4>
-            <DeliveryStatusActions
-              deliveryJobId={delivery.id}
-              currentStatus={delivery.status}
-            />
+
+            <h4 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+              Actions
+            </h4>
+            <DeliveryStatusActions deliveryJobId={delivery.id} currentStatus={delivery.status} />
           </section>
 
           <section className="rounded-lg border border-border bg-card p-6 shadow-sm">

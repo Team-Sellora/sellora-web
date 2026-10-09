@@ -1,14 +1,7 @@
 import type { SelloraRole } from "@/auth/useSelloraAuth";
 
 export type DeliveryColumn =
-  | "deliveryRef"
-  | "orderRef"
-  | "shop"
-  | "territory"
-  | "status"
-  | "date"
-  | "rep"
-  | "assign";
+  "deliveryRef" | "orderRef" | "shop" | "territory" | "status" | "date" | "rep" | "assign";
 
 export function deliveryColumnsFor(role: SelloraRole | null): DeliveryColumn[] {
   if (role === "CompanyAdmin" || role === "AreaManager" || role === "AgencyOperator") {

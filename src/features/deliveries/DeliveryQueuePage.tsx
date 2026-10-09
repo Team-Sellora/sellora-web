@@ -17,7 +17,13 @@ import { DeliveryStatusBadge } from "./components/DeliveryStatusBadge";
 import { AssignDeliveryDialog } from "./components/AssignDeliveryDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const PAGE_SIZE = 20;
 
@@ -99,16 +105,14 @@ export function DeliveryQueuePage() {
       case "date":
         return formatDeliveryDate(delivery.scheduledDate);
       case "rep":
-        return delivery.assignedRepName || <span className="text-muted-foreground">Unassigned</span>;
+        return (
+          delivery.assignedRepName || <span className="text-muted-foreground">Unassigned</span>
+        );
       case "assign":
         // Render assign action if pending. The AssignDeliveryDialog's internal gate
         // handles whether the button actually functions or opens based on role.
         return delivery.status === "Pending" ? (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setAssigningJobId(delivery.id)}
-          >
+          <Button variant="outline" size="sm" onClick={() => setAssigningJobId(delivery.id)}>
             Assign
           </Button>
         ) : null;
@@ -119,7 +123,7 @@ export function DeliveryQueuePage() {
     if (deliveriesQuery.isLoading) {
       return (
         <tr>
-          <td colSpan={columns.length} className="px-4 py-6 text-center text-muted-foreground">
+          <td colSpan={columns.length} className="px-4 py-8 text-center text-muted-foreground">
             Loading deliveries…
           </td>
         </tr>
@@ -129,22 +133,22 @@ export function DeliveryQueuePage() {
     if (deliveries.length === 0) {
       return (
         <tr>
-          <td colSpan={columns.length} className="px-4 py-14 text-center text-muted-foreground">
-            <Truck className="mx-auto mb-2 size-6" />
-            {emptyDeliveriesMessage(role)}
+          <td colSpan={columns.length} className="px-4 py-12 text-center text-muted-foreground">
+            <Truck className="mx-auto mb-2 size-6 opacity-75" />
+            <p className="text-sm">{emptyDeliveriesMessage(role)}</p>
           </td>
         </tr>
       );
     }
 
     return deliveries.map((delivery) => (
-      <tr key={delivery.id} className="hover:bg-muted/40">
+      <tr key={delivery.id} className="transition-colors hover:bg-muted/40">
         {columns.map((column) => (
           <td
             key={column}
             className={cn(
               "whitespace-nowrap px-4 py-3",
-              headers[column].align === "right" && "text-right",
+              headers[column].align === "right" ? "text-right" : "text-left",
             )}
           >
             {cell(delivery, column)}
@@ -239,15 +243,15 @@ export function DeliveryQueuePage() {
           <table className="w-full text-left text-sm">
             <thead className="border-b border-border bg-muted/50 text-xs uppercase tracking-wide text-muted-foreground">
               <tr>
-                {columns.map((column) => (
+                {columns.map((col) => (
                   <th
-                    key={column}
+                    key={col}
                     className={cn(
                       "px-4 py-3 font-semibold",
-                      headers[column].align === "right" && "text-right",
+                      headers[col].align === "right" ? "text-right" : "text-left",
                     )}
                   >
-                    {headers[column].label}
+                    {headers[col].label}
                   </th>
                 ))}
               </tr>
@@ -256,29 +260,34 @@ export function DeliveryQueuePage() {
           </table>
         </div>
 
-        <div className="flex items-center justify-between border-t border-border px-4 py-3 text-xs text-muted-foreground">
+        <nav
+          aria-label="Pagination"
+          className="flex items-center justify-between border-t border-border px-4 py-3 text-xs text-muted-foreground"
+        >
           <span>
             Page {page} of {totalPages}
           </span>
           <div className="flex gap-2">
-            <button
-              type="button"
+            <Button
+              variant="outline"
+              size="sm"
               disabled={page <= 1 || deliveriesQuery.isFetching}
               onClick={() => setPage((current) => Math.max(1, current - 1))}
-              className="inline-flex h-8 items-center gap-1 rounded-md border border-input px-3 disabled:opacity-50"
+              className="h-8 gap-1 px-3"
             >
               <ChevronLeft className="size-4" /> Previous
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
               disabled={page >= totalPages || deliveriesQuery.isFetching}
               onClick={() => setPage((current) => current + 1)}
-              className="inline-flex h-8 items-center gap-1 rounded-md border border-input px-3 disabled:opacity-50"
+              className="h-8 gap-1 px-3"
             >
               Next <ChevronRight className="size-4" />
-            </button>
+            </Button>
           </div>
-        </div>
+        </nav>
       </section>
 
       {assigningJobId && (

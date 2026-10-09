@@ -55,7 +55,7 @@ export interface DeliveryLine {
 export interface DeliveryDetail extends DeliverySummary {
   lines: DeliveryLine[];
   history: DeliveryStatusHistoryEntry[];
-  confirmation: any; // placeholder for later stories
+  confirmation: unknown; // placeholder for later stories
 }
 
 export interface PaginatedDeliveries {

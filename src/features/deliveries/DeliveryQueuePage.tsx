@@ -13,7 +13,7 @@ import {
   type DeliveryColumn,
 } from "./roleView";
 import type { DeliverySummary } from "./types";
-import { DeliveryStatusBadge } from "./components/DeliveryStatusBadge";
+import { DeliveryStatusBadge, AwaitingConfirmationBadge } from "./components/DeliveryStatusBadge";
 import { AssignDeliveryDialog } from "./components/AssignDeliveryDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -101,7 +101,14 @@ export function DeliveryQueuePage() {
       case "territory":
         return delivery.territory;
       case "status":
-        return <DeliveryStatusBadge status={delivery.status} />;
+        return (
+          <div className="flex items-center gap-2">
+            <DeliveryStatusBadge status={delivery.status} />
+            {role === "ShopOwner" && delivery.confirmationState === "Awaiting" && (
+              <AwaitingConfirmationBadge />
+            )}
+          </div>
+        );
       case "date":
         return formatDeliveryDate(delivery.scheduledDate);
       case "rep":

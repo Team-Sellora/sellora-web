@@ -6,6 +6,7 @@ import {
   type UpdateDeliveryStatusPayload,
   type PaginatedDeliveries,
   type DeliveryDetail,
+  type SubmitDeliveryConfirmationPayload,
 } from "./types";
 
 async function unwrap<T>(response: Response): Promise<T> {
@@ -92,4 +93,15 @@ export function getDelivery(deliveryJobId: string): Promise<DeliveryDetail> {
   return deliveryApiFetch(`/api/deliveries/${encodeURIComponent(deliveryJobId)}`).then(
     unwrap<DeliveryDetail>,
   );
+}
+
+export function submitDeliveryConfirmation(
+  deliveryJobId: string,
+  payload: SubmitDeliveryConfirmationPayload,
+): Promise<void> {
+  return deliveryApiFetch(`/api/deliveries/${encodeURIComponent(deliveryJobId)}/confirmation`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  }).then(unwrap<void>);
 }

@@ -99,9 +99,18 @@ export function submitDeliveryConfirmation(
   deliveryJobId: string,
   payload: SubmitDeliveryConfirmationPayload,
 ): Promise<void> {
+  const type = payload.type ?? payload.Type ?? payload.outcome;
+  const notes = payload.notes ?? payload.Notes ?? payload.note;
+  const body = {
+    type,
+    Type: type,
+    outcome: type,
+    ...(notes !== undefined ? { notes, Notes: notes, note: notes } : {}),
+  };
+
   return deliveryApiFetch(`/api/deliveries/${encodeURIComponent(deliveryJobId)}/confirmation`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(body),
   }).then(unwrap<void>);
 }

@@ -45,8 +45,12 @@ export interface DeliveryConfirmation {
 }
 
 export interface SubmitDeliveryConfirmationPayload {
-  outcome: "Confirmed" | "Disputed";
+  outcome?: "Confirmed" | "Disputed";
+  type?: "Confirmed" | "Disputed";
+  Type?: "Confirmed" | "Disputed";
   note?: string;
+  notes?: string;
+  Notes?: string;
 }
 
 export interface DeliverySummary {

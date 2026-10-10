@@ -87,6 +87,17 @@ export function DeliveryQueuePage() {
           </Link>
         );
       case "orderRef":
+        if (role === "ShopOwner" || !delivery.orderId) {
+          return (
+            <Link
+              to="/deliveries/$deliveryId"
+              params={{ deliveryId: delivery.id }}
+              className="font-mono text-xs hover:underline"
+            >
+              {delivery.orderReference}
+            </Link>
+          );
+        }
         return (
           <Link
             to="/orders/$orderId"

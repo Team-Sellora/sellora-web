@@ -67,37 +67,45 @@ export function DeliveryConfirmationActions({
           </Alert>
         )}
 
-        {confirmation.state === "Awaiting" ? (
-          <div className="flex gap-2">
-            <Button onClick={handleConfirm} disabled={isPending}>
-              {isPending && !isReportProblemOpen && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              )}
-              Confirm receipt
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => setIsReportProblemOpen(true)}
-              disabled={isPending}
-            >
-              Report a problem
-            </Button>
-          </div>
-        ) : (
-          <div className="rounded-md bg-muted p-4 text-sm">
-            <p className="font-medium mb-1">
-              {confirmation.state === "Confirmed" ? "Receipt confirmed" : "Problem reported"}
-            </p>
-            {confirmation.note && (
-              <p className="text-muted-foreground mt-2">Note: {confirmation.note}</p>
-            )}
-            {confirmation.time && (
-              <p className="text-xs text-muted-foreground mt-2">
-                Recorded at: {new Date(confirmation.time).toLocaleString()}
+        {(() => {
+          const state = confirmation.state ?? confirmation.status;
+          const note = confirmation.note ?? confirmation.notes;
+          const time = confirmation.time ?? confirmation.confirmedAt;
+
+          if (state === "Awaiting") {
+            return (
+              <div className="flex gap-2">
+                <Button onClick={handleConfirm} disabled={isPending}>
+                  {isPending && !isReportProblemOpen && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Confirm receipt
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsReportProblemOpen(true)}
+                  disabled={isPending}
+                >
+                  Report a problem
+                </Button>
+              </div>
+            );
+          }
+
+          return (
+            <div className="rounded-md bg-muted p-4 text-sm">
+              <p className="font-medium mb-1">
+                {state === "Confirmed" ? "Receipt confirmed" : "Problem reported"}
               </p>
-            )}
-          </div>
-        )}
+              {note && <p className="text-muted-foreground mt-2">Note: {note}</p>}
+              {time && (
+                <p className="text-xs text-muted-foreground mt-2">
+                  Recorded at: {new Date(time).toLocaleString()}
+                </p>
+              )}
+            </div>
+          );
+        })()}
 
         <ReportProblemDialog
           isOpen={isReportProblemOpen}

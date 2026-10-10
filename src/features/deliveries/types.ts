@@ -36,9 +36,12 @@ export interface DeliveryStatusHistoryEntry {
 export type ConfirmationState = "Awaiting" | "Confirmed" | "Disputed";
 
 export interface DeliveryConfirmation {
-  state: ConfirmationState;
+  state?: ConfirmationState;
+  status?: ConfirmationState;
   note?: string;
+  notes?: string;
   time?: string;
+  confirmedAt?: string;
 }
 
 export interface SubmitDeliveryConfirmationPayload {

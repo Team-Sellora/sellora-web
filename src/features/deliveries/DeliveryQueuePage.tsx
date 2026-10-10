@@ -104,9 +104,11 @@ export function DeliveryQueuePage() {
         return (
           <div className="flex items-center gap-2">
             <DeliveryStatusBadge status={delivery.status} />
-            {role === "ShopOwner" && delivery.confirmationState === "Awaiting" && (
-              <AwaitingConfirmationBadge />
-            )}
+            {role === "ShopOwner" &&
+              (delivery.confirmationState === "Awaiting" ||
+                (delivery.status === "Delivered" && !delivery.confirmationState)) && (
+                <AwaitingConfirmationBadge />
+              )}
           </div>
         );
       case "date":

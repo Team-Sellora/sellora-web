@@ -23,7 +23,7 @@ export function ReportProblemDialog({
   isSubmitting,
   onClose,
   onSubmit,
-}: ReportProblemDialogProps) {
+}: Readonly<ReportProblemDialogProps>) {
   const [note, setNote] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {

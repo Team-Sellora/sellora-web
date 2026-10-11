@@ -34,6 +34,12 @@ export function ReturnDetailPage() {
 
   if (query.isError) {
     const is404 = query.error instanceof ReturnApiError && query.error.status === 404;
+    let errorMessage = "Unable to load return details.";
+    if (is404) {
+      errorMessage = "The requested return does not exist or is outside your scope.";
+    } else if (query.error instanceof Error) {
+      errorMessage = query.error.message;
+    }
 
     return (
       <div className="p-6">
@@ -42,13 +48,7 @@ export function ReturnDetailPage() {
           <h2 className="text-lg font-semibold">
             {is404 ? "Return Request Not Found" : "Error Loading Return"}
           </h2>
-          <p className="text-sm text-muted-foreground">
-            {is404
-              ? "The requested return does not exist or is outside your scope."
-              : query.error instanceof Error
-                ? query.error.message
-                : "Unable to load return details."}
-          </p>
+          <p className="text-sm text-muted-foreground">{errorMessage}</p>
           <div className="pt-2">
             <Link
               to="/returns"
@@ -71,6 +71,23 @@ export function ReturnDetailPage() {
   const isRequested = returnData.status === "Requested";
   const canDecide = isOperator && isRequested;
 
+  const handleDecisionError = (err: unknown) => {
+    if (err instanceof ReturnApiError) {
+      if (err.status === 503) {
+        // On 503: stock service unavailable, leave screen exactly as it is for retry
+        setDecisionError("Stock service unavailable, try again");
+      } else if (err.status === 409) {
+        // On 409: already decided or no stock owner; show server detail and refetch
+        setDecisionError(err.detail ?? "The return request is no longer pending.");
+        queryClient.invalidateQueries({ queryKey: [...returnsQueryKey, returnId] });
+      } else {
+        setDecisionError(err.detail ?? err.message);
+      }
+    } else if (err instanceof Error) {
+      setDecisionError(err.message);
+    }
+  };
+
   const handleApprove = async () => {
     setDecisionError(null);
     try {
@@ -79,20 +96,7 @@ export function ReturnDetailPage() {
         payload: { decision: "Approved" },
       });
     } catch (err) {
-      if (err instanceof ReturnApiError) {
-        if (err.status === 503) {
-          // On 503: stock service unavailable, leave screen exactly as it is for retry
-          setDecisionError("Stock service unavailable, try again");
-        } else if (err.status === 409) {
-          // On 409: already decided or no stock owner; show server detail and refetch
-          setDecisionError(err.detail ?? "The return request is no longer pending.");
-          queryClient.invalidateQueries({ queryKey: [...returnsQueryKey, returnId] });
-        } else {
-          setDecisionError(err.detail ?? err.message);
-        }
-      } else if (err instanceof Error) {
-        setDecisionError(err.message);
-      }
+      handleDecisionError(err);
     }
   };
 
@@ -104,18 +108,7 @@ export function ReturnDetailPage() {
         payload: { decision: "Rejected", reason },
       });
     } catch (err) {
-      if (err instanceof ReturnApiError) {
-        if (err.status === 503) {
-          setDecisionError("Stock service unavailable, try again");
-        } else if (err.status === 409) {
-          setDecisionError(err.detail ?? "The return request is no longer pending.");
-          queryClient.invalidateQueries({ queryKey: [...returnsQueryKey, returnId] });
-        } else {
-          setDecisionError(err.detail ?? err.message);
-        }
-      } else if (err instanceof Error) {
-        setDecisionError(err.message);
-      }
+      handleDecisionError(err);
       throw err;
     }
   };

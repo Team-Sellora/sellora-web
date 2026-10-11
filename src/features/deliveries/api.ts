@@ -86,7 +86,8 @@ export function getDeliveries(params: GetDeliveriesParams): Promise<PaginatedDel
   searchParams.set("pageSize", String(params.pageSize ?? 20));
 
   const qs = searchParams.toString();
-  return deliveryApiFetch(`/api/deliveries${qs ? `?${qs}` : ""}`).then(unwrap<PaginatedDeliveries>);
+  const path = qs ? `/api/deliveries?${qs}` : "/api/deliveries";
+  return deliveryApiFetch(path).then(unwrap<PaginatedDeliveries>);
 }
 
 export function getDelivery(deliveryJobId: string): Promise<DeliveryDetail> {

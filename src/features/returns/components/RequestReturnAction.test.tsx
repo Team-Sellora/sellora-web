@@ -5,15 +5,11 @@ import { RequestReturnAction } from "./RequestReturnAction";
 import * as auth from "@/auth/useSelloraAuth";
 import type { DeliveryDetail } from "@/features/deliveries/types";
 
-vi.mock("@/auth/useSelloraAuth", () => ({
-  useSelloraAuth: vi.fn(),
-}));
+import type { SelloraRole } from "@/auth/useSelloraAuth";
 
+vi.mock("@/auth/useSelloraAuth", () => ({ useSelloraAuth: vi.fn() }));
 vi.mock("@tanstack/react-router", () => ({
-  Link: ({ children, to }: { children: React.ReactNode; to: string; params?: unknown }) => (
-    <a href={to}>{children}</a>
-  ),
-  useParams: () => ({}),
+  Link: ({ children }: { children?: React.ReactNode }) => <a>{children}</a>,
 }));
 
 vi.mock("./RequestReturnDialog", () => ({
@@ -71,6 +67,19 @@ const mockDelivery: DeliveryDetail = {
   confirmation: null,
 };
 
+function setViewerRole(role: SelloraRole) {
+  vi.mocked(auth.useSelloraAuth).mockReturnValue({
+    role,
+    roles: [role],
+    companyId: "c-1",
+    accessToken: "token",
+    username: "user",
+    isLoading: false,
+    isAuthenticated: true,
+    logout: vi.fn(),
+  });
+}
+
 describe("RequestReturnAction", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -81,84 +90,34 @@ describe("RequestReturnAction", () => {
   });
 
   it("renders Request return button when role is ShopOwner, status is Delivered, and returnableQuantity > 0", () => {
-    vi.mocked(auth.useSelloraAuth).mockReturnValue({
-      role: "ShopOwner",
-      roles: ["ShopOwner"],
-      companyId: "c-1",
-      accessToken: "token",
-      username: "user",
-      isLoading: false,
-      isAuthenticated: true,
-      logout: vi.fn(),
-    });
-
+    setViewerRole("ShopOwner");
     render(<RequestReturnAction delivery={mockDelivery} />);
     expect(screen.getByRole("button", { name: /request return/i })).toBeDefined();
   });
 
   it("renders Request return button when role is SalesRep", () => {
-    vi.mocked(auth.useSelloraAuth).mockReturnValue({
-      role: "SalesRep",
-      roles: ["SalesRep"],
-      companyId: "c-1",
-      accessToken: "token",
-      username: "user",
-      isLoading: false,
-      isAuthenticated: true,
-      logout: vi.fn(),
-    });
-
+    setViewerRole("SalesRep");
     render(<RequestReturnAction delivery={mockDelivery} />);
     expect(screen.getByRole("button", { name: /request return/i })).toBeDefined();
   });
 
   it("does not render when role is AgencyOperator, AreaManager, or CompanyAdmin", () => {
     for (const role of ["AgencyOperator", "AreaManager", "CompanyAdmin"] as const) {
-      vi.mocked(auth.useSelloraAuth).mockReturnValue({
-        role,
-        roles: [role],
-        companyId: "c-1",
-        accessToken: "token",
-        username: "user",
-        isLoading: false,
-        isAuthenticated: true,
-        logout: vi.fn(),
-      });
-
+      setViewerRole(role);
       const { container } = render(<RequestReturnAction delivery={mockDelivery} />);
       expect(container.firstChild).toBeNull();
     }
   });
 
   it("does not render when delivery status is not Delivered", () => {
-    vi.mocked(auth.useSelloraAuth).mockReturnValue({
-      role: "ShopOwner",
-      roles: ["ShopOwner"],
-      companyId: "c-1",
-      accessToken: "token",
-      username: "user",
-      isLoading: false,
-      isAuthenticated: true,
-      logout: vi.fn(),
-    });
-
+    setViewerRole("ShopOwner");
     const pendingDelivery = { ...mockDelivery, status: "InTransit" as const };
     const { container } = render(<RequestReturnAction delivery={pendingDelivery} />);
     expect(container.firstChild).toBeNull();
   });
 
   it("does not render when all lines have returnableQuantity === 0", () => {
-    vi.mocked(auth.useSelloraAuth).mockReturnValue({
-      role: "ShopOwner",
-      roles: ["ShopOwner"],
-      companyId: "c-1",
-      accessToken: "token",
-      username: "user",
-      isLoading: false,
-      isAuthenticated: true,
-      logout: vi.fn(),
-    });
-
+    setViewerRole("ShopOwner");
     const zeroReturnableDelivery: DeliveryDetail = {
       ...mockDelivery,
       lines: [
@@ -176,17 +135,7 @@ describe("RequestReturnAction", () => {
   });
 
   it("opens dialog on click and displays created return reference on success", () => {
-    vi.mocked(auth.useSelloraAuth).mockReturnValue({
-      role: "ShopOwner",
-      roles: ["ShopOwner"],
-      companyId: "c-1",
-      accessToken: "token",
-      username: "user",
-      isLoading: false,
-      isAuthenticated: true,
-      logout: vi.fn(),
-    });
-
+    setViewerRole("ShopOwner");
     render(<RequestReturnAction delivery={mockDelivery} />);
     fireEvent.click(screen.getByRole("button", { name: /request return/i }));
 

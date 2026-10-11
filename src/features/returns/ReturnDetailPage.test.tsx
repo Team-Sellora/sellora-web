@@ -4,6 +4,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { ReturnDetailPage } from "./ReturnDetailPage";
 import * as hooks from "./hooks";
 import * as auth from "@/auth/useSelloraAuth";
+import type { SelloraRole } from "@/auth/useSelloraAuth";
 import { ReturnApiError, type ReturnRequestDetail } from "./types";
 import type { UseQueryResult, UseMutationResult } from "@tanstack/react-query";
 import type { DecideReturnPayload } from "./types";
@@ -15,8 +16,8 @@ vi.mock("@/routes/returns_.$returnId", () => ({
 }));
 
 vi.mock("@tanstack/react-router", () => ({
-  Link: ({ children, to }: { children: React.ReactNode; to: string; params?: unknown }) => (
-    <a href={to}>{children}</a>
+  Link: (props: { to: string; children?: React.ReactNode }) => (
+    <a href={props.to}>{props.children}</a>
   ),
   useParams: () => ({ returnId: "ret-123" }),
 }));
@@ -66,6 +67,31 @@ const mockReturnDetail: ReturnRequestDetail = {
   ],
 };
 
+function mockAuth(role: SelloraRole) {
+  vi.mocked(auth.useSelloraAuth).mockReturnValue({
+    role,
+    roles: [role],
+    companyId: "c-1",
+    accessToken: "token",
+    username: "user",
+    isLoading: false,
+    isAuthenticated: true,
+    logout: vi.fn(),
+  });
+}
+
+function mockQuery(
+  data: ReturnRequestDetail | undefined,
+  options: { isError?: boolean; error?: unknown } = {},
+) {
+  vi.mocked(hooks.useReturn).mockReturnValue({
+    data,
+    isLoading: false,
+    isError: Boolean(options.isError),
+    error: options.error,
+  } as unknown as UseQueryResult<ReturnRequestDetail>);
+}
+
 describe("ReturnDetailPage", () => {
   const mockDecide = vi.fn();
 
@@ -86,22 +112,8 @@ describe("ReturnDetailPage", () => {
   });
 
   it("renders lines, requester role and time, and header information", () => {
-    vi.mocked(auth.useSelloraAuth).mockReturnValue({
-      role: "ShopOwner",
-      roles: ["ShopOwner"],
-      companyId: "c-1",
-      accessToken: "token",
-      username: "user",
-      isLoading: false,
-      isAuthenticated: true,
-      logout: vi.fn(),
-    });
-
-    vi.mocked(hooks.useReturn).mockReturnValue({
-      data: mockReturnDetail,
-      isLoading: false,
-      isError: false,
-    } as unknown as UseQueryResult<ReturnRequestDetail>);
+    mockAuth("ShopOwner");
+    mockQuery(mockReturnDetail);
 
     render(<ReturnDetailPage />);
 
@@ -113,22 +125,8 @@ describe("ReturnDetailPage", () => {
   });
 
   it("only displays Approve and Reject buttons for AgencyOperator on a Requested return", () => {
-    vi.mocked(auth.useSelloraAuth).mockReturnValue({
-      role: "AgencyOperator",
-      roles: ["AgencyOperator"],
-      companyId: "c-1",
-      accessToken: "token",
-      username: "user",
-      isLoading: false,
-      isAuthenticated: true,
-      logout: vi.fn(),
-    });
-
-    vi.mocked(hooks.useReturn).mockReturnValue({
-      data: mockReturnDetail,
-      isLoading: false,
-      isError: false,
-    } as unknown as UseQueryResult<ReturnRequestDetail>);
+    mockAuth("AgencyOperator");
+    mockQuery(mockReturnDetail);
 
     render(<ReturnDetailPage />);
 
@@ -137,50 +135,20 @@ describe("ReturnDetailPage", () => {
   });
 
   it("hides decision buttons for other roles or when return is already decided", () => {
-    // Non-operator role
-    vi.mocked(auth.useSelloraAuth).mockReturnValue({
-      role: "SalesRep",
-      roles: ["SalesRep"],
-      companyId: "c-1",
-      accessToken: "token",
-      username: "user",
-      isLoading: false,
-      isAuthenticated: true,
-      logout: vi.fn(),
-    });
-
-    vi.mocked(hooks.useReturn).mockReturnValue({
-      data: mockReturnDetail,
-      isLoading: false,
-      isError: false,
-    } as unknown as UseQueryResult<ReturnRequestDetail>);
+    mockAuth("SalesRep");
+    mockQuery(mockReturnDetail);
 
     const { rerender } = render(<ReturnDetailPage />);
     expect(screen.queryByRole("button", { name: /approve/i })).toBeNull();
     expect(screen.queryByRole("button", { name: /reject/i })).toBeNull();
 
-    // Operator role but already Approved
-    vi.mocked(auth.useSelloraAuth).mockReturnValue({
-      role: "AgencyOperator",
-      roles: ["AgencyOperator"],
-      companyId: "c-1",
-      accessToken: "token",
-      username: "user",
-      isLoading: false,
-      isAuthenticated: true,
-      logout: vi.fn(),
+    mockAuth("AgencyOperator");
+    mockQuery({
+      ...mockReturnDetail,
+      status: "Approved",
+      decidedByRole: "AgencyOperator",
+      decidedAt: "2026-10-10T15:00:00Z",
     });
-
-    vi.mocked(hooks.useReturn).mockReturnValue({
-      data: {
-        ...mockReturnDetail,
-        status: "Approved",
-        decidedByRole: "AgencyOperator",
-        decidedAt: "2026-10-10T15:00:00Z",
-      },
-      isLoading: false,
-      isError: false,
-    } as unknown as UseQueryResult<ReturnRequestDetail>);
 
     rerender(<ReturnDetailPage />);
     expect(screen.queryByRole("button", { name: /approve/i })).toBeNull();
@@ -189,22 +157,8 @@ describe("ReturnDetailPage", () => {
   });
 
   it("shows exactly 'Stock service unavailable, try again' on 503 and does not refetch", async () => {
-    vi.mocked(auth.useSelloraAuth).mockReturnValue({
-      role: "AgencyOperator",
-      roles: ["AgencyOperator"],
-      companyId: "c-1",
-      accessToken: "token",
-      username: "user",
-      isLoading: false,
-      isAuthenticated: true,
-      logout: vi.fn(),
-    });
-
-    vi.mocked(hooks.useReturn).mockReturnValue({
-      data: mockReturnDetail,
-      isLoading: false,
-      isError: false,
-    } as unknown as UseQueryResult<ReturnRequestDetail>);
+    mockAuth("AgencyOperator");
+    mockQuery(mockReturnDetail);
 
     mockDecide.mockRejectedValueOnce(new ReturnApiError(503, "Inventory downstream timeout"));
 
@@ -216,28 +170,13 @@ describe("ReturnDetailPage", () => {
       expect(screen.getByText("Stock service unavailable, try again")).toBeDefined();
     });
 
-    // Screen state left intact: controls still available for retry, no refetch triggered
     expect(screen.getByRole("button", { name: /approve/i })).toBeDefined();
     expect(mockQueryClientInvalidate).not.toHaveBeenCalled();
   });
 
   it("shows server detail inline and triggers refetch on 409 conflict", async () => {
-    vi.mocked(auth.useSelloraAuth).mockReturnValue({
-      role: "AgencyOperator",
-      roles: ["AgencyOperator"],
-      companyId: "c-1",
-      accessToken: "token",
-      username: "user",
-      isLoading: false,
-      isAuthenticated: true,
-      logout: vi.fn(),
-    });
-
-    vi.mocked(hooks.useReturn).mockReturnValue({
-      data: mockReturnDetail,
-      isLoading: false,
-      isError: false,
-    } as unknown as UseQueryResult<ReturnRequestDetail>);
+    mockAuth("AgencyOperator");
+    mockQuery(mockReturnDetail);
 
     mockDecide.mockRejectedValueOnce(
       new ReturnApiError(409, "Agency Alpha has no designated stock owner in Inventory."),
@@ -258,32 +197,18 @@ describe("ReturnDetailPage", () => {
   });
 
   it("opens reject dialog and requires non-blank reason before submitting rejection", async () => {
-    vi.mocked(auth.useSelloraAuth).mockReturnValue({
-      role: "AgencyOperator",
-      roles: ["AgencyOperator"],
-      companyId: "c-1",
-      accessToken: "token",
-      username: "user",
-      isLoading: false,
-      isAuthenticated: true,
-      logout: vi.fn(),
-    });
-
-    vi.mocked(hooks.useReturn).mockReturnValue({
-      data: mockReturnDetail,
-      isLoading: false,
-      isError: false,
-    } as unknown as UseQueryResult<ReturnRequestDetail>);
+    mockAuth("AgencyOperator");
+    mockQuery(mockReturnDetail);
 
     render(<ReturnDetailPage />);
 
     fireEvent.click(screen.getByRole("button", { name: /reject/i }));
 
     expect(screen.getByText("Reject Return Request")).toBeDefined();
-    const rejectSubmitBtn = screen.getByRole("button", { name: /reject return/i });
+    const rejectSubmitBtn = screen.getByRole("button", { name: /rejection|reject/i });
     expect(rejectSubmitBtn.hasAttribute("disabled")).toBe(true);
 
-    const reasonTextarea = screen.getByPlaceholderText(/items already past return window/i);
+    const reasonTextarea = screen.getByLabelText(/rejection reason/i);
     fireEvent.change(reasonTextarea, { target: { value: "   " } });
     expect(rejectSubmitBtn.hasAttribute("disabled")).toBe(true);
 
@@ -306,23 +231,11 @@ describe("ReturnDetailPage", () => {
   });
 
   it("renders 404 state when return request is not found", () => {
-    vi.mocked(auth.useSelloraAuth).mockReturnValue({
-      role: "AgencyOperator",
-      roles: ["AgencyOperator"],
-      companyId: "c-1",
-      accessToken: "token",
-      username: "user",
-      isLoading: false,
-      isAuthenticated: true,
-      logout: vi.fn(),
-    });
-
-    vi.mocked(hooks.useReturn).mockReturnValue({
-      data: undefined,
-      isLoading: false,
+    mockAuth("AgencyOperator");
+    mockQuery(undefined, {
       isError: true,
       error: new ReturnApiError(404, "Return not found"),
-    } as unknown as UseQueryResult<ReturnRequestDetail>);
+    });
 
     render(<ReturnDetailPage />);
     expect(screen.getByText("Return Request Not Found")).toBeDefined();

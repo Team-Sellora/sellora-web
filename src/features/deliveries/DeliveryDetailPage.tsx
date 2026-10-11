@@ -1,4 +1,4 @@
-import { Link, useParams } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { ChevronLeft } from "lucide-react";
 import { useState } from "react";
 import { PageHeader } from "@/components/PageHeader";

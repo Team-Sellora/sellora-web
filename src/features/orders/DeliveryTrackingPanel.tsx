@@ -5,7 +5,7 @@ import { useDeliveries } from "@/features/deliveries/hooks";
 import { DeliveryStatusBadge } from "@/features/deliveries/components/DeliveryStatusBadge";
 import { deliveryColumnsFor } from "@/features/deliveries/roleView";
 
-export function DeliveryTrackingPanel({ orderId }: { orderId: string }) {
+export function DeliveryTrackingPanel({ orderId }: Readonly<{ orderId: string }>) {
   const { role } = useSelloraAuth();
   const columns = deliveryColumnsFor(role);
   const { data, isLoading, isError } = useDeliveries({

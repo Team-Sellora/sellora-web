@@ -47,7 +47,7 @@ export function AwaitingConfirmationBadge() {
       )}
     >
       <span aria-hidden="true" className="size-1.5 rounded-full bg-current" />
-      Awaiting your confirmation
+      <span>Awaiting your confirmation</span>
     </span>
   );
 }

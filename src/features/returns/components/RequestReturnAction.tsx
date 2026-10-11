@@ -11,7 +11,7 @@ interface RequestReturnActionProps {
   delivery: DeliveryDetail;
 }
 
-export function RequestReturnAction({ delivery }: RequestReturnActionProps) {
+export function RequestReturnAction({ delivery }: Readonly<RequestReturnActionProps>) {
   const { role } = useSelloraAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [createdReturn, setCreatedReturn] = useState<CreateReturnResponse | null>(null);

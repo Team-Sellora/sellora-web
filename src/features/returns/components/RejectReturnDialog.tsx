@@ -23,7 +23,7 @@ export function RejectReturnDialog({
   isSubmitting,
   onClose,
   onSubmit,
-}: RejectReturnDialogProps) {
+}: Readonly<RejectReturnDialogProps>) {
   const [reason, setReason] = useState("");
 
   const isInvalid = !reason.trim() || reason.length > 500;
@@ -37,49 +37,63 @@ export function RejectReturnDialog({
       setReason("");
       onClose();
     } catch {
-      // Error handled by parent component
-      onClose();
+      // Error handled by caller
     }
   };
 
   return (
-    <Dialog
-      open={isOpen}
-      onOpenChange={(open) => {
-        if (!open && !isSubmitting) onClose();
-      }}
-    >
-      <DialogContent>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && !isSubmitting && onClose()}>
+      <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>Reject Return Request</DialogTitle>
             <DialogDescription>
-              Please provide a reason for rejecting this return request. A reason is mandatory.
+              Provide a clear reason for rejecting this return request. This reason will be recorded
+              and visible on the return details.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="py-4">
-            <Textarea
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              placeholder="E.g., Items already past return window or not matching delivery batch..."
-              disabled={isSubmitting}
-              maxLength={500}
-              className="min-h-[100px] text-sm"
-            />
-            <div className="flex justify-between text-xs text-muted-foreground mt-1">
-              <span>{!reason.trim() ? "Reason is required." : ""}</span>
-              <span>{reason.length}/500</span>
+          <div className="py-4 space-y-3">
+            <div>
+              <label
+                htmlFor="rejection-reason"
+                className="text-sm font-medium text-foreground block mb-1.5"
+              >
+                Rejection Reason (required, max 500 chars)
+              </label>
+              <Textarea
+                id="rejection-reason"
+                placeholder="State why this return cannot be accepted..."
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                disabled={isSubmitting}
+                maxLength={500}
+                className="min-h-[110px] resize-none"
+              />
+            </div>
+            <div className="flex items-center justify-between text-xs text-muted-foreground px-0.5">
+              <span>
+                {isInvalid && reason.length > 0
+                  ? "Reason exceeds 500 characters"
+                  : "Mandatory for operator rejection"}
+              </span>
+              <span className="font-mono">{reason.length} / 500</span>
             </div>
           </div>
 
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>
-              Cancel
+          <DialogFooter className="pt-2">
+            <Button type="button" variant="ghost" onClick={onClose} disabled={isSubmitting}>
+              Dismiss
             </Button>
             <Button type="submit" variant="destructive" disabled={isSubmitting || isInvalid}>
-              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Reject Return
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Rejecting...
+                </>
+              ) : (
+                "Confirm Rejection"
+              )}
             </Button>
           </DialogFooter>
         </form>

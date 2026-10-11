@@ -24,13 +24,123 @@ interface RequestReturnDialogProps {
   onSuccess: (created: CreateReturnResponse) => void;
 }
 
+function extractSubmitErrors(
+  err: unknown,
+  submittedLines: Array<{ productId: string }>,
+): { generalError: string | null; lineErrors: Record<string, string> } {
+  if (err instanceof ReturnApiError) {
+    if (err.status === 400 && err.lineErrors && err.lineErrors.length > 0) {
+      const map: Record<string, string> = {};
+      let matched = false;
+      for (const le of err.lineErrors) {
+        map[le.productId] = le.message;
+        if (submittedLines.some((l) => l.productId === le.productId)) {
+          matched = true;
+        }
+      }
+      return {
+        lineErrors: map,
+        generalError: !matched && err.detail ? err.detail : null,
+      };
+    }
+    return {
+      lineErrors: {},
+      generalError: err.detail ?? err.message,
+    };
+  }
+  if (err instanceof Error) {
+    return { lineErrors: {}, generalError: err.message };
+  }
+  return { lineErrors: {}, generalError: "An unexpected error occurred." };
+}
+
+interface ReturnLineRowProps {
+  line: DeliveryLine;
+  qty: number;
+  reason: string;
+  lineError?: string;
+  isPending: boolean;
+  onQtyChange: (val: string) => void;
+  onReasonChange: (val: string) => void;
+}
+
+function ReturnLineRow({
+  line,
+  qty,
+  reason,
+  lineError,
+  isPending,
+  onQtyChange,
+  onReasonChange,
+}: Readonly<ReturnLineRowProps>) {
+  const lineKey = line.productId ?? line.id;
+  const isSelected = qty > 0;
+
+  return (
+    <div className="rounded-lg border border-border p-4 bg-muted/20 space-y-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <p className="font-medium text-sm">{line.productName}</p>
+          <p className="text-xs text-muted-foreground">
+            Delivered: {line.quantity} | Returnable:{" "}
+            <span className="font-semibold text-foreground">{line.returnableQuantity}</span>
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <label htmlFor={`qty-${lineKey}`} className="text-xs text-muted-foreground">
+            Qty to return:
+          </label>
+          <Input
+            id={`qty-${lineKey}`}
+            type="number"
+            min={0}
+            max={line.returnableQuantity}
+            value={qty}
+            disabled={isPending || line.returnableQuantity === 0}
+            onChange={(e) => onQtyChange(e.target.value)}
+            className="w-24 h-8 text-sm text-right"
+          />
+        </div>
+      </div>
+
+      {isSelected && (
+        <div className="pt-1">
+          <label htmlFor={`reason-${lineKey}`} className="text-xs text-muted-foreground block mb-1">
+            Return reason (required, max 500):
+          </label>
+          <Textarea
+            id={`reason-${lineKey}`}
+            value={reason}
+            disabled={isPending}
+            maxLength={500}
+            placeholder="E.g., Damaged items, expired stock..."
+            onChange={(e) => onReasonChange(e.target.value)}
+            className="min-h-[60px] text-sm"
+          />
+          <div className="flex justify-between text-xs text-muted-foreground mt-1">
+            <span>{!reason.trim() ? "Reason is required." : ""}</span>
+            <span>{reason.length}/500</span>
+          </div>
+        </div>
+      )}
+
+      {lineError && (
+        <p className="text-xs font-medium text-destructive mt-1" role="alert">
+          {lineError}
+        </p>
+      )}
+    </div>
+  );
+}
+
 export function RequestReturnDialog({
   deliveryJobId,
   lines,
   isOpen,
   onClose,
   onSuccess,
-}: RequestReturnDialogProps) {
+}: Readonly<RequestReturnDialogProps>) {
   const { mutateAsync: submitReturn, isPending } = useCreateReturn();
 
   // State keyed by product id
@@ -44,9 +154,11 @@ export function RequestReturnDialog({
 
   const handleQuantityChange = (line: DeliveryLine, rawValue: string) => {
     const key = getLineKey(line);
-    const parsed = parseInt(rawValue, 10);
+    const parsed = Number.parseInt(rawValue, 10);
     // Cap at line's returnableQuantity, min 0
-    const clamped = isNaN(parsed) ? 0 : Math.max(0, Math.min(line.returnableQuantity, parsed));
+    const clamped = Number.isNaN(parsed)
+      ? 0
+      : Math.max(0, Math.min(line.returnableQuantity, parsed));
 
     setLineValues((prev) => ({
       ...prev,
@@ -124,29 +236,9 @@ export function RequestReturnDialog({
       onSuccess(result);
       onClose();
     } catch (err) {
-      if (err instanceof ReturnApiError) {
-        if (err.status === 400 && err.lineErrors && err.lineErrors.length > 0) {
-          const map: Record<string, string> = {};
-          let matched = false;
-          for (const le of err.lineErrors) {
-            map[le.productId] = le.message;
-            if (linesToSubmit.some((l) => l.productId === le.productId)) {
-              matched = true;
-            }
-          }
-          setLineErrors(map);
-          // Show general detail text if there is no line match
-          if (!matched && err.detail) {
-            setGeneralError(err.detail);
-          }
-        } else {
-          setGeneralError(err.detail ?? err.message);
-        }
-      } else if (err instanceof Error) {
-        setGeneralError(err.message);
-      } else {
-        setGeneralError("An unexpected error occurred.");
-      }
+      const { generalError: gErr, lineErrors: lErrs } = extractSubmitErrors(err, linesToSubmit);
+      setGeneralError(gErr);
+      setLineErrors(lErrs);
     }
   };
 
@@ -184,74 +276,17 @@ export function RequestReturnDialog({
           <div className="py-4 space-y-4">
             {lines.map((line) => {
               const key = getLineKey(line);
-              const qty = lineValues[key]?.quantity ?? 0;
-              const reason = lineValues[key]?.reason ?? "";
-              const lineError = lineErrors[key];
-              const isSelected = qty > 0;
-
               return (
-                <div
+                <ReturnLineRow
                   key={key}
-                  className="rounded-lg border border-border p-4 bg-muted/20 space-y-3"
-                >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <div>
-                      <p className="font-medium text-sm">{line.productName}</p>
-                      <p className="text-xs text-muted-foreground">
-                        Delivered: {line.quantity} | Returnable:{" "}
-                        <span className="font-semibold text-foreground">
-                          {line.returnableQuantity}
-                        </span>
-                      </p>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <label htmlFor={`qty-${key}`} className="text-xs text-muted-foreground">
-                        Qty to return:
-                      </label>
-                      <Input
-                        id={`qty-${key}`}
-                        type="number"
-                        min={0}
-                        max={line.returnableQuantity}
-                        value={qty}
-                        disabled={isPending || line.returnableQuantity === 0}
-                        onChange={(e) => handleQuantityChange(line, e.target.value)}
-                        className="w-24 h-8 text-sm text-right"
-                      />
-                    </div>
-                  </div>
-
-                  {isSelected && (
-                    <div className="pt-1">
-                      <label
-                        htmlFor={`reason-${key}`}
-                        className="text-xs text-muted-foreground block mb-1"
-                      >
-                        Return reason (required, max 500):
-                      </label>
-                      <Textarea
-                        id={`reason-${key}`}
-                        value={reason}
-                        disabled={isPending}
-                        maxLength={500}
-                        placeholder="E.g., Damaged items, expired stock..."
-                        onChange={(e) => handleReasonChange(line, e.target.value)}
-                        className="min-h-[60px] text-sm"
-                      />
-                      <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                        <span>{!reason.trim() ? "Reason is required." : ""}</span>
-                        <span>{reason.length}/500</span>
-                      </div>
-                    </div>
-                  )}
-
-                  {lineError && (
-                    <p className="text-xs font-medium text-destructive mt-1" role="alert">
-                      {lineError}
-                    </p>
-                  )}
-                </div>
+                  line={line}
+                  qty={lineValues[key]?.quantity ?? 0}
+                  reason={lineValues[key]?.reason ?? ""}
+                  lineError={lineErrors[key]}
+                  isPending={isPending}
+                  onQtyChange={(val) => handleQuantityChange(line, val)}
+                  onReasonChange={(val) => handleReasonChange(line, val)}
+                />
               );
             })}
           </div>

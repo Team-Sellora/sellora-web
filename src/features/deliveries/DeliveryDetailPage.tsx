@@ -8,6 +8,7 @@ import { DeliveryStatusBadge } from "./components/DeliveryStatusBadge";
 import { DeliveryStatusActions } from "./components/DeliveryStatusActions";
 import { DeliveryStatusHistory } from "./components/DeliveryStatusHistory";
 import { AssignDeliveryDialog } from "./components/AssignDeliveryDialog";
+import { DeliveryConfirmationActions } from "./components/DeliveryConfirmationActions";
 import { Route } from "@/routes/deliveries_.$deliveryId";
 
 export function DeliveryDetailPage() {
@@ -98,6 +99,11 @@ export function DeliveryDetailPage() {
               Actions
             </h4>
             <DeliveryStatusActions deliveryJobId={delivery.id} currentStatus={delivery.status} />
+
+            <DeliveryConfirmationActions
+              deliveryJobId={delivery.id}
+              confirmation={delivery.confirmation}
+            />
           </section>
 
           <section className="rounded-lg border border-border bg-card p-6 shadow-sm">

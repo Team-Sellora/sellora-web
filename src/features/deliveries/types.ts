@@ -33,6 +33,26 @@ export interface DeliveryStatusHistoryEntry {
   reason?: string;
 }
 
+export type ConfirmationState = "Awaiting" | "Confirmed" | "Disputed";
+
+export interface DeliveryConfirmation {
+  state?: ConfirmationState;
+  status?: ConfirmationState;
+  note?: string;
+  notes?: string;
+  time?: string;
+  confirmedAt?: string;
+}
+
+export interface SubmitDeliveryConfirmationPayload {
+  outcome?: "Confirmed" | "Disputed";
+  type?: "Confirmed" | "Disputed";
+  Type?: "Confirmed" | "Disputed";
+  note?: string;
+  notes?: string;
+  Notes?: string;
+}
+
 export interface DeliverySummary {
   id: string;
   deliveryReference: string;
@@ -43,6 +63,7 @@ export interface DeliverySummary {
   status: DeliveryStatus;
   scheduledDate: string | null;
   assignedRepName: string | null;
+  confirmationState?: ConfirmationState | null;
 }
 
 export interface DeliveryLine {
@@ -55,7 +76,7 @@ export interface DeliveryLine {
 export interface DeliveryDetail extends DeliverySummary {
   lines: DeliveryLine[];
   history: DeliveryStatusHistoryEntry[];
-  confirmation: unknown; // placeholder for later stories
+  confirmation: DeliveryConfirmation | null;
 }
 
 export interface PaginatedDeliveries {

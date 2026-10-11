@@ -5,9 +5,14 @@ import {
   updateDeliveryStatus,
   getDeliveries,
   getDelivery,
+  submitDeliveryConfirmation,
   type GetDeliveriesParams,
 } from "./api";
-import type { AssignDeliveryPayload, UpdateDeliveryStatusPayload } from "./types";
+import type {
+  AssignDeliveryPayload,
+  UpdateDeliveryStatusPayload,
+  SubmitDeliveryConfirmationPayload,
+} from "./types";
 
 export const deliveriesQueryKey = ["deliveries"] as const;
 
@@ -66,5 +71,22 @@ export function useDelivery(deliveryJobId: string) {
     queryKey: [...deliveriesQueryKey, "detail", deliveryJobId],
     queryFn: () => getDelivery(deliveryJobId),
     enabled: !!deliveryJobId,
+  });
+}
+
+export function useSubmitDeliveryConfirmation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      deliveryJobId,
+      payload,
+    }: {
+      deliveryJobId: string;
+      payload: SubmitDeliveryConfirmationPayload;
+    }) => submitDeliveryConfirmation(deliveryJobId, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: deliveriesQueryKey });
+    },
   });
 }

@@ -37,3 +37,17 @@ export function DeliveryStatusBadge({ status }: Readonly<{ status: DeliveryStatu
     </span>
   );
 }
+
+export function AwaitingConfirmationBadge() {
+  return (
+    <span
+      className={cn(
+        "status-chip inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium",
+        "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
+      )}
+    >
+      <span aria-hidden="true" className="size-1.5 rounded-full bg-current" />
+      Awaiting your confirmation
+    </span>
+  );
+}

@@ -20,6 +20,7 @@ describe("role-based navigation", () => {
       "Orders",
       "Deliveries",
       "Van returns",
+      "Shop returns",
       "Failed notifications",
     ]);
   });
@@ -33,6 +34,7 @@ describe("role-based navigation", () => {
       "Products",
       "Orders",
       "Deliveries",
+      "Shop returns",
     ]);
   });
 
@@ -47,6 +49,7 @@ describe("role-based navigation", () => {
       "Orders",
       "Deliveries",
       "Van returns",
+      "Shop returns",
     ]);
   });
 
@@ -58,11 +61,12 @@ describe("role-based navigation", () => {
       "Orders",
       "Deliveries",
       "Van returns",
+      "Shop returns",
     ]);
   });
 
   it("shows a shop owner only their orders", () => {
-    expect(labels("ShopOwner")).toEqual(["Dashboard", "Orders", "Deliveries"]);
+    expect(labels("ShopOwner")).toEqual(["Dashboard", "Orders", "Deliveries", "Shop returns"]);
   });
 
   it("shows only the dashboard until the role is known", () => {

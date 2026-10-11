@@ -3,7 +3,7 @@
 function required(value: string | undefined, name: string): string {
   if (!value) {
     if (import.meta.env?.MODE === "test") {
-      return `http://mock-${name.toLowerCase().replace(/_/g, "-")}.example`;
+      return `http://mock-${name.toLowerCase().replaceAll("_", "-")}.example`;
     }
     throw new Error(`Missing required env var: ${name}`);
   }

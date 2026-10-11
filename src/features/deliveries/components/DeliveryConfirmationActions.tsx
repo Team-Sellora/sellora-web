@@ -16,7 +16,7 @@ interface DeliveryConfirmationActionsProps {
 export function DeliveryConfirmationActions({
   deliveryJobId,
   confirmation,
-}: DeliveryConfirmationActionsProps) {
+}: Readonly<DeliveryConfirmationActionsProps>) {
   const { role } = useSelloraAuth();
   const { mutateAsync: submitConfirmation, isPending, error } = useSubmitDeliveryConfirmation();
   const [isReportProblemOpen, setIsReportProblemOpen] = useState(false);
@@ -46,12 +46,12 @@ export function DeliveryConfirmationActions({
     });
   };
 
-  const apiErrorDetail =
-    error instanceof DeliveryApiError
-      ? error.detail || `An unexpected error occurred (Status: ${error.status})`
-      : error
-        ? error.message
-        : undefined;
+  let apiErrorDetail: string | undefined;
+  if (error instanceof DeliveryApiError) {
+    apiErrorDetail = error.detail || `An unexpected error occurred (Status: ${error.status})`;
+  } else if (error) {
+    apiErrorDetail = error.message;
+  }
 
   return (
     <>

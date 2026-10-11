@@ -1,4 +1,4 @@
-import { Link, useParams } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { ChevronLeft } from "lucide-react";
 import { useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
@@ -9,6 +9,7 @@ import { DeliveryStatusActions } from "./components/DeliveryStatusActions";
 import { DeliveryStatusHistory } from "./components/DeliveryStatusHistory";
 import { AssignDeliveryDialog } from "./components/AssignDeliveryDialog";
 import { DeliveryConfirmationActions } from "./components/DeliveryConfirmationActions";
+import { RequestReturnAction } from "@/features/returns/components/RequestReturnAction";
 import { Route } from "@/routes/deliveries_.$deliveryId";
 
 export function DeliveryDetailPage() {
@@ -104,6 +105,8 @@ export function DeliveryDetailPage() {
               deliveryJobId={delivery.id}
               confirmation={delivery.confirmation}
             />
+
+            <RequestReturnAction delivery={delivery} />
           </section>
 
           <section className="rounded-lg border border-border bg-card p-6 shadow-sm">

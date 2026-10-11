@@ -68,6 +68,7 @@ export interface DeliverySummary {
 
 export interface DeliveryLine {
   id: string;
+  productId?: string;
   productName: string;
   quantity: number;
   returnableQuantity: number;

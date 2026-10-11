@@ -5,6 +5,13 @@ import type { Column, Record_ } from "@/lib/mock-data";
 
 const PAGE_SIZE = 5;
 
+export interface ServerPagination {
+  page: number;
+  totalPages: number;
+  totalCount: number;
+  onPageChange: (page: number) => void;
+}
+
 function SortIcon({
   columnKey,
   sort,
@@ -14,7 +21,7 @@ function SortIcon({
   return <ArrowDown className="size-3" />;
 }
 
-export function DataTable({
+export function DataTable<T extends { id: string; [key: string]: unknown }>({
   columns,
   rows,
   loading = false,
@@ -24,33 +31,44 @@ export function DataTable({
   onSearch,
   statusFilter,
   onStatusFilter,
+  statusOptions,
+  serverPagination,
+  emptyMessage,
 }: Readonly<{
   columns: Column[];
-  rows: Record_[];
+  rows: T[];
   loading?: boolean;
-  renderCell?: (row: Record_, key: string) => ReactNode;
-  rowActions?: (row: Record_) => ReactNode;
-  searchValue: string;
-  onSearch: (v: string) => void;
-  statusFilter: string;
-  onStatusFilter: (v: string) => void;
+  renderCell?: (row: T, key: string) => ReactNode;
+  rowActions?: (row: T) => ReactNode;
+  searchValue?: string;
+  onSearch?: (v: string) => void;
+  statusFilter?: string;
+  onStatusFilter?: (v: string) => void;
+  statusOptions?: { value: string; label: string }[];
+  serverPagination?: ServerPagination;
+  emptyMessage?: string;
 }>) {
   const [sort, setSort] = useState<{ key: string; dir: "asc" | "desc" } | null>(null);
   const [page, setPage] = useState(1);
 
   const sorted = useMemo(() => {
-    if (!sort) return rows;
+    // When using server pagination, preserve server sort order (e.g. Requested first)
+    if (serverPagination || !sort) return rows;
     return [...rows].sort((a, b) => {
       const cmp = String(a[sort.key] ?? "").localeCompare(String(b[sort.key] ?? ""), undefined, {
         numeric: true,
       });
       return sort.dir === "asc" ? cmp : -cmp;
     });
-  }, [rows, sort]);
+  }, [rows, sort, serverPagination]);
 
-  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
-  const currentPage = Math.min(page, totalPages);
-  const pageRows = sorted.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+  const totalPages = serverPagination
+    ? serverPagination.totalPages
+    : Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
+  const currentPage = serverPagination ? serverPagination.page : Math.min(page, totalPages);
+  const pageRows = serverPagination
+    ? rows
+    : sorted.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
   let tableContent: ReactNode;
 
   if (loading) {
@@ -71,7 +89,7 @@ export function DataTable({
           colSpan={columns.length + (rowActions ? 1 : 0)}
           className="px-4 py-12 text-center text-sm text-muted-foreground"
         >
-          No records found
+          {emptyMessage ?? "No records found"}
         </td>
       </tr>
     );
@@ -80,7 +98,7 @@ export function DataTable({
       <tr key={row.id} className="border-b border-border last:border-0 hover:bg-muted/40">
         {columns.map((col) => (
           <td key={col.key} className="px-4 py-3">
-            {renderCell ? renderCell(row, col.key) : row[col.key]}
+            {renderCell ? renderCell(row, col.key) : (row[col.key] as ReactNode)}
           </td>
         ))}
         {rowActions && <td className="px-4 py-3 text-right">{rowActions(row)}</td>}
@@ -93,36 +111,56 @@ export function DataTable({
       s?.key === key ? { key, dir: s.dir === "asc" ? "desc" : "asc" } : { key, dir: "asc" },
     );
 
+  const totalRecordCount = serverPagination ? serverPagination.totalCount : sorted.length;
+
   return (
     <div className="rounded-lg border border-border bg-card">
-      <div className="stitch-table-toolbar flex flex-wrap items-center gap-3 p-4">
-        <input
-          value={searchValue}
-          onChange={(e) => {
-            onSearch(e.target.value);
-            setPage(1);
-          }}
-          placeholder="Search…"
-          aria-label="Search records"
-          className="h-9 w-64 rounded-md border border-input bg-background px-3 text-sm outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-ring/40"
-        />
-        <select
-          aria-label="Filter by status"
-          value={statusFilter}
-          onChange={(e) => {
-            onStatusFilter(e.target.value);
-            setPage(1);
-          }}
-          className="h-9 rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring/40"
-        >
-          <option value="all">All statuses</option>
-          <option value="Active">Active</option>
-          <option value="Inactive">Inactive</option>
-        </select>
-        <span className="ml-auto text-xs text-muted-foreground">
-          {sorted.length} record{sorted.length === 1 ? "" : "s"}
-        </span>
-      </div>
+      {(onSearch || onStatusFilter) && (
+        <div className="stitch-table-toolbar flex flex-wrap items-center gap-3 p-4">
+          {onSearch && (
+            <input
+              value={searchValue ?? ""}
+              onChange={(e) => {
+                onSearch(e.target.value);
+                if (serverPagination) serverPagination.onPageChange(1);
+                else setPage(1);
+              }}
+              placeholder="Search…"
+              aria-label="Search records"
+              className="h-9 w-64 rounded-md border border-input bg-background px-3 text-sm outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-ring/40"
+            />
+          )}
+          {onStatusFilter && (
+            <select
+              aria-label="Filter by status"
+              value={statusFilter ?? "all"}
+              onChange={(e) => {
+                onStatusFilter(e.target.value);
+                if (serverPagination) serverPagination.onPageChange(1);
+                else setPage(1);
+              }}
+              className="h-9 rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring/40"
+            >
+              {statusOptions ? (
+                statusOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))
+              ) : (
+                <>
+                  <option value="all">All statuses</option>
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                </>
+              )}
+            </select>
+          )}
+          <span className="ml-auto text-xs text-muted-foreground">
+            {totalRecordCount} record{totalRecordCount === 1 ? "" : "s"}
+          </span>
+        </div>
+      )}
 
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
@@ -163,7 +201,10 @@ export function DataTable({
           <button
             type="button"
             disabled={currentPage <= 1}
-            onClick={() => setPage(currentPage - 1)}
+            onClick={() => {
+              if (serverPagination) serverPagination.onPageChange(currentPage - 1);
+              else setPage(currentPage - 1);
+            }}
             className={cn(
               "rounded-md border border-input px-3 py-1.5 text-xs",
               currentPage <= 1 ? "text-muted-foreground opacity-60" : "hover:bg-muted",
@@ -174,7 +215,10 @@ export function DataTable({
           <button
             type="button"
             disabled={currentPage >= totalPages}
-            onClick={() => setPage(currentPage + 1)}
+            onClick={() => {
+              if (serverPagination) serverPagination.onPageChange(currentPage + 1);
+              else setPage(currentPage + 1);
+            }}
             className={cn(
               "rounded-md border border-input px-3 py-1.5 text-xs",
               currentPage >= totalPages ? "text-muted-foreground opacity-60" : "hover:bg-muted",

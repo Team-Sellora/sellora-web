@@ -21,6 +21,7 @@ import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as ProductCategoriesRouteImport } from './routes/product-categories'
 import { Route as ProductsRouteImport } from './routes/products'
 import { Route as ProvincesRouteImport } from './routes/provinces'
+import { Route as ReturnsRouteImport } from './routes/returns'
 import { Route as SalesRepsRouteImport } from './routes/sales-reps'
 import { Route as ShopsRouteImport } from './routes/shops'
 import { Route as StaffRouteImport } from './routes/staff'
@@ -32,6 +33,7 @@ import { Route as OrdersOrderIdRouteImport } from './routes/orders_.$orderId'
 import { Route as OrdersNewRouteImport } from './routes/orders_.new'
 import { Route as ProductsProductIdRouteImport } from './routes/products_.$productId'
 import { Route as ProductsNewRouteImport } from './routes/products_.new'
+import { Route as ReturnsReturnIdRouteImport } from './routes/returns_.$returnId'
 import { Route as VanReturnsVanReturnIdRouteImport } from './routes/van-returns_.$vanReturnId'
 import { Route as VanReturnsNewRouteImport } from './routes/van-returns_.new'
 import { Route as OrdersOrderIdCheckoutRouteImport } from './routes/orders_.$orderId_.checkout'
@@ -98,6 +100,11 @@ const ProvincesRoute = ProvincesRouteImport.update({
   path: '/provinces',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReturnsRoute = ReturnsRouteImport.update({
+  id: '/returns',
+  path: '/returns',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SalesRepsRoute = SalesRepsRouteImport.update({
   id: '/sales-reps',
   path: '/sales-reps',
@@ -153,6 +160,11 @@ const ProductsNewRoute = ProductsNewRouteImport.update({
   path: '/products/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReturnsReturnIdRoute = ReturnsReturnIdRouteImport.update({
+  id: '/returns_/$returnId',
+  path: '/returns/$returnId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const VanReturnsVanReturnIdRoute = VanReturnsVanReturnIdRouteImport.update({
   id: '/van-returns_/$vanReturnId',
   path: '/van-returns/$vanReturnId',
@@ -192,6 +204,7 @@ export interface FileRoutesByFullPath {
   '/product-categories': typeof ProductCategoriesRoute
   '/products': typeof ProductsRoute
   '/provinces': typeof ProvincesRoute
+  '/returns': typeof ReturnsRoute
   '/sales-reps': typeof SalesRepsRoute
   '/shops': typeof ShopsRoute
   '/staff': typeof StaffRoute
@@ -203,6 +216,7 @@ export interface FileRoutesByFullPath {
   '/orders/new': typeof OrdersNewRoute
   '/products/$productId': typeof ProductsProductIdRoute
   '/products/new': typeof ProductsNewRoute
+  '/returns/$returnId': typeof ReturnsReturnIdRoute
   '/van-returns/$vanReturnId': typeof VanReturnsVanReturnIdRoute
   '/van-returns/new': typeof VanReturnsNewRoute
   '/orders/$orderId/checkout': typeof OrdersOrderIdCheckoutRoute
@@ -222,6 +236,7 @@ export interface FileRoutesByTo {
   '/product-categories': typeof ProductCategoriesRoute
   '/products': typeof ProductsRoute
   '/provinces': typeof ProvincesRoute
+  '/returns': typeof ReturnsRoute
   '/sales-reps': typeof SalesRepsRoute
   '/shops': typeof ShopsRoute
   '/staff': typeof StaffRoute
@@ -233,6 +248,7 @@ export interface FileRoutesByTo {
   '/orders/new': typeof OrdersNewRoute
   '/products/$productId': typeof ProductsProductIdRoute
   '/products/new': typeof ProductsNewRoute
+  '/returns/$returnId': typeof ReturnsReturnIdRoute
   '/van-returns/$vanReturnId': typeof VanReturnsVanReturnIdRoute
   '/van-returns/new': typeof VanReturnsNewRoute
   '/orders/$orderId/checkout': typeof OrdersOrderIdCheckoutRoute
@@ -253,6 +269,7 @@ export interface FileRoutesById {
   '/product-categories': typeof ProductCategoriesRoute
   '/products': typeof ProductsRoute
   '/provinces': typeof ProvincesRoute
+  '/returns': typeof ReturnsRoute
   '/sales-reps': typeof SalesRepsRoute
   '/shops': typeof ShopsRoute
   '/staff': typeof StaffRoute
@@ -264,6 +281,7 @@ export interface FileRoutesById {
   '/orders_/new': typeof OrdersNewRoute
   '/products_/$productId': typeof ProductsProductIdRoute
   '/products_/new': typeof ProductsNewRoute
+  '/returns_/$returnId': typeof ReturnsReturnIdRoute
   '/van-returns_/$vanReturnId': typeof VanReturnsVanReturnIdRoute
   '/van-returns_/new': typeof VanReturnsNewRoute
   '/orders_/$orderId_/checkout': typeof OrdersOrderIdCheckoutRoute
@@ -285,6 +303,7 @@ export interface FileRouteTypes {
     | '/product-categories'
     | '/products'
     | '/provinces'
+    | '/returns'
     | '/sales-reps'
     | '/shops'
     | '/staff'
@@ -296,6 +315,7 @@ export interface FileRouteTypes {
     | '/orders/new'
     | '/products/$productId'
     | '/products/new'
+    | '/returns/$returnId'
     | '/van-returns/$vanReturnId'
     | '/van-returns/new'
     | '/orders/$orderId/checkout'
@@ -315,6 +335,7 @@ export interface FileRouteTypes {
     | '/product-categories'
     | '/products'
     | '/provinces'
+    | '/returns'
     | '/sales-reps'
     | '/shops'
     | '/staff'
@@ -326,6 +347,7 @@ export interface FileRouteTypes {
     | '/orders/new'
     | '/products/$productId'
     | '/products/new'
+    | '/returns/$returnId'
     | '/van-returns/$vanReturnId'
     | '/van-returns/new'
     | '/orders/$orderId/checkout'
@@ -345,6 +367,7 @@ export interface FileRouteTypes {
     | '/product-categories'
     | '/products'
     | '/provinces'
+    | '/returns'
     | '/sales-reps'
     | '/shops'
     | '/staff'
@@ -356,6 +379,7 @@ export interface FileRouteTypes {
     | '/orders_/new'
     | '/products_/$productId'
     | '/products_/new'
+    | '/returns_/$returnId'
     | '/van-returns_/$vanReturnId'
     | '/van-returns_/new'
     | '/orders_/$orderId_/checkout'
@@ -376,6 +400,7 @@ export interface RootRouteChildren {
   ProductCategoriesRoute: typeof ProductCategoriesRoute
   ProductsRoute: typeof ProductsRoute
   ProvincesRoute: typeof ProvincesRoute
+  ReturnsRoute: typeof ReturnsRoute
   SalesRepsRoute: typeof SalesRepsRoute
   ShopsRoute: typeof ShopsRoute
   StaffRoute: typeof StaffRoute
@@ -387,6 +412,7 @@ export interface RootRouteChildren {
   OrdersNewRoute: typeof OrdersNewRoute
   ProductsProductIdRoute: typeof ProductsProductIdRoute
   ProductsNewRoute: typeof ProductsNewRoute
+  ReturnsReturnIdRoute: typeof ReturnsReturnIdRoute
   VanReturnsVanReturnIdRoute: typeof VanReturnsVanReturnIdRoute
   VanReturnsNewRoute: typeof VanReturnsNewRoute
   OrdersOrderIdCheckoutRoute: typeof OrdersOrderIdCheckoutRoute
@@ -480,6 +506,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProvincesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/returns': {
+      id: '/returns'
+      path: '/returns'
+      fullPath: '/returns'
+      preLoaderRoute: typeof ReturnsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sales-reps': {
       id: '/sales-reps'
       path: '/sales-reps'
@@ -557,6 +590,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductsNewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/returns_/$returnId': {
+      id: '/returns_/$returnId'
+      path: '/returns/$returnId'
+      fullPath: '/returns/$returnId'
+      preLoaderRoute: typeof ReturnsReturnIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/van-returns_/$vanReturnId': {
       id: '/van-returns_/$vanReturnId'
       path: '/van-returns/$vanReturnId'
@@ -608,6 +648,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProductCategoriesRoute: ProductCategoriesRoute,
   ProductsRoute: ProductsRoute,
   ProvincesRoute: ProvincesRoute,
+  ReturnsRoute: ReturnsRoute,
   SalesRepsRoute: SalesRepsRoute,
   ShopsRoute: ShopsRoute,
   StaffRoute: StaffRoute,
@@ -619,6 +660,7 @@ const rootRouteChildren: RootRouteChildren = {
   OrdersNewRoute: OrdersNewRoute,
   ProductsProductIdRoute: ProductsProductIdRoute,
   ProductsNewRoute: ProductsNewRoute,
+  ReturnsReturnIdRoute: ReturnsReturnIdRoute,
   VanReturnsVanReturnIdRoute: VanReturnsVanReturnIdRoute,
   VanReturnsNewRoute: VanReturnsNewRoute,
   OrdersOrderIdCheckoutRoute: OrdersOrderIdCheckoutRoute,

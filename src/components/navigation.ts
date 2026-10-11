@@ -9,6 +9,7 @@ import {
   Map,
   MapPin,
   Package,
+  RotateCcw,
   Store,
   Tags,
   Truck,
@@ -78,6 +79,7 @@ export const navSections: NavSection[] = [
       { to: "/orders", label: "Orders", icon: ClipboardList },
       { to: "/deliveries", label: "Deliveries", icon: Truck },
       { to: "/van-returns", label: "Van returns", icon: Undo2 },
+      { to: "/returns", label: "Shop returns", icon: RotateCcw },
     ],
   },
   {

@@ -1,5 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { assignDelivery, fetchEligibleReps, updateDeliveryStatus } from "./api";
+import {
+  assignDelivery,
+  fetchEligibleReps,
+  updateDeliveryStatus,
+  getDeliveries,
+  getDelivery,
+  type GetDeliveriesParams,
+} from "./api";
 import type { AssignDeliveryPayload, UpdateDeliveryStatusPayload } from "./types";
 
 export const deliveriesQueryKey = ["deliveries"] as const;
@@ -44,5 +51,20 @@ export function useUpdateDeliveryStatus() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: deliveriesQueryKey });
     },
+  });
+}
+
+export function useDeliveries(params: GetDeliveriesParams) {
+  return useQuery({
+    queryKey: [...deliveriesQueryKey, "list", params],
+    queryFn: () => getDeliveries(params),
+  });
+}
+
+export function useDelivery(deliveryJobId: string) {
+  return useQuery({
+    queryKey: [...deliveriesQueryKey, "detail", deliveryJobId],
+    queryFn: () => getDelivery(deliveryJobId),
+    enabled: !!deliveryJobId,
   });
 }

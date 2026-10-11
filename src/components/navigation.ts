@@ -11,6 +11,7 @@ import {
   Package,
   Store,
   Tags,
+  Truck,
   Undo2,
   UserCog,
   UserPlus,
@@ -75,6 +76,7 @@ export const navSections: NavSection[] = [
     title: "Sales",
     items: [
       { to: "/orders", label: "Orders", icon: ClipboardList },
+      { to: "/deliveries", label: "Deliveries", icon: Truck },
       { to: "/van-returns", label: "Van returns", icon: Undo2 },
     ],
   },

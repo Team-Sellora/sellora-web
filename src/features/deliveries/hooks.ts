@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   assignDelivery,
@@ -6,6 +7,7 @@ import {
   getDeliveries,
   getDelivery,
   submitDeliveryConfirmation,
+  fetchDeliveryLocation,
   type GetDeliveriesParams,
 } from "./api";
 import type {
@@ -89,4 +91,28 @@ export function useSubmitDeliveryConfirmation() {
       queryClient.invalidateQueries({ queryKey: deliveriesQueryKey });
     },
   });
+}
+
+export { useRepLocationSharing } from "./useRepLocationSharing";
+
+export function useDeliveryLocation(deliveryJobId: string, options?: { enabled?: boolean }) {
+  const queryClient = useQueryClient();
+  const isEnabled = options?.enabled ?? true;
+
+  const query = useQuery({
+    queryKey: [...deliveriesQueryKey, "location", deliveryJobId],
+    queryFn: () => fetchDeliveryLocation(deliveryJobId),
+    enabled: Boolean(deliveryJobId) && isEnabled,
+    refetchInterval: (q) =>
+      q.state.data?.status === "InTransit" || (!q.state.data && isEnabled) ? 30_000 : false,
+    refetchIntervalInBackground: false,
+  });
+
+  useEffect(() => {
+    if (query.data && query.data.status !== "InTransit") {
+      queryClient.invalidateQueries({ queryKey: deliveriesQueryKey });
+    }
+  }, [query.data, queryClient]);
+
+  return query;
 }

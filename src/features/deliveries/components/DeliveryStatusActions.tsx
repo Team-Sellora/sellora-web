@@ -21,7 +21,10 @@ export function DeliveryStatusActions({
 
   const handleStartDelivery = async () => {
     try {
-      await updateStatus({ deliveryJobId, payload: { status: "InTransit" } });
+      await updateStatus({
+        deliveryJobId,
+        payload: { status: "InTransit" },
+      });
     } catch {
       // Handled by query error state
     }
@@ -29,7 +32,10 @@ export function DeliveryStatusActions({
 
   const handleMarkDelivered = async () => {
     try {
-      await updateStatus({ deliveryJobId, payload: { status: "Delivered" } });
+      await updateStatus({
+        deliveryJobId,
+        payload: { status: "Delivered" },
+      });
     } catch {
       // Handled by query error state
     }

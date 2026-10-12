@@ -108,6 +108,17 @@ export function DeliveryQueuePage() {
           </Link>
         );
       case "shop":
+        if (role === "SalesRep") {
+          return (
+            <Link
+              to="/deliveries/$deliveryId"
+              params={{ deliveryId: delivery.id }}
+              className="font-medium text-foreground hover:text-primary hover:underline"
+            >
+              {delivery.shopName}
+            </Link>
+          );
+        }
         return delivery.shopName;
       case "territory":
         return delivery.territory;

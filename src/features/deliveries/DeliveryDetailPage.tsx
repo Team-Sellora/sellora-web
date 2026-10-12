@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { useDelivery } from "./hooks";
 import { DeliveryStatusBadge } from "./components/DeliveryStatusBadge";
 import { DeliveryStatusActions } from "./components/DeliveryStatusActions";
+import { RepLocationSharing } from "./components/RepLocationSharing";
+import { DeliveryLiveTracking } from "./components/DeliveryLiveTracking";
 import { DeliveryStatusHistory } from "./components/DeliveryStatusHistory";
 import { AssignDeliveryDialog } from "./components/AssignDeliveryDialog";
 import { DeliveryConfirmationActions } from "./components/DeliveryConfirmationActions";
@@ -100,6 +102,10 @@ export function DeliveryDetailPage() {
               Actions
             </h4>
             <DeliveryStatusActions deliveryJobId={delivery.id} currentStatus={delivery.status} />
+
+            <RepLocationSharing delivery={delivery} />
+
+            <DeliveryLiveTracking delivery={delivery} />
 
             <DeliveryConfirmationActions
               deliveryJobId={delivery.id}

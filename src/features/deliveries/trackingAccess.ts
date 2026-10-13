@@ -48,3 +48,21 @@ export function isAssignedRep(
 
   return true;
 }
+
+/**
+ * Whether the signed-in user is the Sales Rep assigned to this delivery.
+ * Prefers the server's answer (isAssignedToCaller); falls back to the local
+ * comparison only for an older API that does not send it yet.
+ */
+export function isCallerAssignedRep(
+  delivery: Parameters<typeof isAssignedRep>[0] & { isAssignedToCaller?: boolean | undefined },
+  auth: ViewerAuthInfo,
+): boolean {
+  if (auth.role !== "SalesRep") {
+    return false;
+  }
+  if (typeof delivery.isAssignedToCaller === "boolean") {
+    return delivery.isAssignedToCaller;
+  }
+  return isAssignedRep(delivery, auth);
+}

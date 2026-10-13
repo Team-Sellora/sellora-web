@@ -1,6 +1,6 @@
 import { useSelloraAuth } from "@/auth/useSelloraAuth";
 import type { DeliveryDetail } from "../types";
-import { isAssignedRep } from "../trackingAccess";
+import { isCallerAssignedRep } from "../trackingAccess";
 import { useRepLocationSharing } from "../useRepLocationSharing";
 
 export interface RepLocationSharingProps {
@@ -9,7 +9,7 @@ export interface RepLocationSharingProps {
 
 export function RepLocationSharing({ delivery }: Readonly<RepLocationSharingProps>) {
   const auth = useSelloraAuth();
-  const isActive = isAssignedRep(delivery, auth) && delivery.status === "InTransit";
+  const isActive = isCallerAssignedRep(delivery, auth) && delivery.status === "InTransit";
 
   const { isSharing, permissionDenied, unsupported, nonFatalError } = useRepLocationSharing({
     deliveryJobId: delivery.id,

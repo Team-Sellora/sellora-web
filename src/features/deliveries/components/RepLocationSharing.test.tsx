@@ -122,6 +122,25 @@ describe("RepLocationSharing", () => {
   }
 
   describe("Role and status gating", () => {
+    it("shares location when the API says the caller is the assigned rep, even if IDs differ", () => {
+      // The token's user ID (WSO2 sub) never equals assignedRepId (Organization SalesRepId).
+      renderComponent({
+        ...mockDelivery,
+        assignedRepId: "org-sales-rep-id",
+        isAssignedToCaller: true,
+      });
+
+      expect(watchPositionMock).toHaveBeenCalledTimes(1);
+      expect(screen.getByText("Sharing location")).toBeTruthy();
+    });
+
+    it("does not share location when the API says the caller is not the assigned rep", () => {
+      renderComponent({ ...mockDelivery, isAssignedToCaller: false });
+
+      expect(watchPositionMock).not.toHaveBeenCalled();
+      expect(screen.queryByRole("status")).toBeNull();
+    });
+
     it("renders indicator and watches position when viewer is assigned rep and status is InTransit", () => {
       renderComponent();
 

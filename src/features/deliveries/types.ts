@@ -24,6 +24,7 @@ export type DeliveryStatus =
 export interface UpdateDeliveryStatusPayload {
   status: "InTransit" | "Delivered" | "Failed";
   reason?: string;
+  version?: number;
 }
 
 export interface DeliveryStatusHistoryEntry {
@@ -63,7 +64,32 @@ export interface DeliverySummary {
   status: DeliveryStatus;
   scheduledDate: string | null;
   assignedRepName: string | null;
+  assignedRepId?: string | null;
+  salesRepId?: string | null;
   confirmationState?: ConfirmationState | null;
+}
+
+export interface PostDeliveryLocationPayload {
+  latitude: number;
+  longitude: number;
+  accuracyMeters?: number;
+  capturedAt: string;
+}
+
+export interface DeliveryCoordinates {
+  latitude: number;
+  longitude: number;
+}
+
+export interface DeliveryPosition extends DeliveryCoordinates {
+  capturedAt: string;
+}
+
+export interface DeliveryLocationResponse {
+  deliveryJobId: string;
+  status: DeliveryStatus;
+  position: DeliveryPosition | null;
+  shop: DeliveryCoordinates | null;
 }
 
 export interface DeliveryLine {
@@ -75,6 +101,7 @@ export interface DeliveryLine {
 }
 
 export interface DeliveryDetail extends DeliverySummary {
+  version?: number;
   lines: DeliveryLine[];
   history: DeliveryStatusHistoryEntry[];
   confirmation: DeliveryConfirmation | null;

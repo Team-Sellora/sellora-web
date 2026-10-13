@@ -18,6 +18,8 @@ export interface SelloraAuth {
   accessToken: string | null;
   /** Username / subject display. */
   username: string | null;
+  /** Subject / user identifier. */
+  userId?: string | null;
   logout: () => Promise<void>;
 }
 
@@ -33,6 +35,8 @@ const KNOWN_ROLES: SelloraRole[] = [
 interface SelloraClaims {
   roles?: unknown;
   companyId?: unknown;
+  sub?: unknown;
+  nameid?: unknown;
 }
 
 /** Decode a JWT payload (access token) into its claims object. */
@@ -78,6 +82,14 @@ export function useSelloraAuth(): SelloraAuth {
     accessToken,
     username:
       (typeof profile?.preferred_username === "string" ? profile.preferred_username : null) ??
+      profile?.sub ??
+      null,
+    userId:
+      (typeof claims.sub === "string"
+        ? claims.sub
+        : typeof claims.nameid === "string"
+          ? claims.nameid
+          : null) ??
       profile?.sub ??
       null,
     logout: () => {

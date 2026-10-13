@@ -8,7 +8,7 @@ export function deliveryColumnsFor(role: SelloraRole | null): DeliveryColumn[] {
     return ["deliveryRef", "orderRef", "shop", "territory", "status", "date", "rep", "assign"];
   }
   if (role === "SalesRep") {
-    return ["shop", "status", "date"];
+    return ["deliveryRef", "shop", "status", "date"];
   }
   if (role === "ShopOwner") {
     return ["orderRef", "status", "date"];

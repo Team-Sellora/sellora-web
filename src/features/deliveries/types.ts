@@ -104,6 +104,10 @@ export interface DeliveryLine {
 
 export interface DeliveryDetail extends DeliverySummary {
   version: number;
+  // Set by the Delivery API: true when the caller is the Sales Rep assigned to this
+  // delivery. The token's user ID cannot be compared with assignedRepId, because
+  // that is Organization's SalesRepId, not the WSO2 user ID.
+  isAssignedToCaller?: boolean;
   lines: DeliveryLine[];
   history: DeliveryStatusHistoryEntry[];
   confirmation: DeliveryConfirmation | null;

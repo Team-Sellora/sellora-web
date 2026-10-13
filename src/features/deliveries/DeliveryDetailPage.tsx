@@ -13,10 +13,13 @@ import { AssignDeliveryDialog } from "./components/AssignDeliveryDialog";
 import { DeliveryConfirmationActions } from "./components/DeliveryConfirmationActions";
 import { RequestReturnAction } from "@/features/returns/components/RequestReturnAction";
 import { Route } from "@/routes/deliveries_.$deliveryId";
+import { useSelloraAuth } from "@/auth/useSelloraAuth";
+import { isCallerAssignedRep } from "./trackingAccess";
 
 export function DeliveryDetailPage() {
   const { deliveryId } = Route.useParams();
   const deliveryQuery = useDelivery(deliveryId);
+  const auth = useSelloraAuth();
   const [isAssignOpen, setIsAssignOpen] = useState(false);
 
   if (deliveryQuery.isLoading) {
@@ -101,11 +104,13 @@ export function DeliveryDetailPage() {
             <h4 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
               Actions
             </h4>
-            <DeliveryStatusActions
-              deliveryJobId={delivery.id}
-              currentStatus={delivery.status}
-              version={delivery.version}
-            />
+            {isCallerAssignedRep(delivery, auth) && (
+              <DeliveryStatusActions
+                deliveryJobId={delivery.id}
+                currentStatus={delivery.status}
+                version={delivery.version}
+              />
+            )}
 
             <RepLocationSharing delivery={delivery} />
 

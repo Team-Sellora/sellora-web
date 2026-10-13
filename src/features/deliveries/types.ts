@@ -24,7 +24,9 @@ export type DeliveryStatus =
 export interface UpdateDeliveryStatusPayload {
   status: "InTransit" | "Delivered" | "Failed";
   reason?: string;
-  version?: number;
+  // The delivery's row version from GET /api/deliveries/{id}. The API requires it
+  // (optimistic concurrency) and answers 400 when it is missing.
+  version: number;
 }
 
 export interface DeliveryStatusHistoryEntry {
@@ -101,7 +103,7 @@ export interface DeliveryLine {
 }
 
 export interface DeliveryDetail extends DeliverySummary {
-  version?: number;
+  version: number;
   lines: DeliveryLine[];
   history: DeliveryStatusHistoryEntry[];
   confirmation: DeliveryConfirmation | null;

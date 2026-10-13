@@ -65,6 +65,7 @@ const mockDelivery: DeliveryDetail = {
   ],
   history: [],
   confirmation: null,
+  version: 1,
 };
 
 function setViewerRole(role: SelloraRole) {

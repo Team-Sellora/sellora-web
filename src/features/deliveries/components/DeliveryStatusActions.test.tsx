@@ -28,32 +28,35 @@ describe("DeliveryStatusActions", () => {
   });
 
   it("renders only 'Start delivery' when status is Assigned", () => {
-    renderComponent({ deliveryJobId: "job-1", currentStatus: "Assigned" });
+    renderComponent({ deliveryJobId: "job-1", currentStatus: "Assigned", version: 7 });
     expect(screen.getByRole("button", { name: /start delivery/i })).toBeTruthy();
     expect(screen.queryByRole("button", { name: /mark delivered/i })).toBeNull();
     expect(screen.queryByRole("button", { name: /mark failed/i })).toBeNull();
   });
 
   it("renders 'Mark delivered' and 'Mark failed' when status is InTransit", () => {
-    renderComponent({ deliveryJobId: "job-1", currentStatus: "InTransit" });
+    renderComponent({ deliveryJobId: "job-1", currentStatus: "InTransit", version: 7 });
     expect(screen.queryByRole("button", { name: /start delivery/i })).toBeNull();
     expect(screen.getByRole("button", { name: /mark delivered/i })).toBeTruthy();
     expect(screen.getByRole("button", { name: /mark failed/i })).toBeTruthy();
   });
 
   it("renders no buttons for other statuses", () => {
-    renderComponent({ deliveryJobId: "job-1", currentStatus: "Pending" });
+    renderComponent({ deliveryJobId: "job-1", currentStatus: "Pending", version: 7 });
     expect(screen.queryByRole("button")).toBeNull();
   });
 
   it("calls updateDeliveryStatus when 'Start delivery' is clicked", async () => {
     vi.mocked(api.updateDeliveryStatus).mockResolvedValue();
-    renderComponent({ deliveryJobId: "job-1", currentStatus: "Assigned" });
+    renderComponent({ deliveryJobId: "job-1", currentStatus: "Assigned", version: 7 });
 
     fireEvent.click(screen.getByRole("button", { name: /start delivery/i }));
 
     await waitFor(() => {
-      expect(api.updateDeliveryStatus).toHaveBeenCalledWith("job-1", { status: "InTransit" });
+      expect(api.updateDeliveryStatus).toHaveBeenCalledWith("job-1", {
+        status: "InTransit",
+        version: 7,
+      });
     });
   });
 
@@ -61,7 +64,7 @@ describe("DeliveryStatusActions", () => {
     vi.mocked(api.updateDeliveryStatus).mockRejectedValue(
       new DeliveryApiError(409, "Transition from Assigned to Delivered is not allowed"),
     );
-    renderComponent({ deliveryJobId: "job-1", currentStatus: "Assigned" });
+    renderComponent({ deliveryJobId: "job-1", currentStatus: "Assigned", version: 7 });
 
     fireEvent.click(screen.getByRole("button", { name: /start delivery/i }));
 
@@ -72,7 +75,7 @@ describe("DeliveryStatusActions", () => {
 
   it("opens Mark failed dialog and submits with reason", async () => {
     vi.mocked(api.updateDeliveryStatus).mockResolvedValue();
-    renderComponent({ deliveryJobId: "job-1", currentStatus: "InTransit" });
+    renderComponent({ deliveryJobId: "job-1", currentStatus: "InTransit", version: 7 });
 
     fireEvent.click(screen.getByRole("button", { name: /mark failed/i }));
 
@@ -95,6 +98,7 @@ describe("DeliveryStatusActions", () => {
       expect(api.updateDeliveryStatus).toHaveBeenCalledWith("job-1", {
         status: "Failed",
         reason: "Vehicle broke down",
+        version: 7,
       });
     });
   });

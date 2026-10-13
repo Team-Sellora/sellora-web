@@ -101,7 +101,11 @@ export function DeliveryDetailPage() {
             <h4 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
               Actions
             </h4>
-            <DeliveryStatusActions deliveryJobId={delivery.id} currentStatus={delivery.status} />
+            <DeliveryStatusActions
+              deliveryJobId={delivery.id}
+              currentStatus={delivery.status}
+              version={delivery.version}
+            />
 
             <RepLocationSharing delivery={delivery} />
 

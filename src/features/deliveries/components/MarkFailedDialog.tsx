@@ -36,10 +36,16 @@ const formSchema = z.object({
 interface MarkFailedDialogProps {
   isOpen: boolean;
   deliveryJobId: string;
+  version: number;
   onClose: () => void;
 }
 
-export function MarkFailedDialog({ isOpen, deliveryJobId, onClose }: MarkFailedDialogProps) {
+export function MarkFailedDialog({
+  isOpen,
+  deliveryJobId,
+  version,
+  onClose,
+}: MarkFailedDialogProps) {
   const { mutateAsync: updateStatus, isPending, error } = useUpdateDeliveryStatus();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -60,6 +66,7 @@ export function MarkFailedDialog({ isOpen, deliveryJobId, onClose }: MarkFailedD
         payload: {
           status: "Failed",
           reason: values.reason,
+          version,
         },
       });
       form.reset();

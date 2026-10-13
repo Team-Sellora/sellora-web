@@ -41,6 +41,7 @@ const mockDelivery: DeliveryDetail = {
   lines: [],
   history: [],
   confirmation: null,
+  version: 1,
 };
 
 const capturedTime = "2026-10-12T10:30:00.000Z";

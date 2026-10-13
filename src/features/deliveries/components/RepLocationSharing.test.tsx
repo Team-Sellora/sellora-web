@@ -29,6 +29,7 @@ const mockDelivery: DeliveryDetail = {
   lines: [],
   history: [],
   confirmation: null,
+  version: 1,
 };
 
 describe("RepLocationSharing", () => {

@@ -10,11 +10,13 @@ import { DeliveryApiError } from "../types";
 interface DeliveryStatusActionsProps {
   deliveryJobId: string;
   currentStatus: DeliveryStatus;
+  version: number;
 }
 
 export function DeliveryStatusActions({
   deliveryJobId,
   currentStatus,
+  version,
 }: DeliveryStatusActionsProps) {
   const { mutateAsync: updateStatus, isPending, error } = useUpdateDeliveryStatus();
   const [isFailedDialogOpen, setIsFailedDialogOpen] = useState(false);
@@ -23,7 +25,7 @@ export function DeliveryStatusActions({
     try {
       await updateStatus({
         deliveryJobId,
-        payload: { status: "InTransit" },
+        payload: { status: "InTransit", version },
       });
     } catch {
       // Handled by query error state
@@ -34,7 +36,7 @@ export function DeliveryStatusActions({
     try {
       await updateStatus({
         deliveryJobId,
-        payload: { status: "Delivered" },
+        payload: { status: "Delivered", version },
       });
     } catch {
       // Handled by query error state
@@ -88,6 +90,7 @@ export function DeliveryStatusActions({
       <MarkFailedDialog
         isOpen={isFailedDialogOpen}
         deliveryJobId={deliveryJobId}
+        version={version}
         onClose={() => setIsFailedDialogOpen(false)}
       />
     </div>

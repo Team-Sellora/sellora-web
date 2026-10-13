@@ -1,0 +1,222 @@
+diff --git a/src/features/deliveries/DeliveryDetailPage.tsx b/src/features/deliveries/DeliveryDetailPage.tsx
+index bacbb5a..c82dc5f 100644
+--- a/src/features/deliveries/DeliveryDetailPage.tsx
++++ b/src/features/deliveries/DeliveryDetailPage.tsx
+@@ -101,7 +101,11 @@ export function DeliveryDetailPage() {
+             <h4 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+               Actions
+             </h4>
+-            <DeliveryStatusActions deliveryJobId={delivery.id} currentStatus={delivery.status} />
++            <DeliveryStatusActions
++              deliveryJobId={delivery.id}
++              currentStatus={delivery.status}
++              version={delivery.version}
++            />
+ 
+             <RepLocationSharing delivery={delivery} />
+ 
+diff --git a/src/features/deliveries/components/DeliveryLiveTracking.test.tsx b/src/features/deliveries/components/DeliveryLiveTracking.test.tsx
+index 0e8fc65..31d7a93 100644
+--- a/src/features/deliveries/components/DeliveryLiveTracking.test.tsx
++++ b/src/features/deliveries/components/DeliveryLiveTracking.test.tsx
+@@ -41,6 +41,7 @@ const mockDelivery: DeliveryDetail = {
+   lines: [],
+   history: [],
+   confirmation: null,
++  version: 1,
+ };
+ 
+ const capturedTime = "2026-10-12T10:30:00.000Z";
+diff --git a/src/features/deliveries/components/DeliveryStatusActions.test.tsx b/src/features/deliveries/components/DeliveryStatusActions.test.tsx
+index 668b732..7511e09 100644
+--- a/src/features/deliveries/components/DeliveryStatusActions.test.tsx
++++ b/src/features/deliveries/components/DeliveryStatusActions.test.tsx
+@@ -28,32 +28,35 @@ describe("DeliveryStatusActions", () => {
+   });
+ 
+   it("renders only 'Start delivery' when status is Assigned", () => {
+-    renderComponent({ deliveryJobId: "job-1", currentStatus: "Assigned" });
++    renderComponent({ deliveryJobId: "job-1", currentStatus: "Assigned", version: 7 });
+     expect(screen.getByRole("button", { name: /start delivery/i })).toBeTruthy();
+     expect(screen.queryByRole("button", { name: /mark delivered/i })).toBeNull();
+     expect(screen.queryByRole("button", { name: /mark failed/i })).toBeNull();
+   });
+ 
+   it("renders 'Mark delivered' and 'Mark failed' when status is InTransit", () => {
+-    renderComponent({ deliveryJobId: "job-1", currentStatus: "InTransit" });
++    renderComponent({ deliveryJobId: "job-1", currentStatus: "InTransit", version: 7 });
+     expect(screen.queryByRole("button", { name: /start delivery/i })).toBeNull();
+     expect(screen.getByRole("button", { name: /mark delivered/i })).toBeTruthy();
+     expect(screen.getByRole("button", { name: /mark failed/i })).toBeTruthy();
+   });
+ 
+   it("renders no buttons for other statuses", () => {
+-    renderComponent({ deliveryJobId: "job-1", currentStatus: "Pending" });
++    renderComponent({ deliveryJobId: "job-1", currentStatus: "Pending", version: 7 });
+     expect(screen.queryByRole("button")).toBeNull();
+   });
+ 
+   it("calls updateDeliveryStatus when 'Start delivery' is clicked", async () => {
+     vi.mocked(api.updateDeliveryStatus).mockResolvedValue();
+-    renderComponent({ deliveryJobId: "job-1", currentStatus: "Assigned" });
++    renderComponent({ deliveryJobId: "job-1", currentStatus: "Assigned", version: 7 });
+ 
+     fireEvent.click(screen.getByRole("button", { name: /start delivery/i }));
+ 
+     await waitFor(() => {
+-      expect(api.updateDeliveryStatus).toHaveBeenCalledWith("job-1", { status: "InTransit" });
++      expect(api.updateDeliveryStatus).toHaveBeenCalledWith("job-1", {
++        status: "InTransit",
++        version: 7,
++      });
+     });
+   });
+ 
+@@ -61,7 +64,7 @@ describe("DeliveryStatusActions", () => {
+     vi.mocked(api.updateDeliveryStatus).mockRejectedValue(
+       new DeliveryApiError(409, "Transition from Assigned to Delivered is not allowed"),
+     );
+-    renderComponent({ deliveryJobId: "job-1", currentStatus: "Assigned" });
++    renderComponent({ deliveryJobId: "job-1", currentStatus: "Assigned", version: 7 });
+ 
+     fireEvent.click(screen.getByRole("button", { name: /start delivery/i }));
+ 
+@@ -72,7 +75,7 @@ describe("DeliveryStatusActions", () => {
+ 
+   it("opens Mark failed dialog and submits with reason", async () => {
+     vi.mocked(api.updateDeliveryStatus).mockResolvedValue();
+-    renderComponent({ deliveryJobId: "job-1", currentStatus: "InTransit" });
++    renderComponent({ deliveryJobId: "job-1", currentStatus: "InTransit", version: 7 });
+ 
+     fireEvent.click(screen.getByRole("button", { name: /mark failed/i }));
+ 
+@@ -95,6 +98,7 @@ describe("DeliveryStatusActions", () => {
+       expect(api.updateDeliveryStatus).toHaveBeenCalledWith("job-1", {
+         status: "Failed",
+         reason: "Vehicle broke down",
++        version: 7,
+       });
+     });
+   });
+diff --git a/src/features/deliveries/components/DeliveryStatusActions.tsx b/src/features/deliveries/components/DeliveryStatusActions.tsx
+index e0d953e..956ffa0 100644
+--- a/src/features/deliveries/components/DeliveryStatusActions.tsx
++++ b/src/features/deliveries/components/DeliveryStatusActions.tsx
+@@ -10,11 +10,13 @@ import { DeliveryApiError } from "../types";
+ interface DeliveryStatusActionsProps {
+   deliveryJobId: string;
+   currentStatus: DeliveryStatus;
++  version: number;
+ }
+ 
+ export function DeliveryStatusActions({
+   deliveryJobId,
+   currentStatus,
++  version,
+ }: DeliveryStatusActionsProps) {
+   const { mutateAsync: updateStatus, isPending, error } = useUpdateDeliveryStatus();
+   const [isFailedDialogOpen, setIsFailedDialogOpen] = useState(false);
+@@ -23,7 +25,7 @@ export function DeliveryStatusActions({
+     try {
+       await updateStatus({
+         deliveryJobId,
+-        payload: { status: "InTransit" },
++        payload: { status: "InTransit", version },
+       });
+     } catch {
+       // Handled by query error state
+@@ -34,7 +36,7 @@ export function DeliveryStatusActions({
+     try {
+       await updateStatus({
+         deliveryJobId,
+-        payload: { status: "Delivered" },
++        payload: { status: "Delivered", version },
+       });
+     } catch {
+       // Handled by query error state
+@@ -88,6 +90,7 @@ export function DeliveryStatusActions({
+       <MarkFailedDialog
+         isOpen={isFailedDialogOpen}
+         deliveryJobId={deliveryJobId}
++        version={version}
+         onClose={() => setIsFailedDialogOpen(false)}
+       />
+     </div>
+diff --git a/src/features/deliveries/components/MarkFailedDialog.tsx b/src/features/deliveries/components/MarkFailedDialog.tsx
+index d188419..c3031fc 100644
+--- a/src/features/deliveries/components/MarkFailedDialog.tsx
++++ b/src/features/deliveries/components/MarkFailedDialog.tsx
+@@ -36,10 +36,16 @@ const formSchema = z.object({
+ interface MarkFailedDialogProps {
+   isOpen: boolean;
+   deliveryJobId: string;
++  version: number;
+   onClose: () => void;
+ }
+ 
+-export function MarkFailedDialog({ isOpen, deliveryJobId, onClose }: MarkFailedDialogProps) {
++export function MarkFailedDialog({
++  isOpen,
++  deliveryJobId,
++  version,
++  onClose,
++}: MarkFailedDialogProps) {
+   const { mutateAsync: updateStatus, isPending, error } = useUpdateDeliveryStatus();
+ 
+   const form = useForm<z.infer<typeof formSchema>>({
+@@ -60,6 +66,7 @@ export function MarkFailedDialog({ isOpen, deliveryJobId, onClose }: MarkFailedD
+         payload: {
+           status: "Failed",
+           reason: values.reason,
++          version,
+         },
+       });
+       form.reset();
+diff --git a/src/features/deliveries/components/RepLocationSharing.test.tsx b/src/features/deliveries/components/RepLocationSharing.test.tsx
+index cd79a58..5202671 100644
+--- a/src/features/deliveries/components/RepLocationSharing.test.tsx
++++ b/src/features/deliveries/components/RepLocationSharing.test.tsx
+@@ -29,6 +29,7 @@ const mockDelivery: DeliveryDetail = {
+   lines: [],
+   history: [],
+   confirmation: null,
++  version: 1,
+ };
+ 
+ describe("RepLocationSharing", () => {
+diff --git a/src/features/deliveries/types.ts b/src/features/deliveries/types.ts
+index 2f772a6..ce44768 100644
+--- a/src/features/deliveries/types.ts
++++ b/src/features/deliveries/types.ts
+@@ -24,7 +24,9 @@ export type DeliveryStatus =
+ export interface UpdateDeliveryStatusPayload {
+   status: "InTransit" | "Delivered" | "Failed";
+   reason?: string;
+-  version?: number;
++  // The delivery's row version from GET /api/deliveries/{id}. The API requires it
++  // (optimistic concurrency) and answers 400 when it is missing.
++  version: number;
+ }
+ 
+ export interface DeliveryStatusHistoryEntry {
+@@ -101,7 +103,7 @@ export interface DeliveryLine {
+ }
+ 
+ export interface DeliveryDetail extends DeliverySummary {
+-  version?: number;
++  version: number;
+   lines: DeliveryLine[];
+   history: DeliveryStatusHistoryEntry[];
+   confirmation: DeliveryConfirmation | null;
+diff --git a/src/features/returns/components/RequestReturnAction.test.tsx b/src/features/returns/components/RequestReturnAction.test.tsx
+index b249db1..9f115d5 100644
+--- a/src/features/returns/components/RequestReturnAction.test.tsx
++++ b/src/features/returns/components/RequestReturnAction.test.tsx
+@@ -65,6 +65,7 @@ const mockDelivery: DeliveryDetail = {
+   ],
+   history: [],
+   confirmation: null,
++  version: 1,
+ };
+ 
+ function setViewerRole(role: SelloraRole) {

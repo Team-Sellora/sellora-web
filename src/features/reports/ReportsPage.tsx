@@ -11,6 +11,8 @@ import { SummaryCards } from "./components/SummaryCards";
 import { computePreviousPeriod, getPresetRange } from "./dateRange";
 import { useSalesBreakdown, useSalesSummary } from "./hooks";
 import type { BreakdownGroupBy, ReportFilterState } from "./types";
+import { ExportButtons } from "@/features/exports/components/ExportButtons";
+import { MyExportsPanel } from "@/features/exports/components/MyExportsPanel";
 
 export interface ReportsPageProps {
   initialTab?: BreakdownGroupBy | undefined;
@@ -73,7 +75,23 @@ export function ReportsPage({ initialTab = "rep" }: Readonly<ReportsPageProps>) 
         title="Reporting dashboard"
         description="Aggregate sales performance by rep, territory, agency and product."
         crumbs={[{ label: "Reports" }]}
+        actions={
+          <ExportButtons
+            reportType="sales-breakdown"
+            reportFilters={{
+              from: filters.from,
+              to: filters.to,
+              compare: filters.compare,
+              compareFrom: filters.compareFrom,
+              compareTo: filters.compareTo,
+              groupBy: activeTab,
+            }}
+            disabled={!filters.from || !filters.to || filters.from > filters.to}
+          />
+        }
       />
+
+      <MyExportsPanel />
 
       <ReportFilters filters={filters} onChange={setFilters} onReset={handleReset} />
 

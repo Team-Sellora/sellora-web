@@ -21,7 +21,7 @@ import { downloadExportFile } from "../download";
 import type { ExportStatusResponse } from "../types";
 import { MY_EXPORTS_QUERY_KEY, useMyExports } from "../useMyExports";
 
-export function formatColomboTime(iso: string | null | undefined): string {
+function formatColomboTime(iso: string | null | undefined): string {
   if (!iso) return "—";
   try {
     const date = new Date(iso);
@@ -40,13 +40,13 @@ export function formatColomboTime(iso: string | null | undefined): string {
   }
 }
 
-export function isExportExpired(item: ExportStatusResponse): boolean {
+function isExportExpired(item: ExportStatusResponse): boolean {
   if (item.status === "Expired") return true;
   if (!item.expiresAt) return false;
   return new Date(item.expiresAt).getTime() <= Date.now();
 }
 
-export function getReportTypeLabel(type: string): string {
+function getReportTypeLabel(type: string): string {
   switch (type) {
     case "sales-summary":
       return "Sales summary";

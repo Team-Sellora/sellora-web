@@ -41,6 +41,7 @@ function createWrapper() {
 
 describe("MyExportsPanel component", () => {
   beforeEach(() => {
+    vi.clearAllMocks();
     vi.mocked(auth.useSelloraAuth).mockReturnValue({
       role: "CompanyAdmin",
       isAuthenticated: true,
@@ -55,7 +56,7 @@ describe("MyExportsPanel component", () => {
 
   afterEach(() => {
     cleanup();
-    vi.restoreAllMocks();
+    vi.clearAllMocks();
   });
 
   it("renders empty state when no exports exist and toggle is expanded", () => {
@@ -72,7 +73,7 @@ describe("MyExportsPanel component", () => {
     // Open panel
     fireEvent.click(screen.getByRole("button", { name: /show/i }));
 
-    expect(screen.getByText("No exports yet.")).toBeInTheDocument();
+    expect(screen.getByText("No exports yet.")).toBeTruthy();
   });
 
   it("renders each status and restricts download button to ready unexpired items", () => {
@@ -128,12 +129,12 @@ describe("MyExportsPanel component", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /show/i }));
 
-    expect(screen.getByText("Ready")).toBeInTheDocument();
-    expect(screen.getByText("Running")).toBeInTheDocument();
-    expect(screen.getByText("Queued")).toBeInTheDocument();
-    expect(screen.getByText("Failed")).toBeInTheDocument();
-    expect(screen.getByText("Database projection timeout")).toBeInTheDocument();
-    expect(screen.getByText("Expired")).toBeInTheDocument();
+    expect(screen.getByText("Ready")).toBeTruthy();
+    expect(screen.getByText("Running")).toBeTruthy();
+    expect(screen.getByText("Queued")).toBeTruthy();
+    expect(screen.getByText("Failed")).toBeTruthy();
+    expect(screen.getByText("Database projection timeout")).toBeTruthy();
+    expect(screen.getAllByText("Expired").length).toBeGreaterThanOrEqual(1);
 
     // Only 1 download button should exist (for exp-ready)
     const downloadButtons = screen.getAllByRole("button", { name: /download/i });

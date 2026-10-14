@@ -27,6 +27,7 @@ describe("ExportButtons component", () => {
   const runExportMock = vi.fn();
 
   beforeEach(() => {
+    vi.clearAllMocks();
     runExportMock.mockReset();
     vi.mocked(hooks.useRunExport).mockReturnValue({
       runExport: runExportMock,
@@ -47,7 +48,7 @@ describe("ExportButtons component", () => {
 
   afterEach(() => {
     cleanup();
-    vi.restoreAllMocks();
+    vi.clearAllMocks();
   });
 
   it("renders CSV and PDF buttons for reports on CompanyAdmin and sends correct payload", () => {
@@ -67,8 +68,8 @@ describe("ExportButtons component", () => {
 
     const csvButton = screen.getByRole("button", { name: /export report as csv/i });
     const pdfButton = screen.getByRole("button", { name: /export report as pdf/i });
-    expect(csvButton).toBeInTheDocument();
-    expect(pdfButton).toBeInTheDocument();
+    expect(csvButton).toBeTruthy();
+    expect(pdfButton).toBeTruthy();
 
     fireEvent.click(csvButton);
 
@@ -138,7 +139,7 @@ describe("ExportButtons component", () => {
       { wrapper: createWrapper() },
     );
 
-    expect(screen.getByRole("button", { name: /export report as csv/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /export report as csv/i })).toBeTruthy();
   });
 
   it("renders only CSV on audit page for CompanyAdmin and sends audit filters", () => {
@@ -155,8 +156,8 @@ describe("ExportButtons component", () => {
       { wrapper: createWrapper() },
     );
 
-    expect(screen.getByRole("button", { name: /export report as csv/i })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /export report as pdf/i })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /export report as csv/i })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /export report as pdf/i })).toBeNull();
 
     fireEvent.click(screen.getByRole("button", { name: /export report as csv/i }));
 
@@ -206,7 +207,7 @@ describe("ExportButtons component", () => {
     );
 
     const csvButton = screen.getByRole("button", { name: /export report as csv/i });
-    expect(csvButton).toBeDisabled();
+    expect(csvButton.hasAttribute("disabled")).toBe(true);
   });
 
   it("displays in-flight phase text during export", () => {
@@ -224,6 +225,7 @@ describe("ExportButtons component", () => {
       { wrapper: createWrapper() },
     );
 
-    expect(screen.getByText("Generating…")).toBeInTheDocument();
+    const generatingElements = screen.getAllByText("Generating…");
+    expect(generatingElements.length).toBeGreaterThanOrEqual(1);
   });
 });

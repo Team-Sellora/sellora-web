@@ -56,14 +56,15 @@ describe("useExportStatus refetch interval", () => {
 
 describe("useRunExport workflow", () => {
   beforeEach(() => {
+    vi.clearAllMocks();
     vi.useFakeTimers();
     vi.mocked(api.submitExport).mockResolvedValue({ exportId: "exp-test-123" });
     vi.mocked(download.downloadExportFile).mockResolvedValue({ fileName: "report.csv" });
   });
 
   afterEach(() => {
+    vi.clearAllMocks();
     vi.useRealTimers();
-    vi.restoreAllMocks();
   });
 
   const sampleRequest: CreateExportRequest = {

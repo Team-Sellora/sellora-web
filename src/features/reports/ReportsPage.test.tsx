@@ -20,6 +20,20 @@ vi.mock("./hooks", () => ({
   reportsQueryKey: ["reports"],
 }));
 
+vi.mock("@/auth/useSelloraAuth", () => ({
+  useSelloraAuth: vi.fn(() => ({
+    role: "CompanyAdmin",
+    isAuthenticated: true,
+    isLoading: false,
+    roles: ["CompanyAdmin"],
+    companyId: "comp-1",
+    accessToken: "mock-token",
+    username: "admin",
+    userId: "admin-1",
+    logout: vi.fn(),
+  })),
+}));
+
 vi.mock("@tanstack/react-router", () => ({
   Link: ({ children, to }: { children: React.ReactNode; to: string }) => (
     <a href={to}>{children}</a>

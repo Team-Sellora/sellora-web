@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AgenciesRouteImport } from './routes/agencies'
 import { Route as AreaManagersRouteImport } from './routes/area-managers'
+import { Route as AuditRouteImport } from './routes/audit'
 import { Route as DeliveriesRouteImport } from './routes/deliveries'
 import { Route as HierarchyRollUpRouteImport } from './routes/hierarchy-roll-up'
 import { Route as InventoryRouteImport } from './routes/inventory'
@@ -53,6 +54,11 @@ const AgenciesRoute = AgenciesRouteImport.update({
 const AreaManagersRoute = AreaManagersRouteImport.update({
   id: '/area-managers',
   path: '/area-managers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuditRoute = AuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DeliveriesRoute = DeliveriesRouteImport.update({
@@ -195,6 +201,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/agencies': typeof AgenciesRoute
   '/area-managers': typeof AreaManagersRoute
+  '/audit': typeof AuditRoute
   '/deliveries': typeof DeliveriesRoute
   '/hierarchy-roll-up': typeof HierarchyRollUpRoute
   '/inventory': typeof InventoryRoute
@@ -227,6 +234,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/agencies': typeof AgenciesRoute
   '/area-managers': typeof AreaManagersRoute
+  '/audit': typeof AuditRoute
   '/deliveries': typeof DeliveriesRoute
   '/hierarchy-roll-up': typeof HierarchyRollUpRoute
   '/inventory': typeof InventoryRoute
@@ -260,6 +268,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/agencies': typeof AgenciesRoute
   '/area-managers': typeof AreaManagersRoute
+  '/audit': typeof AuditRoute
   '/deliveries': typeof DeliveriesRoute
   '/hierarchy-roll-up': typeof HierarchyRollUpRoute
   '/inventory': typeof InventoryRoute
@@ -294,6 +303,7 @@ export interface FileRouteTypes {
     | '/'
     | '/agencies'
     | '/area-managers'
+    | '/audit'
     | '/deliveries'
     | '/hierarchy-roll-up'
     | '/inventory'
@@ -326,6 +336,7 @@ export interface FileRouteTypes {
     | '/'
     | '/agencies'
     | '/area-managers'
+    | '/audit'
     | '/deliveries'
     | '/hierarchy-roll-up'
     | '/inventory'
@@ -358,6 +369,7 @@ export interface FileRouteTypes {
     | '/'
     | '/agencies'
     | '/area-managers'
+    | '/audit'
     | '/deliveries'
     | '/hierarchy-roll-up'
     | '/inventory'
@@ -391,6 +403,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AgenciesRoute: typeof AgenciesRoute
   AreaManagersRoute: typeof AreaManagersRoute
+  AuditRoute: typeof AuditRoute
   DeliveriesRoute: typeof DeliveriesRoute
   HierarchyRollUpRoute: typeof HierarchyRollUpRoute
   InventoryRoute: typeof InventoryRoute
@@ -441,6 +454,13 @@ declare module '@tanstack/react-router' {
       path: '/area-managers'
       fullPath: '/area-managers'
       preLoaderRoute: typeof AreaManagersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/audit': {
+      id: '/audit'
+      path: '/audit'
+      fullPath: '/audit'
+      preLoaderRoute: typeof AuditRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/deliveries': {
@@ -639,6 +659,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AgenciesRoute: AgenciesRoute,
   AreaManagersRoute: AreaManagersRoute,
+  AuditRoute: AuditRoute,
   DeliveriesRoute: DeliveriesRoute,
   HierarchyRollUpRoute: HierarchyRollUpRoute,
   InventoryRoute: InventoryRoute,

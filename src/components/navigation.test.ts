@@ -21,6 +21,7 @@ describe("role-based navigation", () => {
       "Deliveries",
       "Van returns",
       "Shop returns",
+      "Audit log",
       "Failed notifications",
     ]);
   });
@@ -35,6 +36,7 @@ describe("role-based navigation", () => {
       "Orders",
       "Deliveries",
       "Shop returns",
+      "Audit log",
     ]);
   });
 

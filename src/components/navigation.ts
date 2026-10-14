@@ -10,6 +10,7 @@ import {
   MapPin,
   Package,
   RotateCcw,
+  ScrollText,
   Store,
   Tags,
   Truck,
@@ -84,7 +85,10 @@ export const navSections: NavSection[] = [
   },
   {
     title: "Admin",
-    items: [{ to: "/notifications", label: "Failed notifications", icon: MailWarning }],
+    items: [
+      { to: "/audit", label: "Audit log", icon: ScrollText },
+      { to: "/notifications", label: "Failed notifications", icon: MailWarning },
+    ],
   },
 ];
 

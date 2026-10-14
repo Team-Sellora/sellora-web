@@ -21,6 +21,7 @@ describe("role-based navigation", () => {
       "Deliveries",
       "Van returns",
       "Shop returns",
+      "Reports",
       "Audit log",
       "Failed notifications",
     ]);
@@ -36,6 +37,7 @@ describe("role-based navigation", () => {
       "Orders",
       "Deliveries",
       "Shop returns",
+      "Reports",
       "Audit log",
     ]);
   });
@@ -104,5 +106,18 @@ describe("role-based navigation", () => {
         expect(isRoleAllowed(item.to, role), `${role} → ${item.to}`).toBe(true);
       }
     }
+  });
+
+  it("permits /reports for CompanyAdmin and AreaManager only", () => {
+    expect(isRoleAllowed("/reports", "CompanyAdmin")).toBe(true);
+    expect(isRoleAllowed("/reports", "AreaManager")).toBe(true);
+    expect(isRoleAllowed("/reports", "AgencyOperator")).toBe(false);
+    expect(isRoleAllowed("/reports", "SalesRep")).toBe(false);
+    expect(isRoleAllowed("/reports", "ShopOwner")).toBe(false);
+    expect(isRoleAllowed("/reports", null)).toBe(false);
+
+    expect(labels("AgencyOperator")).not.toContain("Reports");
+    expect(labels("SalesRep")).not.toContain("Reports");
+    expect(labels("ShopOwner")).not.toContain("Reports");
   });
 });

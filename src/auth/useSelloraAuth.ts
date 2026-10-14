@@ -63,6 +63,23 @@ function decodeJwtPayload(token: string): SelloraClaims {
  */
 export function useSelloraAuth(): SelloraAuth {
   const auth = useAuth();
+
+  // If useAuth returns undefined (no AuthProvider in the tree),
+  // return a safe default so consumers can render in tests or other environments.
+  if (!auth) {
+    return {
+      isAuthenticated: false,
+      isLoading: false,
+      role: null,
+      roles: [],
+      companyId: null,
+      accessToken: null,
+      username: null,
+      userId: null,
+      logout: async () => Promise.resolve(),
+    };
+  }
+
   const profile = auth.user?.profile;
   const accessToken = auth.user?.access_token ?? null;
 
@@ -95,7 +112,7 @@ export function useSelloraAuth(): SelloraAuth {
     logout: () => {
       // Dashboard snapshots belong to this user and company; none survive logout.
       clearDashboardSnapshots();
-      return auth.signoutRedirect();
+      return auth.signoutRedirect?.() ?? Promise.resolve();
     },
   };
 }

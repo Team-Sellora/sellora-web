@@ -1,5 +1,6 @@
 import {
   ArrowLeftRight,
+  BarChart3,
   Boxes,
   Building2,
   ClipboardList,
@@ -86,6 +87,7 @@ export const navSections: NavSection[] = [
   {
     title: "Admin",
     items: [
+      { to: "/reports", label: "Reports", icon: BarChart3 },
       { to: "/audit", label: "Audit log", icon: ScrollText },
       { to: "/notifications", label: "Failed notifications", icon: MailWarning },
     ],

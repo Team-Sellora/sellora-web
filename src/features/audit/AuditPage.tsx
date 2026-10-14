@@ -26,6 +26,8 @@ import {
 import { AuditFilterForm } from "./components/AuditFilterForm";
 import { AuditEntryDrawer } from "./components/AuditEntryDrawer";
 import { AuditVerifyPanel } from "./components/AuditVerifyPanel";
+import { ExportButtons } from "@/features/exports/components/ExportButtons";
+import { MyExportsPanel } from "@/features/exports/components/MyExportsPanel";
 
 export interface AuditPageProps {
   searchParams?: (AuditSearchFilter & { entry?: string | undefined }) | undefined;
@@ -162,7 +164,16 @@ export function AuditPage({ searchParams }: Readonly<AuditPageProps>) {
         title="Audit log"
         description="Immutable cryptographic record of all business transactions and state changes."
         crumbs={crumbs}
+        actions={
+          <ExportButtons
+            reportType="audit-extract"
+            auditFilters={filter}
+            disabled={Boolean(filter.from && filter.to && filter.from > filter.to)}
+          />
+        }
       />
+
+      <MyExportsPanel />
 
       <AuditVerifyPanel onSelectEntry={handleOpenEntry} />
 

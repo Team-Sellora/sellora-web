@@ -22,6 +22,7 @@ import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as ProductCategoriesRouteImport } from './routes/product-categories'
 import { Route as ProductsRouteImport } from './routes/products'
 import { Route as ProvincesRouteImport } from './routes/provinces'
+import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as ReturnsRouteImport } from './routes/returns'
 import { Route as SalesRepsRouteImport } from './routes/sales-reps'
 import { Route as ShopsRouteImport } from './routes/shops'
@@ -104,6 +105,11 @@ const ProductsRoute = ProductsRouteImport.update({
 const ProvincesRoute = ProvincesRouteImport.update({
   id: '/provinces',
   path: '/provinces',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportsRoute = ReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReturnsRoute = ReturnsRouteImport.update({
@@ -211,6 +217,7 @@ export interface FileRoutesByFullPath {
   '/product-categories': typeof ProductCategoriesRoute
   '/products': typeof ProductsRoute
   '/provinces': typeof ProvincesRoute
+  '/reports': typeof ReportsRoute
   '/returns': typeof ReturnsRoute
   '/sales-reps': typeof SalesRepsRoute
   '/shops': typeof ShopsRoute
@@ -244,6 +251,7 @@ export interface FileRoutesByTo {
   '/product-categories': typeof ProductCategoriesRoute
   '/products': typeof ProductsRoute
   '/provinces': typeof ProvincesRoute
+  '/reports': typeof ReportsRoute
   '/returns': typeof ReturnsRoute
   '/sales-reps': typeof SalesRepsRoute
   '/shops': typeof ShopsRoute
@@ -278,6 +286,7 @@ export interface FileRoutesById {
   '/product-categories': typeof ProductCategoriesRoute
   '/products': typeof ProductsRoute
   '/provinces': typeof ProvincesRoute
+  '/reports': typeof ReportsRoute
   '/returns': typeof ReturnsRoute
   '/sales-reps': typeof SalesRepsRoute
   '/shops': typeof ShopsRoute
@@ -313,6 +322,7 @@ export interface FileRouteTypes {
     | '/product-categories'
     | '/products'
     | '/provinces'
+    | '/reports'
     | '/returns'
     | '/sales-reps'
     | '/shops'
@@ -346,6 +356,7 @@ export interface FileRouteTypes {
     | '/product-categories'
     | '/products'
     | '/provinces'
+    | '/reports'
     | '/returns'
     | '/sales-reps'
     | '/shops'
@@ -379,6 +390,7 @@ export interface FileRouteTypes {
     | '/product-categories'
     | '/products'
     | '/provinces'
+    | '/reports'
     | '/returns'
     | '/sales-reps'
     | '/shops'
@@ -413,6 +425,7 @@ export interface RootRouteChildren {
   ProductCategoriesRoute: typeof ProductCategoriesRoute
   ProductsRoute: typeof ProductsRoute
   ProvincesRoute: typeof ProvincesRoute
+  ReportsRoute: typeof ReportsRoute
   ReturnsRoute: typeof ReturnsRoute
   SalesRepsRoute: typeof SalesRepsRoute
   ShopsRoute: typeof ShopsRoute
@@ -524,6 +537,13 @@ declare module '@tanstack/react-router' {
       path: '/provinces'
       fullPath: '/provinces'
       preLoaderRoute: typeof ProvincesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reports': {
+      id: '/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof ReportsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/returns': {
@@ -669,6 +689,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProductCategoriesRoute: ProductCategoriesRoute,
   ProductsRoute: ProductsRoute,
   ProvincesRoute: ProvincesRoute,
+  ReportsRoute: ReportsRoute,
   ReturnsRoute: ReturnsRoute,
   SalesRepsRoute: SalesRepsRoute,
   ShopsRoute: ShopsRoute,

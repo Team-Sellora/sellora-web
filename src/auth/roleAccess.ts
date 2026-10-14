@@ -33,6 +33,8 @@ export const routeAccess: Record<string, SelloraRole[]> = {
   "/notifications": ["CompanyAdmin"],
   // US-E7-1 / CSP-250: Immutable append-only audit log.
   "/audit": ["CompanyAdmin", "AreaManager"],
+  // US-E7-2 / CSP-252: Aggregate sales reporting dashboard.
+  "/reports": ["CompanyAdmin", "AreaManager"],
 };
 
 export function isRoleAllowed(path: string, role: SelloraRole | null): boolean {

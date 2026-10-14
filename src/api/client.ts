@@ -21,7 +21,9 @@ async function fetchWithBase(
   if (token) {
     headers.set("Authorization", `Bearer ${token}`);
   }
-  headers.set("Accept", "application/json");
+  if (!headers.has("Accept")) {
+    headers.set("Accept", "application/json");
+  }
 
   const url = `${baseUrl}${path}`;
   const response = await fetch(url, { ...options, headers });
@@ -76,4 +78,45 @@ export function deliveryApiFetch(path: string, options: RequestInit = {}): Promi
 /** Gateway HTTP client for the Audit service (US-E7-1 / CSP-250). */
 export function auditApiFetch(path: string, options: RequestInit = {}): Promise<Response> {
   return fetchWithBase(env.auditGatewayBaseUrl, path, options, false);
+}
+
+export interface BlobResponse {
+  blob: Blob;
+  headers: Headers;
+  status: number;
+}
+
+/** Gateway HTTP client for binary downloads from the Audit service (US-E7-3). */
+export async function auditApiBlob(path: string, options: RequestInit = {}): Promise<BlobResponse> {
+  const headers = new Headers(options.headers);
+  if (!headers.has("Accept")) {
+    headers.set("Accept", "*/*");
+  }
+
+  const response = await fetchWithBase(
+    env.auditGatewayBaseUrl,
+    path,
+    { ...options, headers },
+    false,
+  );
+
+  if (!response.ok) {
+    let detail: string | undefined;
+    let title: string | undefined;
+    try {
+      const body = (await response.json()) as { detail?: string; title?: string; message?: string };
+      detail = body.detail ?? body.message;
+      title = body.title;
+    } catch {
+      // Non-JSON response
+    }
+    const err = new Error(detail ?? `Download failed with status ${response.status}`);
+    (err as Error & { status?: number; detail?: string; title?: string }).status = response.status;
+    (err as Error & { status?: number; detail?: string; title?: string }).detail = detail;
+    (err as Error & { status?: number; detail?: string; title?: string }).title = title;
+    throw err;
+  }
+
+  const blob = await response.blob();
+  return { blob, headers: response.headers, status: response.status };
 }

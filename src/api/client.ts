@@ -72,3 +72,8 @@ export function notificationApiFetch(path: string, options: RequestInit = {}): P
 export function deliveryApiFetch(path: string, options: RequestInit = {}): Promise<Response> {
   return fetchWithBase(env.deliveryGatewayBaseUrl, path, options, false);
 }
+
+/** Gateway HTTP client for the Audit service (US-E7-1 / CSP-250). */
+export function auditApiFetch(path: string, options: RequestInit = {}): Promise<Response> {
+  return fetchWithBase(env.auditGatewayBaseUrl, path, options, false);
+}

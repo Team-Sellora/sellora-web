@@ -31,6 +31,8 @@ export const routeAccess: Record<string, SelloraRole[]> = {
   "/returns": ["CompanyAdmin", "AreaManager", "AgencyOperator", "SalesRep", "ShopOwner"],
   // US-E5-3: the Notification service's admin endpoints are RequireCompanyAdmin.
   "/notifications": ["CompanyAdmin"],
+  // US-E7-1 / CSP-250: Immutable append-only audit log.
+  "/audit": ["CompanyAdmin", "AreaManager"],
 };
 
 export function isRoleAllowed(path: string, role: SelloraRole | null): boolean {

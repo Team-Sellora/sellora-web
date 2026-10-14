@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { canCreateOrder, emptyOrdersMessage, orderColumnsFor } from "./roleView";
+import { canCreateOrder, canOpenAuditTrail, emptyOrdersMessage, orderColumnsFor } from "./roleView";
 
 describe("order list role view", () => {
   it("hides shop and agency columns from a shop owner", () => {
@@ -41,5 +41,14 @@ describe("order list role view", () => {
     ] as const) {
       expect(orderColumnsFor(role)).toContain("fulfilment");
     }
+  });
+
+  it("allows only company admin and area manager to open audit trail", () => {
+    expect(canOpenAuditTrail("CompanyAdmin")).toBe(true);
+    expect(canOpenAuditTrail("AreaManager")).toBe(true);
+    expect(canOpenAuditTrail("AgencyOperator")).toBe(false);
+    expect(canOpenAuditTrail("SalesRep")).toBe(false);
+    expect(canOpenAuditTrail("ShopOwner")).toBe(false);
+    expect(canOpenAuditTrail(null)).toBe(false);
   });
 });

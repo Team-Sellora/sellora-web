@@ -5,6 +5,7 @@ import {
   CalendarClock,
   Hourglass,
   Lock,
+  ScrollText,
   Store,
   User,
   Warehouse,
@@ -17,7 +18,7 @@ import { canDecideApproval, formatDecision } from "./approvalView";
 import { formatLkr, formatOrderDate, shortId } from "./format";
 import { useHierarchyNames, useOrder } from "./hooks";
 import { OrderStatusBadge, FulfilmentTypeBadge } from "./OrderStatusBadge";
-import { orderColumnsFor } from "./roleView";
+import { canOpenAuditTrail, orderColumnsFor } from "./roleView";
 import { ShopCancellationPanel } from "./ShopCancellationPanel";
 import { OrderApiError } from "./types";
 import { DeliveryTrackingPanel } from "./DeliveryTrackingPanel";
@@ -62,6 +63,12 @@ export function OrderDetailsPage({ orderId }: Readonly<{ orderId: string }>) {
 
   if (orderQuery.isError || !orderQuery.data) {
     const notFound = orderQuery.error instanceof OrderApiError && orderQuery.error.status === 404;
+    let errorMessage = "The order could not be loaded.";
+    if (notFound) {
+      errorMessage = "This order does not exist or is not visible to you.";
+    } else if (orderQuery.error instanceof Error) {
+      errorMessage = orderQuery.error.message;
+    }
 
     return (
       <>
@@ -72,13 +79,7 @@ export function OrderDetailsPage({ orderId }: Readonly<{ orderId: string }>) {
         >
           <AlertCircle className="mt-0.5 size-4 shrink-0" />
           <div>
-            <p>
-              {notFound
-                ? "This order does not exist or is not visible to you."
-                : orderQuery.error instanceof Error
-                  ? orderQuery.error.message
-                  : "The order could not be loaded."}
-            </p>
+            <p>{errorMessage}</p>
             <Link to="/orders" className="mt-2 inline-block font-medium underline">
               Back to orders
             </Link>
@@ -100,6 +101,16 @@ export function OrderDetailsPage({ orderId }: Readonly<{ orderId: string }>) {
         crumbs={[{ label: "Orders", to: "/orders" }, { label: order.orderReference }]}
         actions={
           <div className="flex items-center gap-2">
+            {canOpenAuditTrail(role) && (
+              <Link
+                to="/audit"
+                search={{ orderReference: order.orderReference }}
+                className="inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-2.5 py-1 text-xs font-medium text-foreground hover:bg-muted transition-colors"
+              >
+                <ScrollText className="size-3.5 text-muted-foreground" />
+                <span>Audit trail</span>
+              </Link>
+            )}
             <FulfilmentTypeBadge type={order.fulfilmentType} />
             <OrderStatusBadge status={order.status} />
           </div>

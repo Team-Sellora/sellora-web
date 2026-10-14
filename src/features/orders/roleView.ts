@@ -80,3 +80,8 @@ export function emptyOrdersMessage(role: SelloraRole | null): string {
 export function canCreateOrder(role: SelloraRole | null): boolean {
   return role === "SalesRep";
 }
+
+/** Only admins and area managers can view the immutable audit trail. */
+export function canOpenAuditTrail(role: SelloraRole | null): boolean {
+  return role === "CompanyAdmin" || role === "AreaManager";
+}

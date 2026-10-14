@@ -63,6 +63,12 @@ export function OrderDetailsPage({ orderId }: Readonly<{ orderId: string }>) {
 
   if (orderQuery.isError || !orderQuery.data) {
     const notFound = orderQuery.error instanceof OrderApiError && orderQuery.error.status === 404;
+    let errorMessage = "The order could not be loaded.";
+    if (notFound) {
+      errorMessage = "This order does not exist or is not visible to you.";
+    } else if (orderQuery.error instanceof Error) {
+      errorMessage = orderQuery.error.message;
+    }
 
     return (
       <>
@@ -73,13 +79,7 @@ export function OrderDetailsPage({ orderId }: Readonly<{ orderId: string }>) {
         >
           <AlertCircle className="mt-0.5 size-4 shrink-0" />
           <div>
-            <p>
-              {notFound
-                ? "This order does not exist or is not visible to you."
-                : orderQuery.error instanceof Error
-                  ? orderQuery.error.message
-                  : "The order could not be loaded."}
-            </p>
+            <p>{errorMessage}</p>
             <Link to="/orders" className="mt-2 inline-block font-medium underline">
               Back to orders
             </Link>

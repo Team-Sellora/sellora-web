@@ -145,10 +145,11 @@ export function extractCheckInCoordinates(payload: string): Coordinates | null {
 }
 
 export function googleMapsUrl(lat: number, lng: number): string {
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${lat},${lng}`)}`;
+  const coordinates = `${lat},${lng}`;
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(coordinates)}`;
 }
 
-export function formatVerificationReason(reason: VerificationFailureReason | string): string {
+export function formatVerificationReason(reason: string): string {
   switch (reason) {
     case "HashMismatch":
       return "Hash mismatch — the entry's recorded hash does not match its contents.";

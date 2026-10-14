@@ -66,26 +66,26 @@ describe("AuditPage component", () => {
     totalCount: 1,
   };
 
-  const mockAdminAuth = () => {
+  const mockAuthRole = (role: auth.SelloraRole = "CompanyAdmin") => {
     vi.mocked(auth.useSelloraAuth).mockReturnValue({
-      role: "CompanyAdmin",
-      roles: ["CompanyAdmin"],
+      role,
+      roles: [role],
       companyId: "comp-1",
       accessToken: "token-1",
-      username: "acme_admin",
+      username: role === "CompanyAdmin" ? "acme_admin" : "area_mgr",
       isLoading: false,
       isAuthenticated: true,
       logout: vi.fn(),
     });
   };
 
-  it("renders loading state while entries are fetching", () => {
-    mockAdminAuth();
+  const setupSearchMock = (overrides: Partial<ReturnType<typeof hooks.useAuditSearch>> = {}) => {
     vi.mocked(hooks.useAuditSearch).mockReturnValue({
-      isLoading: true,
+      isLoading: false,
       data: undefined,
       isError: false,
       error: null,
+      ...overrides,
     } as unknown as ReturnType<typeof hooks.useAuditSearch>);
     vi.mocked(hooks.useAuditEntry).mockReturnValue({
       data: undefined,
@@ -100,6 +100,11 @@ describe("AuditPage component", () => {
       isError: false,
       error: null,
     } as unknown as ReturnType<typeof hooks.useVerifyAudit>);
+  };
+
+  it("renders loading state while entries are fetching", () => {
+    mockAuthRole();
+    setupSearchMock({ isLoading: true });
 
     renderPage();
     expect(screen.getByText("Loading audit entries…")).toBeDefined();
@@ -107,26 +112,8 @@ describe("AuditPage component", () => {
   });
 
   it("renders audit entry rows and formatted metadata", () => {
-    mockAdminAuth();
-    vi.mocked(hooks.useAuditSearch).mockReturnValue({
-      isLoading: false,
-      data: samplePagedData,
-      isError: false,
-      error: null,
-    } as unknown as ReturnType<typeof hooks.useAuditSearch>);
-    vi.mocked(hooks.useAuditEntry).mockReturnValue({
-      data: undefined,
-      isLoading: false,
-      isError: false,
-      error: null,
-    } as unknown as ReturnType<typeof hooks.useAuditEntry>);
-    vi.mocked(hooks.useVerifyAudit).mockReturnValue({
-      mutate: vi.fn(),
-      isPending: false,
-      data: undefined,
-      isError: false,
-      error: null,
-    } as unknown as ReturnType<typeof hooks.useVerifyAudit>);
+    mockAuthRole();
+    setupSearchMock({ data: samplePagedData });
 
     renderPage();
     expect(screen.getByText("#42")).toBeDefined();
@@ -138,26 +125,8 @@ describe("AuditPage component", () => {
   });
 
   it("renders empty state when no entries match filters", () => {
-    mockAdminAuth();
-    vi.mocked(hooks.useAuditSearch).mockReturnValue({
-      isLoading: false,
-      data: { items: [], page: 1, pageSize: 20, totalCount: 0 },
-      isError: false,
-      error: null,
-    } as unknown as ReturnType<typeof hooks.useAuditSearch>);
-    vi.mocked(hooks.useAuditEntry).mockReturnValue({
-      data: undefined,
-      isLoading: false,
-      isError: false,
-      error: null,
-    } as unknown as ReturnType<typeof hooks.useAuditEntry>);
-    vi.mocked(hooks.useVerifyAudit).mockReturnValue({
-      mutate: vi.fn(),
-      isPending: false,
-      data: undefined,
-      isError: false,
-      error: null,
-    } as unknown as ReturnType<typeof hooks.useVerifyAudit>);
+    mockAuthRole();
+    setupSearchMock({ data: { items: [], page: 1, pageSize: 20, totalCount: 0 } });
 
     renderPage();
     expect(
@@ -166,26 +135,11 @@ describe("AuditPage component", () => {
   });
 
   it("handles 403 Forbidden error state", () => {
-    mockAdminAuth();
-    vi.mocked(hooks.useAuditSearch).mockReturnValue({
-      isLoading: false,
-      data: undefined,
+    mockAuthRole();
+    setupSearchMock({
       isError: true,
       error: new AuditApiError(403, "Forbidden", "Access denied"),
-    } as unknown as ReturnType<typeof hooks.useAuditSearch>);
-    vi.mocked(hooks.useAuditEntry).mockReturnValue({
-      data: undefined,
-      isLoading: false,
-      isError: false,
-      error: null,
-    } as unknown as ReturnType<typeof hooks.useAuditEntry>);
-    vi.mocked(hooks.useVerifyAudit).mockReturnValue({
-      mutate: vi.fn(),
-      isPending: false,
-      data: undefined,
-      isError: false,
-      error: null,
-    } as unknown as ReturnType<typeof hooks.useVerifyAudit>);
+    });
 
     renderPage();
     expect(screen.getByTestId("audit-error-banner")).toBeDefined();
@@ -193,26 +147,11 @@ describe("AuditPage component", () => {
   });
 
   it("handles 503 Service Unavailable error state", () => {
-    mockAdminAuth();
-    vi.mocked(hooks.useAuditSearch).mockReturnValue({
-      isLoading: false,
-      data: undefined,
+    mockAuthRole();
+    setupSearchMock({
       isError: true,
       error: new AuditApiError(503, "Unavailable", "Service unavailable"),
-    } as unknown as ReturnType<typeof hooks.useAuditSearch>);
-    vi.mocked(hooks.useAuditEntry).mockReturnValue({
-      data: undefined,
-      isLoading: false,
-      isError: false,
-      error: null,
-    } as unknown as ReturnType<typeof hooks.useAuditEntry>);
-    vi.mocked(hooks.useVerifyAudit).mockReturnValue({
-      mutate: vi.fn(),
-      isPending: false,
-      data: undefined,
-      isError: false,
-      error: null,
-    } as unknown as ReturnType<typeof hooks.useVerifyAudit>);
+    });
 
     renderPage();
     expect(screen.getByTestId("audit-error-banner")).toBeDefined();
@@ -222,26 +161,8 @@ describe("AuditPage component", () => {
   });
 
   it("displays date range validation error when from > to", () => {
-    mockAdminAuth();
-    vi.mocked(hooks.useAuditSearch).mockReturnValue({
-      isLoading: false,
-      data: { items: [], page: 1, pageSize: 20, totalCount: 0 },
-      isError: false,
-      error: null,
-    } as unknown as ReturnType<typeof hooks.useAuditSearch>);
-    vi.mocked(hooks.useAuditEntry).mockReturnValue({
-      data: undefined,
-      isLoading: false,
-      isError: false,
-      error: null,
-    } as unknown as ReturnType<typeof hooks.useAuditEntry>);
-    vi.mocked(hooks.useVerifyAudit).mockReturnValue({
-      mutate: vi.fn(),
-      isPending: false,
-      data: undefined,
-      isError: false,
-      error: null,
-    } as unknown as ReturnType<typeof hooks.useVerifyAudit>);
+    mockAuthRole();
+    setupSearchMock({ data: { items: [], page: 1, pageSize: 20, totalCount: 0 } });
 
     renderPage();
 
@@ -255,36 +176,8 @@ describe("AuditPage component", () => {
   });
 
   it("hides verify panel for Area Manager role while displaying entries", () => {
-    vi.mocked(auth.useSelloraAuth).mockReturnValue({
-      role: "AreaManager",
-      roles: ["AreaManager"],
-      companyId: "comp-1",
-      accessToken: "token-1",
-      username: "area_mgr",
-      isLoading: false,
-      isAuthenticated: true,
-      logout: vi.fn(),
-    });
-
-    vi.mocked(hooks.useAuditSearch).mockReturnValue({
-      isLoading: false,
-      data: samplePagedData,
-      isError: false,
-      error: null,
-    } as unknown as ReturnType<typeof hooks.useAuditSearch>);
-    vi.mocked(hooks.useAuditEntry).mockReturnValue({
-      data: undefined,
-      isLoading: false,
-      isError: false,
-      error: null,
-    } as unknown as ReturnType<typeof hooks.useAuditEntry>);
-    vi.mocked(hooks.useVerifyAudit).mockReturnValue({
-      mutate: vi.fn(),
-      isPending: false,
-      data: undefined,
-      isError: false,
-      error: null,
-    } as unknown as ReturnType<typeof hooks.useVerifyAudit>);
+    mockAuthRole("AreaManager");
+    setupSearchMock({ data: samplePagedData });
 
     renderPage();
     expect(screen.queryByTestId("audit-verify-panel")).toBeNull();
@@ -293,26 +186,8 @@ describe("AuditPage component", () => {
   });
 
   it("shows timeline mode hint when orderReference is provided", () => {
-    mockAdminAuth();
-    vi.mocked(hooks.useAuditSearch).mockReturnValue({
-      isLoading: false,
-      data: samplePagedData,
-      isError: false,
-      error: null,
-    } as unknown as ReturnType<typeof hooks.useAuditSearch>);
-    vi.mocked(hooks.useAuditEntry).mockReturnValue({
-      data: undefined,
-      isLoading: false,
-      isError: false,
-      error: null,
-    } as unknown as ReturnType<typeof hooks.useAuditEntry>);
-    vi.mocked(hooks.useVerifyAudit).mockReturnValue({
-      mutate: vi.fn(),
-      isPending: false,
-      data: undefined,
-      isError: false,
-      error: null,
-    } as unknown as ReturnType<typeof hooks.useVerifyAudit>);
+    mockAuthRole();
+    setupSearchMock({ data: samplePagedData });
 
     renderPage({ searchParams: { orderReference: "ORD-999" } });
     expect(screen.getByTestId("timeline-order-hint")).toBeDefined();
@@ -320,7 +195,7 @@ describe("AuditPage component", () => {
   });
 
   it("opens entry drawer when row is clicked", () => {
-    mockAdminAuth();
+    mockAuthRole();
     const entryDetail: AuditEntryDetail = {
       ...sampleEntry,
       schemaVersion: 1,
@@ -337,12 +212,7 @@ describe("AuditPage component", () => {
       }),
     };
 
-    vi.mocked(hooks.useAuditSearch).mockReturnValue({
-      isLoading: false,
-      data: samplePagedData,
-      isError: false,
-      error: null,
-    } as unknown as ReturnType<typeof hooks.useAuditSearch>);
+    setupSearchMock({ data: samplePagedData });
 
     vi.mocked(hooks.useAuditEntry).mockImplementation((id) => {
       if (id === "entry-101") {
@@ -360,14 +230,6 @@ describe("AuditPage component", () => {
         error: null,
       } as unknown as ReturnType<typeof hooks.useAuditEntry>;
     });
-
-    vi.mocked(hooks.useVerifyAudit).mockReturnValue({
-      mutate: vi.fn(),
-      isPending: false,
-      data: undefined,
-      isError: false,
-      error: null,
-    } as unknown as ReturnType<typeof hooks.useVerifyAudit>);
 
     renderPage();
     const row = screen.getByTestId("audit-row-42");

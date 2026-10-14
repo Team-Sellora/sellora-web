@@ -5,6 +5,39 @@ import { Button } from "@/components/ui/button";
 import type { AuditSearchFilter } from "../types";
 import { isDateRangeValid } from "../api";
 
+interface FilterInputFieldProps {
+  id: string;
+  label: string;
+  placeholder: string;
+  value: string;
+  onChange: (val: string) => void;
+  isMono?: boolean;
+}
+
+function FilterInputField({
+  id,
+  label,
+  placeholder,
+  value,
+  onChange,
+  isMono,
+}: Readonly<FilterInputFieldProps>) {
+  return (
+    <div>
+      <label htmlFor={id} className="mb-1 block text-xs font-medium text-muted-foreground">
+        {label}
+      </label>
+      <Input
+        id={id}
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className={isMono ? "h-8 text-xs font-mono" : "h-8 text-xs"}
+      />
+    </div>
+  );
+}
+
 export interface AuditFilterFormProps {
   initialFilter: AuditSearchFilter;
   onApply: (filter: AuditSearchFilter) => void;
@@ -61,85 +94,47 @@ export function AuditFilterForm({
       data-testid="audit-filter-form"
     >
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        <div>
-          <label
-            htmlFor="filter-order-ref"
-            className="mb-1 block text-xs font-medium text-muted-foreground"
-          >
-            Order Reference
-          </label>
-          <Input
-            id="filter-order-ref"
-            placeholder="e.g. ORD-1001"
-            value={orderReference}
-            onChange={(e) => setOrderReference(e.target.value)}
-            className="h-8 text-xs"
-          />
-        </div>
+        <FilterInputField
+          id="filter-order-ref"
+          label="Order Reference"
+          placeholder="e.g. ORD-1001"
+          value={orderReference}
+          onChange={setOrderReference}
+        />
 
-        <div>
-          <label
-            htmlFor="filter-event-type"
-            className="mb-1 block text-xs font-medium text-muted-foreground"
-          >
-            Event Type
-          </label>
-          <Input
-            id="filter-event-type"
-            placeholder="e.g. order.placed"
-            value={eventType}
-            onChange={(e) => setEventType(e.target.value)}
-            className="h-8 text-xs"
-          />
-        </div>
+        <FilterInputField
+          id="filter-event-type"
+          label="Event Type"
+          placeholder="e.g. order.placed"
+          value={eventType}
+          onChange={setEventType}
+        />
 
-        <div>
-          <label
-            htmlFor="filter-aggregate-type"
-            className="mb-1 block text-xs font-medium text-muted-foreground"
-          >
-            Aggregate Type
-          </label>
-          <Input
-            id="filter-aggregate-type"
-            placeholder="e.g. Order, Delivery"
-            value={aggregateType}
-            onChange={(e) => setAggregateType(e.target.value)}
-            className="h-8 text-xs"
-          />
-        </div>
+        <FilterInputField
+          id="filter-aggregate-type"
+          label="Aggregate Type"
+          placeholder="e.g. Order, Delivery"
+          value={aggregateType}
+          onChange={setAggregateType}
+        />
 
-        <div>
-          <label
-            htmlFor="filter-aggregate-id"
-            className="mb-1 block text-xs font-medium text-muted-foreground"
-          >
-            Aggregate ID
-          </label>
-          <Input
-            id="filter-aggregate-id"
-            placeholder="UUID or reference"
-            value={aggregateId}
-            onChange={(e) => setAggregateId(e.target.value)}
-            className="h-8 text-xs font-mono"
-          />
-        </div>
+        <FilterInputField
+          id="filter-aggregate-id"
+          label="Aggregate ID"
+          placeholder="UUID or reference"
+          value={aggregateId}
+          onChange={setAggregateId}
+          isMono
+        />
 
-        <div>
-          <label
-            htmlFor="filter-actor"
-            className="mb-1 block text-xs font-medium text-muted-foreground"
-          >
-            Actor User ID
-          </label>
-          <Input
-            id="filter-actor"
-            placeholder="UUID of actor"
-            value={actorUserId}
-            onChange={(e) => setActorUserId(e.target.value)}
-            className="h-8 text-xs font-mono"
-          />
-        </div>
+        <FilterInputField
+          id="filter-actor"
+          label="Actor User ID"
+          placeholder="UUID of actor"
+          value={actorUserId}
+          onChange={setActorUserId}
+          isMono
+        />
 
         <div>
           <label

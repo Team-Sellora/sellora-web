@@ -60,9 +60,8 @@ export function AuditVerifyPanel({ onSelectEntry }: Readonly<AuditVerifyPanelPro
         </Button>
       </div>
 
-      {result && result.verified && (
-        <div
-          role="status"
+      {result?.verified && (
+        <output
           data-testid="verify-success-banner"
           className="mt-4 flex items-start gap-3 rounded-md border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-800 dark:text-emerald-400"
         >
@@ -74,10 +73,10 @@ export function AuditVerifyPanel({ onSelectEntry }: Readonly<AuditVerifyPanelPro
               audit chain were verified with valid hash continuity. No tampering detected.
             </p>
           </div>
-        </div>
+        </output>
       )}
 
-      {result && !result.verified && result.firstBroken && (
+      {result?.firstBroken && !result.verified && (
         <div
           role="alert"
           data-testid="verify-failure-banner"

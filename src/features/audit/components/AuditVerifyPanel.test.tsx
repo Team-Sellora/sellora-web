@@ -33,17 +33,21 @@ describe("AuditVerifyPanel", () => {
     );
   };
 
-  it("is hidden for Area Manager role", () => {
+  const mockAuth = (role: auth.SelloraRole = "CompanyAdmin") => {
     vi.mocked(auth.useSelloraAuth).mockReturnValue({
-      role: "AreaManager",
-      roles: ["AreaManager"],
+      role,
+      roles: [role],
       companyId: "c1",
       accessToken: "t1",
-      username: "area_mgr",
+      username: role === "CompanyAdmin" ? "admin" : "area_mgr",
       isLoading: false,
       isAuthenticated: true,
       logout: vi.fn(),
     });
+  };
+
+  it("is hidden for Area Manager role", () => {
+    mockAuth("AreaManager");
 
     vi.mocked(hooks.useVerifyAudit).mockReturnValue({
       mutate: vi.fn(),
@@ -58,16 +62,7 @@ describe("AuditVerifyPanel", () => {
   });
 
   it("renders verify button for Company Admin", () => {
-    vi.mocked(auth.useSelloraAuth).mockReturnValue({
-      role: "CompanyAdmin",
-      roles: ["CompanyAdmin"],
-      companyId: "c1",
-      accessToken: "t1",
-      username: "admin",
-      isLoading: false,
-      isAuthenticated: true,
-      logout: vi.fn(),
-    });
+    mockAuth("CompanyAdmin");
 
     const mutate = vi.fn();
     vi.mocked(hooks.useVerifyAudit).mockReturnValue({
@@ -86,16 +81,7 @@ describe("AuditVerifyPanel", () => {
   });
 
   it("displays green success banner with entries checked when chain is verified", () => {
-    vi.mocked(auth.useSelloraAuth).mockReturnValue({
-      role: "CompanyAdmin",
-      roles: ["CompanyAdmin"],
-      companyId: "c1",
-      accessToken: "t1",
-      username: "admin",
-      isLoading: false,
-      isAuthenticated: true,
-      logout: vi.fn(),
-    });
+    mockAuth("CompanyAdmin");
 
     const verifiedResult: AuditVerificationResult = {
       verified: true,
@@ -118,16 +104,7 @@ describe("AuditVerifyPanel", () => {
   });
 
   it("displays red banner naming first broken entry, plain reason, and link to entry", () => {
-    vi.mocked(auth.useSelloraAuth).mockReturnValue({
-      role: "CompanyAdmin",
-      roles: ["CompanyAdmin"],
-      companyId: "c1",
-      accessToken: "t1",
-      username: "admin",
-      isLoading: false,
-      isAuthenticated: true,
-      logout: vi.fn(),
-    });
+    mockAuth("CompanyAdmin");
 
     const brokenResult: AuditVerificationResult = {
       verified: false,

@@ -2,14 +2,38 @@
 // Change deployment targets via .env — never hardcode URLs elsewhere.
 function required(value: string | undefined, name: string): string {
   if (!value) {
+    if (import.meta.env?.MODE === "test") {
+      return `http://mock-${name.toLowerCase().replaceAll("_", "-")}.example`;
+    }
     throw new Error(`Missing required env var: ${name}`);
   }
   return value;
 }
 
 export const env = {
-  isBaseUrl: required(import.meta.env.VITE_IS_BASE_URL, "VITE_IS_BASE_URL"),
-  gatewayBaseUrl: required(import.meta.env.VITE_GATEWAY_BASE_URL, "VITE_GATEWAY_BASE_URL"),
-  oidcClientId: required(import.meta.env.VITE_OIDC_CLIENT_ID, "VITE_OIDC_CLIENT_ID"),
-  appOrigin: required(import.meta.env.VITE_APP_ORIGIN, "VITE_APP_ORIGIN"),
+  isBaseUrl: required(import.meta.env["VITE_IS_BASE_URL"], "VITE_IS_BASE_URL"),
+  gatewayBaseUrl: required(import.meta.env["VITE_GATEWAY_BASE_URL"], "VITE_GATEWAY_BASE_URL"),
+  catalogGatewayBaseUrl: required(
+    import.meta.env["VITE_CATALOG_GATEWAY_BASE_URL"],
+    "VITE_CATALOG_GATEWAY_BASE_URL",
+  ),
+  inventoryGatewayBaseUrl:
+    import.meta.env["VITE_INVENTORY_GATEWAY_BASE_URL"] ??
+    required(import.meta.env["VITE_GATEWAY_BASE_URL"], "VITE_GATEWAY_BASE_URL"),
+  orderGatewayBaseUrl:
+    import.meta.env["VITE_ORDER_GATEWAY_BASE_URL"] ??
+    required(import.meta.env["VITE_GATEWAY_BASE_URL"], "VITE_GATEWAY_BASE_URL"),
+  deliveryGatewayBaseUrl:
+    import.meta.env["VITE_DELIVERY_GATEWAY_BASE_URL"] ??
+    required(import.meta.env["VITE_GATEWAY_BASE_URL"], "VITE_GATEWAY_BASE_URL"),
+  // US-E5-3: the Notification service's APIM API (failed-notification list, resend, health).
+  notificationGatewayBaseUrl:
+    import.meta.env["VITE_NOTIFICATION_GATEWAY_BASE_URL"] ??
+    required(import.meta.env["VITE_GATEWAY_BASE_URL"], "VITE_GATEWAY_BASE_URL"),
+  auditGatewayBaseUrl:
+    import.meta.env["VITE_AUDIT_GATEWAY_BASE_URL"] ??
+    required(import.meta.env["VITE_GATEWAY_BASE_URL"], "VITE_GATEWAY_BASE_URL"),
+  oidcClientId: required(import.meta.env["VITE_OIDC_CLIENT_ID"], "VITE_OIDC_CLIENT_ID"),
+  appOrigin: required(import.meta.env["VITE_APP_ORIGIN"], "VITE_APP_ORIGIN"),
+  googleMapsApiKey: import.meta.env["VITE_GOOGLE_MAPS_API_KEY"] ?? "",
 } as const;

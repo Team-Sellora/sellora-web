@@ -1,4 +1,5 @@
 import { useAuth } from "react-oidc-context";
+import { clearDashboardSnapshots } from "@/features/dashboard/snapshotCache";
 
 // The five Sellora roles from US-E0-1.
 export type SelloraRole =
@@ -17,6 +18,8 @@ export interface SelloraAuth {
   accessToken: string | null;
   /** Username / subject display. */
   username: string | null;
+  /** Subject / user identifier. */
+  userId?: string | null;
   logout: () => Promise<void>;
 }
 
@@ -28,6 +31,31 @@ const KNOWN_ROLES: SelloraRole[] = [
   "ShopOwner",
 ];
 
+/** Claims we read from the (access) token. */
+interface SelloraClaims {
+  roles?: unknown;
+  companyId?: unknown;
+  sub?: unknown;
+  nameid?: unknown;
+}
+
+/** Decode a JWT payload (access token) into its claims object. */
+function decodeJwtPayload(token: string): SelloraClaims {
+  try {
+    const base64Url = token.split(".")[1]!;
+    const base64 = base64Url.replaceAll("-", "+").replaceAll("_", "/");
+    const json = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map((c) => "%" + ("00" + c.codePointAt(0)!.toString(16)).slice(-2))
+        .join(""),
+    );
+    return JSON.parse(json) as SelloraClaims;
+  } catch {
+    return {};
+  }
+}
+
 /**
  * Typed accessor for Sellora auth state.
  * Reads decoded claims (role, companyId) from the OIDC token so components
@@ -35,11 +63,32 @@ const KNOWN_ROLES: SelloraRole[] = [
  */
 export function useSelloraAuth(): SelloraAuth {
   const auth = useAuth();
-  const profile = auth.user?.profile;
 
-  const roles: string[] = Array.isArray(profile?.roles) ? (profile.roles as string[]) : [];
+  // If useAuth returns undefined (no AuthProvider in the tree),
+  // return a safe default so consumers can render in tests or other environments.
+  if (!auth) {
+    return {
+      isAuthenticated: false,
+      isLoading: false,
+      role: null,
+      roles: [],
+      companyId: null,
+      accessToken: null,
+      username: null,
+      userId: null,
+      logout: async () => Promise.resolve(),
+    };
+  }
+
+  const profile = auth.user?.profile;
+  const accessToken = auth.user?.access_token ?? null;
+
+  // Roles and companyId live in the ACCESS token, not the ID token.
+  const claims = accessToken ? decodeJwtPayload(accessToken) : {};
+
+  const roles: string[] = Array.isArray(claims.roles) ? (claims.roles as string[]) : [];
   const role = KNOWN_ROLES.find((r) => roles.includes(r)) ?? null;
-  const companyId = typeof profile?.companyId === "string" ? profile.companyId : null;
+  const companyId = typeof claims.companyId === "string" ? claims.companyId : null;
 
   return {
     isAuthenticated: auth.isAuthenticated,
@@ -47,14 +96,23 @@ export function useSelloraAuth(): SelloraAuth {
     role,
     roles,
     companyId,
-    accessToken: auth.user?.access_token ?? null,
+    accessToken,
     username:
       (typeof profile?.preferred_username === "string" ? profile.preferred_username : null) ??
       profile?.sub ??
       null,
-    // Ends the Identity Server session (end-session endpoint) AND clears
-    // local state — not just removeUser(), which would leave the IS session
-    // alive and let back/new-tab silently sign the user back in.
-    logout: () => auth.signoutRedirect(),
+    userId:
+      (typeof claims.sub === "string"
+        ? claims.sub
+        : typeof claims.nameid === "string"
+          ? claims.nameid
+          : null) ??
+      profile?.sub ??
+      null,
+    logout: () => {
+      // Dashboard snapshots belong to this user and company; none survive logout.
+      clearDashboardSnapshots();
+      return auth.signoutRedirect?.() ?? Promise.resolve();
+    },
   };
 }

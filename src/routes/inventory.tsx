@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { EntityListPage } from "@/components/EntityListPage";
 import { RouteGuard } from "@/auth/RouteGuard";
+import { InventoryPage } from "@/features/inventory/InventoryPage";
 
 export const Route = createFileRoute("/inventory")({
   head: () => ({
@@ -8,18 +8,18 @@ export const Route = createFileRoute("/inventory")({
       { title: "Inventory — Sellora" },
       {
         name: "description",
-        content: "Track stock on hand and reserved quantities per warehouse.",
+        content: "View role-scoped stock levels and record authorised adjustments.",
       },
       { property: "og:title", content: "Inventory — Sellora" },
       {
         property: "og:description",
-        content: "Track stock on hand and reserved quantities per warehouse.",
+        content: "View role-scoped stock levels and record authorised adjustments.",
       },
     ],
   }),
   component: () => (
     <RouteGuard>
-      <EntityListPage slug="inventory" />
+      <InventoryPage />
     </RouteGuard>
   ),
 });

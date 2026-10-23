@@ -12,14 +12,34 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AgenciesRouteImport } from './routes/agencies'
 import { Route as AreaManagersRouteImport } from './routes/area-managers'
+import { Route as AuditRouteImport } from './routes/audit'
+import { Route as DeliveriesRouteImport } from './routes/deliveries'
+import { Route as HierarchyRollUpRouteImport } from './routes/hierarchy-roll-up'
 import { Route as InventoryRouteImport } from './routes/inventory'
 import { Route as NotAuthorisedRouteImport } from './routes/not-authorised'
+import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as OrdersRouteImport } from './routes/orders'
+import { Route as ProductCategoriesRouteImport } from './routes/product-categories'
 import { Route as ProductsRouteImport } from './routes/products'
 import { Route as ProvincesRouteImport } from './routes/provinces'
+import { Route as ReportsRouteImport } from './routes/reports'
+import { Route as ReturnsRouteImport } from './routes/returns'
 import { Route as SalesRepsRouteImport } from './routes/sales-reps'
 import { Route as ShopsRouteImport } from './routes/shops'
+import { Route as StaffRouteImport } from './routes/staff'
 import { Route as TerritoriesRouteImport } from './routes/territories'
+import { Route as TerritoryAssignmentsRouteImport } from './routes/territory-assignments'
+import { Route as VanReturnsRouteImport } from './routes/van-returns'
+import { Route as DeliveriesDeliveryIdRouteImport } from './routes/deliveries_.$deliveryId'
+import { Route as OrdersOrderIdRouteImport } from './routes/orders_.$orderId'
+import { Route as OrdersNewRouteImport } from './routes/orders_.new'
+import { Route as ProductsProductIdRouteImport } from './routes/products_.$productId'
+import { Route as ProductsNewRouteImport } from './routes/products_.new'
+import { Route as ReturnsReturnIdRouteImport } from './routes/returns_.$returnId'
+import { Route as VanReturnsVanReturnIdRouteImport } from './routes/van-returns_.$vanReturnId'
+import { Route as VanReturnsNewRouteImport } from './routes/van-returns_.new'
+import { Route as OrdersOrderIdCheckoutRouteImport } from './routes/orders_.$orderId_.checkout'
+import { Route as ProductsProductIdEditRouteImport } from './routes/products_.$productId_.edit'
 import { Route as RecordsEntityIdRouteImport } from './routes/records.$entity.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -37,6 +57,21 @@ const AreaManagersRoute = AreaManagersRouteImport.update({
   path: '/area-managers',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuditRoute = AuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DeliveriesRoute = DeliveriesRouteImport.update({
+  id: '/deliveries',
+  path: '/deliveries',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HierarchyRollUpRoute = HierarchyRollUpRouteImport.update({
+  id: '/hierarchy-roll-up',
+  path: '/hierarchy-roll-up',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InventoryRoute = InventoryRouteImport.update({
   id: '/inventory',
   path: '/inventory',
@@ -47,9 +82,19 @@ const NotAuthorisedRoute = NotAuthorisedRouteImport.update({
   path: '/not-authorised',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NotificationsRoute = NotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OrdersRoute = OrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductCategoriesRoute = ProductCategoriesRouteImport.update({
+  id: '/product-categories',
+  path: '/product-categories',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProductsRoute = ProductsRouteImport.update({
@@ -62,6 +107,16 @@ const ProvincesRoute = ProvincesRouteImport.update({
   path: '/provinces',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReportsRoute = ReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReturnsRoute = ReturnsRouteImport.update({
+  id: '/returns',
+  path: '/returns',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SalesRepsRoute = SalesRepsRouteImport.update({
   id: '/sales-reps',
   path: '/sales-reps',
@@ -72,9 +127,74 @@ const ShopsRoute = ShopsRouteImport.update({
   path: '/shops',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StaffRoute = StaffRouteImport.update({
+  id: '/staff',
+  path: '/staff',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TerritoriesRoute = TerritoriesRouteImport.update({
   id: '/territories',
   path: '/territories',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TerritoryAssignmentsRoute = TerritoryAssignmentsRouteImport.update({
+  id: '/territory-assignments',
+  path: '/territory-assignments',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VanReturnsRoute = VanReturnsRouteImport.update({
+  id: '/van-returns',
+  path: '/van-returns',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DeliveriesDeliveryIdRoute = DeliveriesDeliveryIdRouteImport.update({
+  id: '/deliveries_/$deliveryId',
+  path: '/deliveries/$deliveryId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrdersOrderIdRoute = OrdersOrderIdRouteImport.update({
+  id: '/orders_/$orderId',
+  path: '/orders/$orderId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrdersNewRoute = OrdersNewRouteImport.update({
+  id: '/orders_/new',
+  path: '/orders/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductsProductIdRoute = ProductsProductIdRouteImport.update({
+  id: '/products_/$productId',
+  path: '/products/$productId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductsNewRoute = ProductsNewRouteImport.update({
+  id: '/products_/new',
+  path: '/products/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReturnsReturnIdRoute = ReturnsReturnIdRouteImport.update({
+  id: '/returns_/$returnId',
+  path: '/returns/$returnId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VanReturnsVanReturnIdRoute = VanReturnsVanReturnIdRouteImport.update({
+  id: '/van-returns_/$vanReturnId',
+  path: '/van-returns/$vanReturnId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VanReturnsNewRoute = VanReturnsNewRouteImport.update({
+  id: '/van-returns_/new',
+  path: '/van-returns/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrdersOrderIdCheckoutRoute = OrdersOrderIdCheckoutRouteImport.update({
+  id: '/orders_/$orderId_/checkout',
+  path: '/orders/$orderId/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductsProductIdEditRoute = ProductsProductIdEditRouteImport.update({
+  id: '/products_/$productId_/edit',
+  path: '/products/$productId/edit',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RecordsEntityIdRoute = RecordsEntityIdRouteImport.update({
@@ -87,28 +207,68 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/agencies': typeof AgenciesRoute
   '/area-managers': typeof AreaManagersRoute
+  '/audit': typeof AuditRoute
+  '/deliveries': typeof DeliveriesRoute
+  '/hierarchy-roll-up': typeof HierarchyRollUpRoute
   '/inventory': typeof InventoryRoute
   '/not-authorised': typeof NotAuthorisedRoute
+  '/notifications': typeof NotificationsRoute
   '/orders': typeof OrdersRoute
+  '/product-categories': typeof ProductCategoriesRoute
   '/products': typeof ProductsRoute
   '/provinces': typeof ProvincesRoute
+  '/reports': typeof ReportsRoute
+  '/returns': typeof ReturnsRoute
   '/sales-reps': typeof SalesRepsRoute
   '/shops': typeof ShopsRoute
+  '/staff': typeof StaffRoute
   '/territories': typeof TerritoriesRoute
+  '/territory-assignments': typeof TerritoryAssignmentsRoute
+  '/van-returns': typeof VanReturnsRoute
+  '/deliveries/$deliveryId': typeof DeliveriesDeliveryIdRoute
+  '/orders/$orderId': typeof OrdersOrderIdRoute
+  '/orders/new': typeof OrdersNewRoute
+  '/products/$productId': typeof ProductsProductIdRoute
+  '/products/new': typeof ProductsNewRoute
+  '/returns/$returnId': typeof ReturnsReturnIdRoute
+  '/van-returns/$vanReturnId': typeof VanReturnsVanReturnIdRoute
+  '/van-returns/new': typeof VanReturnsNewRoute
+  '/orders/$orderId/checkout': typeof OrdersOrderIdCheckoutRoute
+  '/products/$productId/edit': typeof ProductsProductIdEditRoute
   '/records/$entity/$id': typeof RecordsEntityIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/agencies': typeof AgenciesRoute
   '/area-managers': typeof AreaManagersRoute
+  '/audit': typeof AuditRoute
+  '/deliveries': typeof DeliveriesRoute
+  '/hierarchy-roll-up': typeof HierarchyRollUpRoute
   '/inventory': typeof InventoryRoute
   '/not-authorised': typeof NotAuthorisedRoute
+  '/notifications': typeof NotificationsRoute
   '/orders': typeof OrdersRoute
+  '/product-categories': typeof ProductCategoriesRoute
   '/products': typeof ProductsRoute
   '/provinces': typeof ProvincesRoute
+  '/reports': typeof ReportsRoute
+  '/returns': typeof ReturnsRoute
   '/sales-reps': typeof SalesRepsRoute
   '/shops': typeof ShopsRoute
+  '/staff': typeof StaffRoute
   '/territories': typeof TerritoriesRoute
+  '/territory-assignments': typeof TerritoryAssignmentsRoute
+  '/van-returns': typeof VanReturnsRoute
+  '/deliveries/$deliveryId': typeof DeliveriesDeliveryIdRoute
+  '/orders/$orderId': typeof OrdersOrderIdRoute
+  '/orders/new': typeof OrdersNewRoute
+  '/products/$productId': typeof ProductsProductIdRoute
+  '/products/new': typeof ProductsNewRoute
+  '/returns/$returnId': typeof ReturnsReturnIdRoute
+  '/van-returns/$vanReturnId': typeof VanReturnsVanReturnIdRoute
+  '/van-returns/new': typeof VanReturnsNewRoute
+  '/orders/$orderId/checkout': typeof OrdersOrderIdCheckoutRoute
+  '/products/$productId/edit': typeof ProductsProductIdEditRoute
   '/records/$entity/$id': typeof RecordsEntityIdRoute
 }
 export interface FileRoutesById {
@@ -116,14 +276,34 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/agencies': typeof AgenciesRoute
   '/area-managers': typeof AreaManagersRoute
+  '/audit': typeof AuditRoute
+  '/deliveries': typeof DeliveriesRoute
+  '/hierarchy-roll-up': typeof HierarchyRollUpRoute
   '/inventory': typeof InventoryRoute
   '/not-authorised': typeof NotAuthorisedRoute
+  '/notifications': typeof NotificationsRoute
   '/orders': typeof OrdersRoute
+  '/product-categories': typeof ProductCategoriesRoute
   '/products': typeof ProductsRoute
   '/provinces': typeof ProvincesRoute
+  '/reports': typeof ReportsRoute
+  '/returns': typeof ReturnsRoute
   '/sales-reps': typeof SalesRepsRoute
   '/shops': typeof ShopsRoute
+  '/staff': typeof StaffRoute
   '/territories': typeof TerritoriesRoute
+  '/territory-assignments': typeof TerritoryAssignmentsRoute
+  '/van-returns': typeof VanReturnsRoute
+  '/deliveries_/$deliveryId': typeof DeliveriesDeliveryIdRoute
+  '/orders_/$orderId': typeof OrdersOrderIdRoute
+  '/orders_/new': typeof OrdersNewRoute
+  '/products_/$productId': typeof ProductsProductIdRoute
+  '/products_/new': typeof ProductsNewRoute
+  '/returns_/$returnId': typeof ReturnsReturnIdRoute
+  '/van-returns_/$vanReturnId': typeof VanReturnsVanReturnIdRoute
+  '/van-returns_/new': typeof VanReturnsNewRoute
+  '/orders_/$orderId_/checkout': typeof OrdersOrderIdCheckoutRoute
+  '/products_/$productId_/edit': typeof ProductsProductIdEditRoute
   '/records/$entity/$id': typeof RecordsEntityIdRoute
 }
 export interface FileRouteTypes {
@@ -132,42 +312,102 @@ export interface FileRouteTypes {
     | '/'
     | '/agencies'
     | '/area-managers'
+    | '/audit'
+    | '/deliveries'
+    | '/hierarchy-roll-up'
     | '/inventory'
     | '/not-authorised'
+    | '/notifications'
     | '/orders'
+    | '/product-categories'
     | '/products'
     | '/provinces'
+    | '/reports'
+    | '/returns'
     | '/sales-reps'
     | '/shops'
+    | '/staff'
     | '/territories'
+    | '/territory-assignments'
+    | '/van-returns'
+    | '/deliveries/$deliveryId'
+    | '/orders/$orderId'
+    | '/orders/new'
+    | '/products/$productId'
+    | '/products/new'
+    | '/returns/$returnId'
+    | '/van-returns/$vanReturnId'
+    | '/van-returns/new'
+    | '/orders/$orderId/checkout'
+    | '/products/$productId/edit'
     | '/records/$entity/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/agencies'
     | '/area-managers'
+    | '/audit'
+    | '/deliveries'
+    | '/hierarchy-roll-up'
     | '/inventory'
     | '/not-authorised'
+    | '/notifications'
     | '/orders'
+    | '/product-categories'
     | '/products'
     | '/provinces'
+    | '/reports'
+    | '/returns'
     | '/sales-reps'
     | '/shops'
+    | '/staff'
     | '/territories'
+    | '/territory-assignments'
+    | '/van-returns'
+    | '/deliveries/$deliveryId'
+    | '/orders/$orderId'
+    | '/orders/new'
+    | '/products/$productId'
+    | '/products/new'
+    | '/returns/$returnId'
+    | '/van-returns/$vanReturnId'
+    | '/van-returns/new'
+    | '/orders/$orderId/checkout'
+    | '/products/$productId/edit'
     | '/records/$entity/$id'
   id:
     | '__root__'
     | '/'
     | '/agencies'
     | '/area-managers'
+    | '/audit'
+    | '/deliveries'
+    | '/hierarchy-roll-up'
     | '/inventory'
     | '/not-authorised'
+    | '/notifications'
     | '/orders'
+    | '/product-categories'
     | '/products'
     | '/provinces'
+    | '/reports'
+    | '/returns'
     | '/sales-reps'
     | '/shops'
+    | '/staff'
     | '/territories'
+    | '/territory-assignments'
+    | '/van-returns'
+    | '/deliveries_/$deliveryId'
+    | '/orders_/$orderId'
+    | '/orders_/new'
+    | '/products_/$productId'
+    | '/products_/new'
+    | '/returns_/$returnId'
+    | '/van-returns_/$vanReturnId'
+    | '/van-returns_/new'
+    | '/orders_/$orderId_/checkout'
+    | '/products_/$productId_/edit'
     | '/records/$entity/$id'
   fileRoutesById: FileRoutesById
 }
@@ -175,14 +415,34 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AgenciesRoute: typeof AgenciesRoute
   AreaManagersRoute: typeof AreaManagersRoute
+  AuditRoute: typeof AuditRoute
+  DeliveriesRoute: typeof DeliveriesRoute
+  HierarchyRollUpRoute: typeof HierarchyRollUpRoute
   InventoryRoute: typeof InventoryRoute
   NotAuthorisedRoute: typeof NotAuthorisedRoute
+  NotificationsRoute: typeof NotificationsRoute
   OrdersRoute: typeof OrdersRoute
+  ProductCategoriesRoute: typeof ProductCategoriesRoute
   ProductsRoute: typeof ProductsRoute
   ProvincesRoute: typeof ProvincesRoute
+  ReportsRoute: typeof ReportsRoute
+  ReturnsRoute: typeof ReturnsRoute
   SalesRepsRoute: typeof SalesRepsRoute
   ShopsRoute: typeof ShopsRoute
+  StaffRoute: typeof StaffRoute
   TerritoriesRoute: typeof TerritoriesRoute
+  TerritoryAssignmentsRoute: typeof TerritoryAssignmentsRoute
+  VanReturnsRoute: typeof VanReturnsRoute
+  DeliveriesDeliveryIdRoute: typeof DeliveriesDeliveryIdRoute
+  OrdersOrderIdRoute: typeof OrdersOrderIdRoute
+  OrdersNewRoute: typeof OrdersNewRoute
+  ProductsProductIdRoute: typeof ProductsProductIdRoute
+  ProductsNewRoute: typeof ProductsNewRoute
+  ReturnsReturnIdRoute: typeof ReturnsReturnIdRoute
+  VanReturnsVanReturnIdRoute: typeof VanReturnsVanReturnIdRoute
+  VanReturnsNewRoute: typeof VanReturnsNewRoute
+  OrdersOrderIdCheckoutRoute: typeof OrdersOrderIdCheckoutRoute
+  ProductsProductIdEditRoute: typeof ProductsProductIdEditRoute
   RecordsEntityIdRoute: typeof RecordsEntityIdRoute
 }
 
@@ -209,6 +469,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AreaManagersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/audit': {
+      id: '/audit'
+      path: '/audit'
+      fullPath: '/audit'
+      preLoaderRoute: typeof AuditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/deliveries': {
+      id: '/deliveries'
+      path: '/deliveries'
+      fullPath: '/deliveries'
+      preLoaderRoute: typeof DeliveriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hierarchy-roll-up': {
+      id: '/hierarchy-roll-up'
+      path: '/hierarchy-roll-up'
+      fullPath: '/hierarchy-roll-up'
+      preLoaderRoute: typeof HierarchyRollUpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/inventory': {
       id: '/inventory'
       path: '/inventory'
@@ -223,11 +504,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NotAuthorisedRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/notifications': {
+      id: '/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof NotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/orders': {
       id: '/orders'
       path: '/orders'
       fullPath: '/orders'
       preLoaderRoute: typeof OrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/product-categories': {
+      id: '/product-categories'
+      path: '/product-categories'
+      fullPath: '/product-categories'
+      preLoaderRoute: typeof ProductCategoriesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/products': {
@@ -244,6 +539,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProvincesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reports': {
+      id: '/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof ReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/returns': {
+      id: '/returns'
+      path: '/returns'
+      fullPath: '/returns'
+      preLoaderRoute: typeof ReturnsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sales-reps': {
       id: '/sales-reps'
       path: '/sales-reps'
@@ -258,11 +567,102 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShopsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/staff': {
+      id: '/staff'
+      path: '/staff'
+      fullPath: '/staff'
+      preLoaderRoute: typeof StaffRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/territories': {
       id: '/territories'
       path: '/territories'
       fullPath: '/territories'
       preLoaderRoute: typeof TerritoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/territory-assignments': {
+      id: '/territory-assignments'
+      path: '/territory-assignments'
+      fullPath: '/territory-assignments'
+      preLoaderRoute: typeof TerritoryAssignmentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/van-returns': {
+      id: '/van-returns'
+      path: '/van-returns'
+      fullPath: '/van-returns'
+      preLoaderRoute: typeof VanReturnsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/deliveries_/$deliveryId': {
+      id: '/deliveries_/$deliveryId'
+      path: '/deliveries/$deliveryId'
+      fullPath: '/deliveries/$deliveryId'
+      preLoaderRoute: typeof DeliveriesDeliveryIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orders_/$orderId': {
+      id: '/orders_/$orderId'
+      path: '/orders/$orderId'
+      fullPath: '/orders/$orderId'
+      preLoaderRoute: typeof OrdersOrderIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orders_/new': {
+      id: '/orders_/new'
+      path: '/orders/new'
+      fullPath: '/orders/new'
+      preLoaderRoute: typeof OrdersNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/products_/$productId': {
+      id: '/products_/$productId'
+      path: '/products/$productId'
+      fullPath: '/products/$productId'
+      preLoaderRoute: typeof ProductsProductIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/products_/new': {
+      id: '/products_/new'
+      path: '/products/new'
+      fullPath: '/products/new'
+      preLoaderRoute: typeof ProductsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/returns_/$returnId': {
+      id: '/returns_/$returnId'
+      path: '/returns/$returnId'
+      fullPath: '/returns/$returnId'
+      preLoaderRoute: typeof ReturnsReturnIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/van-returns_/$vanReturnId': {
+      id: '/van-returns_/$vanReturnId'
+      path: '/van-returns/$vanReturnId'
+      fullPath: '/van-returns/$vanReturnId'
+      preLoaderRoute: typeof VanReturnsVanReturnIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/van-returns_/new': {
+      id: '/van-returns_/new'
+      path: '/van-returns/new'
+      fullPath: '/van-returns/new'
+      preLoaderRoute: typeof VanReturnsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orders_/$orderId_/checkout': {
+      id: '/orders_/$orderId_/checkout'
+      path: '/orders/$orderId/checkout'
+      fullPath: '/orders/$orderId/checkout'
+      preLoaderRoute: typeof OrdersOrderIdCheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/products_/$productId_/edit': {
+      id: '/products_/$productId_/edit'
+      path: '/products/$productId/edit'
+      fullPath: '/products/$productId/edit'
+      preLoaderRoute: typeof ProductsProductIdEditRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/records/$entity/$id': {
@@ -279,14 +679,34 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AgenciesRoute: AgenciesRoute,
   AreaManagersRoute: AreaManagersRoute,
+  AuditRoute: AuditRoute,
+  DeliveriesRoute: DeliveriesRoute,
+  HierarchyRollUpRoute: HierarchyRollUpRoute,
   InventoryRoute: InventoryRoute,
   NotAuthorisedRoute: NotAuthorisedRoute,
+  NotificationsRoute: NotificationsRoute,
   OrdersRoute: OrdersRoute,
+  ProductCategoriesRoute: ProductCategoriesRoute,
   ProductsRoute: ProductsRoute,
   ProvincesRoute: ProvincesRoute,
+  ReportsRoute: ReportsRoute,
+  ReturnsRoute: ReturnsRoute,
   SalesRepsRoute: SalesRepsRoute,
   ShopsRoute: ShopsRoute,
+  StaffRoute: StaffRoute,
   TerritoriesRoute: TerritoriesRoute,
+  TerritoryAssignmentsRoute: TerritoryAssignmentsRoute,
+  VanReturnsRoute: VanReturnsRoute,
+  DeliveriesDeliveryIdRoute: DeliveriesDeliveryIdRoute,
+  OrdersOrderIdRoute: OrdersOrderIdRoute,
+  OrdersNewRoute: OrdersNewRoute,
+  ProductsProductIdRoute: ProductsProductIdRoute,
+  ProductsNewRoute: ProductsNewRoute,
+  ReturnsReturnIdRoute: ReturnsReturnIdRoute,
+  VanReturnsVanReturnIdRoute: VanReturnsVanReturnIdRoute,
+  VanReturnsNewRoute: VanReturnsNewRoute,
+  OrdersOrderIdCheckoutRoute: OrdersOrderIdCheckoutRoute,
+  ProductsProductIdEditRoute: ProductsProductIdEditRoute,
   RecordsEntityIdRoute: RecordsEntityIdRoute,
 }
 export const routeTree = rootRouteImport

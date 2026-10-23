@@ -70,52 +70,74 @@ function RecordForm() {
         crumbs={[{ label: entity.title, to: listPath }, { label: isNew ? "New" : "Edit" }]}
       />
 
-      <form
-        onSubmit={onSubmit}
-        className="max-w-xl space-y-5 rounded-lg border border-border bg-card p-6"
-      >
-        {entity.fields.map((f) => (
-          <FormField
-            key={f.key}
-            name={f.key}
-            label={f.label}
-            type={f.type ?? "text"}
-            value={values[f.key] ?? ""}
-            error={errors[f.key]}
-            onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
-          />
-        ))}
+      <div className="record-layout">
+        <form onSubmit={onSubmit} className="space-y-5 rounded-lg border border-border bg-card p-8">
+          {entity.fields.map((f) => (
+            <FormField
+              key={f.key}
+              name={f.key}
+              label={f.label}
+              type={f.type ?? "text"}
+              value={values[f.key] ?? ""}
+              error={errors[f.key]}
+              onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
+            />
+          ))}
 
-        <div className="space-y-1.5">
-          <label htmlFor="status" className="block text-sm font-medium">
-            Status
-          </label>
-          <select
-            id="status"
-            value={values["status"]}
-            onChange={(e) => setValues((v) => ({ ...v, status: e.target.value }))}
-            className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring/40"
-          >
-            <option value="Active">Active</option>
-            <option value="Inactive">Inactive</option>
-          </select>
-        </div>
+          <div className="space-y-1.5">
+            <label htmlFor="status" className="block text-sm font-medium">
+              Status
+            </label>
+            <select
+              id="status"
+              value={values["status"]}
+              onChange={(e) => setValues((v) => ({ ...v, status: e.target.value }))}
+              className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring/40"
+            >
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
 
-        <div className="flex gap-2 border-t border-border pt-5">
-          <button
-            type="submit"
-            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-          >
-            Save
-          </button>
-          <Link
-            to={listPath}
-            className="rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-muted"
-          >
-            Cancel
-          </Link>
-        </div>
-      </form>
+          <div className="flex gap-2 border-t border-border pt-5">
+            <button
+              type="submit"
+              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+            >
+              Save
+            </button>
+            <Link
+              to={listPath}
+              className="rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-muted"
+            >
+              Cancel
+            </Link>
+          </div>
+        </form>
+        <aside className="dashboard-stack">
+          <section className="stitch-panel">
+            <h2>Record information</h2>
+            <dl className="mt-5 space-y-4">
+              <div>
+                <dt className="metric-label">RECORD TYPE</dt>
+                <dd className="mt-1">{entity.singular}</dd>
+              </div>
+              <div>
+                <dt className="metric-label">STATUS</dt>
+                <dd className="mt-1">{values["status"]}</dd>
+              </div>
+              <div>
+                <dt className="metric-label">IDENTIFIER</dt>
+                <dd className="mt-1 break-all font-mono text-xs">{isNew ? "New record" : id}</dd>
+              </div>
+            </dl>
+          </section>
+          <section className="stitch-info">
+            <strong>Record details</strong>Review the required fields and operational status before
+            saving your changes.
+          </section>
+        </aside>
+      </div>
     </>
   );
 }

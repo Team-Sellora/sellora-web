@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { EntityListPage } from "@/components/EntityListPage";
 import { RouteGuard } from "@/auth/RouteGuard";
+import { AreaManagerListPage } from "@/features/provinces/AreaManagerListPage";
 
 export const Route = createFileRoute("/area-managers")({
   head: () => ({
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/area-managers")({
   }),
   component: () => (
     <RouteGuard>
-      <EntityListPage slug="area-managers" />
+      <AreaManagerListPage />
     </RouteGuard>
   ),
 });

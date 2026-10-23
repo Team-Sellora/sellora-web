@@ -1,5 +1,6 @@
 @import "tailwindcss" source(none);
 @import "tw-animate-css";
+@import "./stitch.css";
 @source "../src";
 
 @custom-variant dark (&:is(.dark *));
@@ -10,8 +11,8 @@
  * The @theme inline block maps CSS custom properties to Tailwind utility
  * classes (e.g. --color-primary -> bg-primary, text-primary).
  *
- * The :root and .dark blocks define the actual color values using oklch.
- * All colors MUST use oklch format.
+ * stitch.css contains the exact light palette from the provided HTML export.
+ * The .dark block retains the existing dark theme values.
  *
  * To add a new semantic color:
  * 1. Add the variable to :root (light value) and .dark (dark value)
@@ -65,43 +66,7 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
-:root {
-  --radius: 0.5rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.25 0.01 260);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.25 0.01 260);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.25 0.01 260);
-  --primary: oklch(0.52 0.09 250);
-  --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.968 0.004 250);
-  --secondary-foreground: oklch(0.32 0.01 260);
-  --muted: oklch(0.972 0.003 250);
-  --muted-foreground: oklch(0.53 0.015 258);
-  --accent: oklch(0.955 0.012 250);
-  --accent-foreground: oklch(0.4 0.06 250);
-  --destructive: oklch(0.55 0.19 27);
-  --destructive-foreground: oklch(0.99 0 0);
-  --success: oklch(0.94 0.04 155);
-  --success-foreground: oklch(0.44 0.11 155);
-  --border: oklch(0.92 0.005 250);
-  --input: oklch(0.9 0.005 250);
-  --ring: oklch(0.62 0.07 250);
-  --chart-1: oklch(0.52 0.09 250);
-  --chart-2: oklch(0.6 0.05 200);
-  --chart-3: oklch(0.65 0.04 260);
-  --chart-4: oklch(0.72 0.03 250);
-  --chart-5: oklch(0.8 0.02 250);
-  --sidebar: oklch(0.985 0.002 250);
-  --sidebar-foreground: oklch(0.3 0.01 260);
-  --sidebar-primary: oklch(0.52 0.09 250);
-  --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.95 0.012 250);
-  --sidebar-accent-foreground: oklch(0.4 0.06 250);
-  --sidebar-border: oklch(0.92 0.005 250);
-  --sidebar-ring: oklch(0.62 0.07 250);
-}
+/* Light theme values are taken verbatim from the Stitch export in stitch.css. */
 
 .dark {
   --background: oklch(0.129 0.042 264.695);

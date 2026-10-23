@@ -1,0 +1,284 @@
+import { Link } from "@tanstack/react-router";
+import {
+  AlertCircle,
+  Banknote,
+  CalendarClock,
+  Hourglass,
+  Lock,
+  ScrollText,
+  Store,
+  User,
+  Warehouse,
+} from "lucide-react";
+import { useCallback, type ReactNode } from "react";
+import { useSelloraAuth } from "@/auth/useSelloraAuth";
+import { PageHeader } from "@/components/PageHeader";
+import { AgencyApprovalPanel } from "./AgencyApprovalPanel";
+import { canDecideApproval, formatDecision } from "./approvalView";
+import { formatLkr, formatOrderDate, shortId } from "./format";
+import { useHierarchyNames, useOrder } from "./hooks";
+import { OrderStatusBadge, FulfilmentTypeBadge } from "./OrderStatusBadge";
+import { canOpenAuditTrail, orderColumnsFor } from "./roleView";
+import { ShopCancellationPanel } from "./ShopCancellationPanel";
+import { OrderApiError } from "./types";
+import { DeliveryTrackingPanel } from "./DeliveryTrackingPanel";
+
+function InfoCard({
+  icon,
+  label,
+  value,
+}: Readonly<{ icon: ReactNode; label: string; value: ReactNode }>) {
+  return (
+    <div className="rounded-lg border border-border bg-card p-4">
+      <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-muted-foreground">
+        {icon}
+        {label}
+      </div>
+      <div className="mt-1.5 font-medium">{value}</div>
+    </div>
+  );
+}
+
+export function OrderDetailsPage({ orderId }: Readonly<{ orderId: string }>) {
+  const { role } = useSelloraAuth();
+  const orderQuery = useOrder(orderId);
+  const namesQuery = useHierarchyNames();
+  const columns = orderColumnsFor(role);
+  const { refetch } = orderQuery;
+  // Stable, so the countdown asks the server once when it reaches zero.
+  const refreshWindow = useCallback(() => {
+    void refetch();
+  }, [refetch]);
+
+  const crumbs = [{ label: "Orders", to: "/orders" }, { label: "Order details" }];
+
+  if (orderQuery.isLoading) {
+    return (
+      <>
+        <PageHeader title="Order details" crumbs={crumbs} />
+        <p className="text-sm text-muted-foreground">Loading order…</p>
+      </>
+    );
+  }
+
+  if (orderQuery.isError || !orderQuery.data) {
+    const notFound = orderQuery.error instanceof OrderApiError && orderQuery.error.status === 404;
+    let errorMessage = "The order could not be loaded.";
+    if (notFound) {
+      errorMessage = "This order does not exist or is not visible to you.";
+    } else if (orderQuery.error instanceof Error) {
+      errorMessage = orderQuery.error.message;
+    }
+
+    return (
+      <>
+        <PageHeader title="Order details" crumbs={crumbs} />
+        <div
+          role="alert"
+          className="flex items-start gap-2 rounded-lg border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive"
+        >
+          <AlertCircle className="mt-0.5 size-4 shrink-0" />
+          <div>
+            <p>{errorMessage}</p>
+            <Link to="/orders" className="mt-2 inline-block font-medium underline">
+              Back to orders
+            </Link>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  const order = orderQuery.data;
+  const shopName = namesQuery.data?.shops[order.shopId] ?? shortId(order.shopId);
+  const agencyName = namesQuery.data?.agencies[order.agencyId] ?? shortId(order.agencyId);
+
+  return (
+    <>
+      <PageHeader
+        title={order.orderReference}
+        description="Submitted orders are read-only."
+        crumbs={[{ label: "Orders", to: "/orders" }, { label: order.orderReference }]}
+        actions={
+          <div className="flex items-center gap-2">
+            {canOpenAuditTrail(role) && (
+              <Link
+                to="/audit"
+                search={{ orderReference: order.orderReference }}
+                className="inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-2.5 py-1 text-xs font-medium text-foreground hover:bg-muted transition-colors"
+              >
+                <ScrollText className="size-3.5 text-muted-foreground" />
+                <span>Audit trail</span>
+              </Link>
+            )}
+            <FulfilmentTypeBadge type={order.fulfilmentType} />
+            <OrderStatusBadge status={order.status} />
+          </div>
+        }
+      />
+
+      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <InfoCard
+          icon={<CalendarClock className="size-4" />}
+          label="Order date"
+          value={formatOrderDate(order.orderDate)}
+        />
+        {columns.includes("shop") && (
+          <InfoCard icon={<Store className="size-4" />} label="Shop" value={shopName} />
+        )}
+        {columns.includes("salesRep") && (
+          <InfoCard
+            icon={<User className="size-4" />}
+            label="Sales rep"
+            value={<span className="font-mono text-sm">{shortId(order.salesRepId)}</span>}
+          />
+        )}
+        {columns.includes("agency") && (
+          <InfoCard icon={<Warehouse className="size-4" />} label="Agency" value={agencyName} />
+        )}
+      </div>
+
+      <section className="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
+        <div className="border-b border-border p-4 text-sm font-medium">
+          Order lines ({order.lines.length})
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead className="border-b border-border bg-muted/50 text-xs uppercase tracking-wide text-muted-foreground">
+              <tr>
+                <th className="px-4 py-3 font-semibold">Product</th>
+                <th className="px-4 py-3 text-right font-semibold">Qty</th>
+                <th className="px-4 py-3 text-right font-semibold">Unit price</th>
+                <th className="px-4 py-3 text-right font-semibold">Line total</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {order.lines.map((line) => (
+                <tr key={line.orderLineId}>
+                  <td className="px-4 py-3 font-medium">{line.productNameSnapshot}</td>
+                  <td className="px-4 py-3 text-right font-mono">{line.quantity}</td>
+                  <td className="px-4 py-3 text-right font-mono">
+                    {formatLkr(line.unitPriceSnapshot)}
+                  </td>
+                  <td className="px-4 py-3 text-right font-mono font-medium">
+                    {formatLkr(line.lineTotal)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot className="border-t border-border bg-muted/30">
+              <tr>
+                <td colSpan={3} className="px-4 py-2 text-right text-muted-foreground">
+                  Subtotal
+                </td>
+                <td className="px-4 py-2 text-right font-mono">{formatLkr(order.subtotal)}</td>
+              </tr>
+              <tr>
+                <td colSpan={3} className="px-4 py-3 text-right font-semibold">
+                  Total
+                </td>
+                <td className="px-4 py-3 text-right font-mono text-base font-semibold">
+                  {formatLkr(order.total)}
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </section>
+
+      {order.checkout?.payment && (
+        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <InfoCard
+            icon={<Banknote className="size-4" />}
+            label="Cash received"
+            value={formatLkr(order.checkout.payment.amount)}
+          />
+          <InfoCard
+            icon={<CalendarClock className="size-4" />}
+            label="Paid at"
+            value={formatOrderDate(order.checkout.payment.recordedAt)}
+          />
+          <InfoCard
+            icon={<Store className="size-4" />}
+            label="Checked in"
+            value={`${Math.round(order.checkout.payment.distanceMeters)} m from the shop`}
+          />
+        </div>
+      )}
+
+      {order.status === "Cancelled" && order.checkout?.cancellationReason && (
+        <div className="mt-6 rounded-lg border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive">
+          {order.checkout.cancellationReason}
+        </div>
+      )}
+
+      {canDecideApproval(role, order) && <AgencyApprovalPanel order={order} />}
+
+      {order.status === "PendingApproval" && role !== "AgencyOperator" && (
+        <div className="mt-6 flex items-start gap-3 rounded-lg border border-primary/30 bg-primary/5 p-4 text-sm">
+          <Hourglass className="mt-0.5 size-5 shrink-0 text-primary" />
+          <p>
+            This scheduled delivery is waiting for the agency to approve it. It is not binding until
+            then.
+          </p>
+        </div>
+      )}
+
+      {role === "ShopOwner" && (
+        <ShopCancellationPanel
+          order={order}
+          receivedAt={orderQuery.dataUpdatedAt}
+          onExpired={refreshWindow}
+        />
+      )}
+
+      {order.decisions && order.decisions.length > 0 && (
+        <section className="mt-6 rounded-lg border border-border bg-card p-4 text-sm">
+          <h2 className="mb-2 font-medium">Decisions</h2>
+          <ol className="space-y-2">
+            {order.decisions.map((decision) => (
+              <li key={decision.orderDecisionId} className="flex flex-wrap gap-x-2">
+                <span className="font-medium">{formatDecision(decision.decision)}</span>
+                <span className="text-muted-foreground">{formatOrderDate(decision.decidedAt)}</span>
+                {decision.reason && <span className="w-full">“{decision.reason}”</span>}
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
+
+      {order.fulfilmentType === "ScheduledDelivery" && (
+        <DeliveryTrackingPanel orderId={order.orderId} />
+      )}
+
+      {order.status === "AwaitingCheckout" && (
+        <div className="mt-6 flex items-start gap-3 rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-sm">
+          <Banknote className="mt-0.5 size-5 shrink-0 text-amber-600 dark:text-amber-400" />
+          <div className="flex-1">
+            <p>
+              This cash sale is not finished. The stock is held in your van until you check in at
+              the shop and record the payment.
+            </p>
+            {role === "SalesRep" && (
+              <Link
+                to="/orders/$orderId/checkout"
+                params={{ orderId: order.orderId }}
+                className="mt-3 inline-flex h-9 items-center gap-1.5 rounded-md bg-primary px-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+              >
+                Go to checkout
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
+
+      <div className="mt-6 flex items-start gap-3 rounded-lg border border-border bg-muted/50 p-4 text-sm text-muted-foreground">
+        <Lock className="mt-0.5 size-5 shrink-0 text-primary" />
+        <p>
+          Names and prices are snapshots taken when the order was placed. Later catalogue changes do
+          not alter this order.
+        </p>
+      </div>
+    </>
+  );
+}

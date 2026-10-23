@@ -9,26 +9,114 @@ export function setUnauthorizedHandler(handler: () => void): void {
   onUnauthorized = handler;
 }
 
-/**
- * Single gateway HTTP client. Automatically attaches the bearer token to
- * every request, so callers never handle auth headers themselves.
- */
-export async function apiFetch(path: string, options: RequestInit = {}): Promise<Response> {
+async function fetchWithBase(
+  baseUrl: string,
+  path: string,
+  options: RequestInit = {},
+  redirectOnUnauthorized = true,
+): Promise<Response> {
   const token = getAccessToken();
 
   const headers = new Headers(options.headers);
   if (token) {
     headers.set("Authorization", `Bearer ${token}`);
   }
-  headers.set("Accept", "application/json");
+  if (!headers.has("Accept")) {
+    headers.set("Accept", "application/json");
+  }
 
-  const url = `${env.gatewayBaseUrl}${path}`;
+  const url = `${baseUrl}${path}`;
   const response = await fetch(url, { ...options, headers });
 
-  if (response.status === 401) {
+  if (response.status === 401 && redirectOnUnauthorized) {
     // Token rejected — trigger the login redirect wired up by the auth layer.
     onUnauthorized?.();
   }
 
   return response;
+}
+
+/**
+ * Gateway HTTP client for the organization service. Automatically attaches
+ * the bearer token to every request, so callers never handle auth headers.
+ */
+export function apiFetch(path: string, options: RequestInit = {}): Promise<Response> {
+  return fetchWithBase(env.gatewayBaseUrl, path, options);
+}
+
+/** Gateway HTTP client for the catalog service (products). */
+export function catalogApiFetch(path: string, options: RequestInit = {}): Promise<Response> {
+  return fetchWithBase(env.catalogGatewayBaseUrl, path, options);
+}
+
+/** Gateway HTTP client for the Inventory service (stock). */
+export function inventoryApiFetch(path: string, options: RequestInit = {}): Promise<Response> {
+  // Inventory can return 401 when APIM/backend role or tenant mapping is
+  // incomplete. Keep the user on the page so its actionable error is shown;
+  // a 401 from the identity or other APIs still follows the normal sign-in flow.
+  return fetchWithBase(env.inventoryGatewayBaseUrl, path, options, false);
+}
+
+/** Gateway HTTP client for the Order service. */
+export function orderApiFetch(path: string, options: RequestInit = {}): Promise<Response> {
+  // Like Inventory: keep the user on the page on 401 so the order screens can
+  // show an actionable message while token scope claims are still being wired.
+  return fetchWithBase(env.orderGatewayBaseUrl, path, options, false);
+}
+
+/** Gateway HTTP client for the Notification service (US-E5-3). */
+export function notificationApiFetch(path: string, options: RequestInit = {}): Promise<Response> {
+  // Like Order: stay on the page on 401 so the screen can say what is missing.
+  return fetchWithBase(env.notificationGatewayBaseUrl, path, options, false);
+}
+
+/** Gateway HTTP client for the Delivery service. */
+export function deliveryApiFetch(path: string, options: RequestInit = {}): Promise<Response> {
+  return fetchWithBase(env.deliveryGatewayBaseUrl, path, options, false);
+}
+
+/** Gateway HTTP client for the Audit service (US-E7-1 / CSP-250). */
+export function auditApiFetch(path: string, options: RequestInit = {}): Promise<Response> {
+  return fetchWithBase(env.auditGatewayBaseUrl, path, options, false);
+}
+
+export interface BlobResponse {
+  blob: Blob;
+  headers: Headers;
+  status: number;
+}
+
+/** Gateway HTTP client for binary downloads from the Audit service (US-E7-3). */
+export async function auditApiBlob(path: string, options: RequestInit = {}): Promise<BlobResponse> {
+  const headers = new Headers(options.headers);
+  if (!headers.has("Accept")) {
+    headers.set("Accept", "*/*");
+  }
+
+  const response = await fetchWithBase(
+    env.auditGatewayBaseUrl,
+    path,
+    { ...options, headers },
+    false,
+  );
+
+  if (!response.ok) {
+    let detail: string | undefined;
+    let title: string | undefined;
+    try {
+      const body = (await response.json()) as { detail?: string; title?: string; message?: string };
+      detail = body.detail ?? body.message;
+      title = body.title;
+    } catch {
+      // Non-JSON response
+    }
+    const err = new Error(detail ?? `Download failed with status ${response.status}`);
+    (err as Error & { status?: number; detail?: string; title?: string }).status = response.status;
+    (err as Error & { status?: number; detail?: string; title?: string }).detail = detail;
+    (err as Error & { status?: number; detail?: string; title?: string }).title = title;
+    throw err;
+  }
+
+  const blob = await response.blob();
+  return { blob, headers: response.headers, status: response.status };
 }

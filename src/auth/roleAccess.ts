@@ -3,17 +3,95 @@ import type { SelloraRole } from "./useSelloraAuth";
 export const routeAccess: Record<string, SelloraRole[]> = {
   "/provinces": ["CompanyAdmin"],
   "/area-managers": ["CompanyAdmin"],
-  "/agencies": ["CompanyAdmin", "AreaManager"],
-  "/territories": ["CompanyAdmin", "AreaManager", "AgencyOperator"],
-  "/sales-reps": ["CompanyAdmin", "AreaManager", "AgencyOperator"],
-  "/shops": ["CompanyAdmin", "AreaManager", "AgencyOperator", "SalesRep"],
-  "/inventory": ["CompanyAdmin", "AreaManager", "AgencyOperator"],
-  "/orders": ["CompanyAdmin", "AreaManager", "AgencyOperator", "SalesRep"],
+  "/hierarchy-roll-up": ["CompanyAdmin"],
+  // The API currently authorizes both agency and territory registration/listing
+  // for Area Managers only; match that rule in the route guard.
+  "/agencies": ["AreaManager"],
+  "/territories": ["AreaManager"],
+  "/territory-assignments": ["AreaManager"],
+  "/sales-reps": ["AgencyOperator"],
+  // POST /api/staff: Company Admins add any staff role, Agency Operators add Sales Reps.
+  "/staff": ["CompanyAdmin", "AgencyOperator"],
+  "/shops": ["AgencyOperator"],
+  "/products": ["CompanyAdmin", "AreaManager", "AgencyOperator", "SalesRep"],
+  "/products/new": ["CompanyAdmin"],
+  // Categories are created and edited here (POST/PUT /api/categories are
+  // RequireCompanyAdmin); everyone else sees categories on the Products page.
+  "/product-categories": ["CompanyAdmin"],
+  "/inventory": ["CompanyAdmin", "AgencyOperator", "SalesRep"],
+  // Shop Owners can read their own shop's orders (server-side scoping).
+  "/orders": ["CompanyAdmin", "AreaManager", "AgencyOperator", "SalesRep", "ShopOwner"],
+  // POST /api/orders is RequireSalesRep on the server.
+  "/orders/new": ["SalesRep"],
+  // US-E4-6: reps see their own returns, operators their agency's, admins all.
+  "/van-returns": ["CompanyAdmin", "AgencyOperator", "SalesRep"],
+  // POST /api/van-returns is RequireSalesRep on the server.
+  "/van-returns/new": ["SalesRep"],
+  "/deliveries": ["CompanyAdmin", "AreaManager", "AgencyOperator", "SalesRep", "ShopOwner"],
+  "/returns": ["CompanyAdmin", "AreaManager", "AgencyOperator", "SalesRep", "ShopOwner"],
+  // US-E5-3: the Notification service's admin endpoints are RequireCompanyAdmin.
+  "/notifications": ["CompanyAdmin"],
+  // US-E7-1 / CSP-250: Immutable append-only audit log.
+  "/audit": ["CompanyAdmin", "AreaManager"],
+  // US-E7-2 / CSP-252: Aggregate sales reporting dashboard.
+  "/reports": ["CompanyAdmin", "AreaManager"],
 };
 
 export function isRoleAllowed(path: string, role: SelloraRole | null): boolean {
-  const allowed = routeAccess[path];
-  if (!allowed) return true;
-  if (!role) return false;
-  return allowed.includes(role);
+  const exactRoles = routeAccess[path];
+
+  if (exactRoles) {
+    return role !== null && exactRoles.includes(role);
+  }
+
+  // US-E4-3: only the rep takes payment at the counter.
+  if (/^\/orders\/[^/]+\/checkout$/.test(path)) {
+    return role === "SalesRep";
+  }
+
+  if (/^\/van-returns\/[^/]+$/.test(path)) {
+    const vanReturnReaderRoles = routeAccess["/van-returns"] ?? [];
+
+    return role !== null && vanReturnReaderRoles.includes(role);
+  }
+
+  const isOrderDetailsRoute = /^\/orders\/[^/]+$/.test(path);
+
+  if (isOrderDetailsRoute) {
+    const orderReaderRoles = routeAccess["/orders"] ?? [];
+
+    return role !== null && orderReaderRoles.includes(role);
+  }
+
+  const isProductEditRoute = /^\/products\/[^/]+\/edit$/.test(path);
+
+  if (isProductEditRoute) {
+    return role === "CompanyAdmin";
+  }
+
+  const isProductDetailsRoute = /^\/products\/[^/]+$/.test(path);
+
+  if (isProductDetailsRoute) {
+    const productReaderRoles = routeAccess["/products"] ?? [];
+
+    return role !== null && productReaderRoles.includes(role);
+  }
+
+  const isDeliveryDetailsRoute = /^\/deliveries\/[^/]+$/.test(path);
+
+  if (isDeliveryDetailsRoute) {
+    const deliveryReaderRoles = routeAccess["/deliveries"] ?? [];
+
+    return role !== null && deliveryReaderRoles.includes(role);
+  }
+
+  const isReturnDetailsRoute = /^\/returns\/[^/]+$/.test(path);
+
+  if (isReturnDetailsRoute) {
+    const returnReaderRoles = routeAccess["/returns"] ?? [];
+
+    return role !== null && returnReaderRoles.includes(role);
+  }
+
+  return true;
 }

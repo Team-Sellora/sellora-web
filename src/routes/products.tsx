@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { EntityListPage } from "@/components/EntityListPage";
+import { ProductPage } from "@/features/products/ProductPage";
 
 export const Route = createFileRoute("/products")({
   head: () => ({
@@ -10,5 +10,5 @@ export const Route = createFileRoute("/products")({
       { property: "og:description", content: "Manage the FMCG product catalogue and pricing." },
     ],
   }),
-  component: () => <EntityListPage slug="products" />,
+  component: ProductPage,
 });
